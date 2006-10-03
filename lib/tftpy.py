@@ -2,7 +2,8 @@
 
 """This library implements the tftp protocol, based on rfc 1350.
 http://www.faqs.org/rfcs/rfc1350.html
-At the moment it implements only a client class.
+At the moment it implements only a client class, but will include a server,
+with support for variable block sizes.
 """
 
 import struct, random, socket, sys, logging, time
