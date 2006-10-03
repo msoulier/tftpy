@@ -1,0 +1,14 @@
+Copyright, Michael P. Soulier, 2006.
+
+This is a simple tftp library for Python. The project has no hosting as of
+yet, so for now, simply direct any problems to me at
+msoulier@digitaltorque.ca.
+
+This library was developed against Python 2.4.1. If you have a previous
+version, don't bother contacting me. You're welcome to backport it if you
+like.
+
+License is the CNRI Python License.
+http://www.opensource.org/licenses/pythonpl.php
+
+See LICENSE in this distribution.
