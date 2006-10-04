@@ -427,6 +427,18 @@ class TftpClient(TftpSession):
         self.host = host
         self.port = port
         self.options = options
+        
+    def gethost(self):
+        "Simple getter method."
+        return self.__host
+    
+    def sethost(self, host):
+        """Setter method that also sets the address property as a result
+        of the host that is set."""
+        self.__host = host
+        self.address = socket.gethostbyname(host)
+        
+    host = property(gethost, sethost)
 
     def download(self, filename, output, packethook=None):
         """This method initiates a tftp download from the configured remote
@@ -456,7 +468,14 @@ class TftpClient(TftpSession):
 
             logger.debug("Received %d bytes from %s:%s" 
                          % (len(buffer), raddress, rport))
-            # FIXME - check sender port and ip address
+            
+            if rport != self.port or raddress != self.address:
+                logger.warn("Received traffic from %s:%s but we're "
+                            "connected to %s:%s. Discarding."
+                            % (raddress, rport,
+                               self.host, self.port))
+                continue
+            
             if isinstance(recvpkt, TftpPacketDAT):
                 logger.debug("recvpkt.blocknumber = %d" % recvpkt.blocknumber)
                 logger.debug("curblock = %d" % curblock)
