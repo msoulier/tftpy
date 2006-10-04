@@ -1,5 +1,13 @@
 Copyright, Michael P. Soulier, 2006.
 
+About Release 0.1:
+==================
+
+This is an initial release in the spirit of "release early, release often".
+Currently the sample client works, supporting RFC 1350. The server is not yet
+implemented, and RFC 2347 and 2348 support (variable block sizes) is underway,
+planned for 0.2.
+
 About Tftpy:
 ============
 
