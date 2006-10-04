@@ -23,7 +23,7 @@ MAX_DUPS = 20
 logging.basicConfig(
         level=LOG_LEVEL,
         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-        datefmt='%m-%d %H:%M')
+        datefmt='%m-%d %H:%M:%S')
 logger = logging.getLogger('tftpy')
 
 class TftpException(Exception):
