@@ -1,4 +1,5 @@
-#!/usr/bin/python
+"""Disclaimer: This is just a placeholder. I do not yet support Twisted
+Python."""
 
 from twisted.internet import reactor, protocol
 
@@ -9,9 +10,6 @@ class TFTPProtocolFactory(protocol.ClientFactory):
     protocol = TFTPProtocol
 
 def main():
-    host = '216.191.234.113'
-    port = 20001
-
     reactor.listenUDP(port, TFTPProtocolFactory())
     reactor.run()
 

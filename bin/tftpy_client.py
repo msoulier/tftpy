@@ -7,12 +7,6 @@ import tftpy
 def main():
     usage=""
     parser = OptionParser(usage=usage)
-    parser.add_option('-t',
-                      '--test',
-                      action='store_true',
-                      dest='test',
-                      help='run test case(s)',
-                      default=False)
     parser.add_option('-H',
                       '--host',
                       action='store',
@@ -42,11 +36,6 @@ def main():
                       help='output file (default: out)',
                       default='out')
     options, args = parser.parse_args()
-    if options.test:
-        options.host = "216.191.234.113"
-        options.port = 20001
-        options.filename = 'ipp510main.bin'
-        options.output = 'ipp510main.bin'
     if not options.host or not options.filename:
         parser.print_help()
         sys.exit(1)
