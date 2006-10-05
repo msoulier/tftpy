@@ -528,7 +528,7 @@ class TftpClient(TftpSession):
                     if packethook:
                         packethook(recvpkt)
                     # Check for end-of-file, any less than full data packet.
-                    if len(recvpkt.data) < DEF_BLKSIZE:
+                    if len(recvpkt.data) < self.options['blksize']:
                         logger.info("end of file detected")
                         break
 
