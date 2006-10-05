@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import sys
+import sys, logging
 from optparse import OptionParser
-from tftpy import *
+import tftpy
 
 def main():
     usage=""
@@ -58,12 +58,19 @@ def main():
         def progresshook(self, pkt):
             self.progress += len(pkt.data)
             self.out("Downloaded %d bytes" % self.progress)
+        
+    tftpy.setLogLevel(logging.DEBUG)
 
-    progresshook = Progress(logger.info).progresshook
+    progresshook = Progress(tftpy.logger.info).progresshook
 
-    tclient = TftpClient(options.host,
-                         options.port,
-                         options.blocksize)
+    tftp_options = {}
+    if options.blocksize:
+        tftp_options['blksize'] = int(options.blocksize)
+
+    tclient = tftpy.TftpClient(options.host,
+                               options.port,
+                               tftp_options)
+
     tclient.download(options.filename,
                      options.output,
                      progresshook)

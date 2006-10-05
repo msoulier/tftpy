@@ -4,7 +4,7 @@ At the moment it implements only a client class, but will include a server,
 with support for variable block sizes.
 """
 
-import struct, socket, logging, time, sys
+import struct, socket, logging, time, sys, types
 
 # Make sure that this is at least Python 2.4
 verlist = sys.version_info
@@ -12,7 +12,7 @@ if not verlist[0] >= 2 or not verlist[1] >= 4:
     raise AssertionError, "Requires at least Python 2.4"
 
 # Change this as desired. FIXME - make this a command-line arg
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.DEBUG
 MIN_BLKSIZE = 8
 DEF_BLKSIZE = 512
 MAX_BLKSIZE = 65536
@@ -81,32 +81,32 @@ class TftpPacket(object):
         unknown number of options. It returns a dictionary of option names and
         values."""
         nulls = 0
-        format = ""
+        format = "!"
         options = {}
 
+        logger.debug("buffer is: " + buffer)
+        logger.debug("size of buffer is %d bytes" % len(buffer))
         # Count the nulls in the buffer. Each one terminates a string.
-        self.debug("about to iterate options buffer counting nulls")
+        logger.debug("about to iterate options buffer counting nulls")
         length = 0
         for c in buffer:
             if ord(c) == 0:
-                self.debug("found a null at length %d" % length)
+                logger.debug("found a null at length %d" % length)
                 if length > 0:
                     format += "%dsx" % length
-                    length = 0
+                    length = -1
                 else:
                     raise TftpException, "Invalid options buffer"
             length += 1
                 
-        # Unpack the buffer.
+        logger.debug("about to unpack, format is: %s" % format)
         mystruct = struct.unpack(format, buffer)
-        for key in mystruct:
-            self.debug("option name is %s, value is %s" 
-                       % (key, mystruct[key]))
         
         tftpassert(len(mystruct) % 2 == 0, 
                    "packet with odd number of option/value pairs")
         
         for i in range(0, len(mystruct), 2):
+            logger.debug("setting option %s to %s" % (mystruct[i], mystruct[i+1]))
             options[mystruct[i]] = mystruct[i+1]
 
         return options
@@ -136,9 +136,9 @@ class TftpPacketInitial(TftpPacket):
         if self.options.keys() > 0:
             for key in self.options:
                 format += "%dsx" % len(key)
-                format += "%dsx" % len(self.options[key])
+                format += "%dsx" % len(str(self.options[key]))
                 options_list.append(key)
-                options_list.append(self.options[key])
+                options_list.append(str(self.options[key]))
         #format += "B"
         logger.debug("format is %s" % format)
         logger.debug("size of struct is %d" % struct.calcsize(format))
@@ -297,14 +297,15 @@ ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
             4: "Illegal TFTP operation",
             5: "Unknown transfer ID",
             6: "File already exists",
-            7: "No such user"
+            7: "No such user",
+            8: "Failed to negotiate options"
             }
 
     def encode(self):
         """Encode the DAT packet based on instance variables, populating
         self.buffer, returning self."""
         format = "!HH%dsx" % len(self.errmsgs[self.errorcode])
-        self.debug("encoding ERR packet with format %s" % format)
+        logger.debug("encoding ERR packet with format %s" % format)
         self.buffer = struct.pack(format,
                                   self.opcode,
                                   self.errorcode,
@@ -346,6 +347,24 @@ class TftpPacketOACK(TftpPacket):
     def decode(self):
         self.options = self.decode_options(self.buffer[2:])
         return self
+    
+    def match_options(self, options):
+        """This method takes a set of options, and tries to match them with
+        its own. It can accept some changes in those options from the server as
+        part of a negotiation. Changed or unchanged, it will return a dict of
+        the options so that the session can update itself to the negotiated
+        options."""
+        for name in self.options:
+            if options.has_key(name):
+                if name == 'blksize':
+                    # We can accept anything between the min and max values.
+                    size = self.options[name]
+                    if size >= MIN_BLKSIZE and size <= MAX_BLKSIZE:
+                        logger.debug("negotiated blksize of %d bytes" % size)
+                        options[blksize] = size
+                else:
+                    raise TftpException, "Unsupported option: %s" % name
+        return True
 
 class TftpPacketFactory(object):
     """This class generates TftpPacket objects."""
@@ -355,7 +374,8 @@ class TftpPacketFactory(object):
             2: TftpPacketWRQ,
             3: TftpPacketDAT,
             4: TftpPacketACK,
-            5: TftpPacketERR
+            5: TftpPacketERR,
+            6: TftpPacketOACK
             }
 
     def create(self, opcode):
@@ -420,13 +440,21 @@ class TftpSession(object):
 
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client."""
-    def __init__(self, host, port, options):
+    def __init__(self, host, port, options={}):
         """This constructor returns an instance of TftpClient, taking the
         remote host, the remote port, and the filename to fetch."""
         TftpSession.__init__(self)
         self.host = host
         self.port = port
         self.options = options
+        if self.options.has_key('blksize'):
+            size = self.options['blksize']
+            tftpassert(types.IntType == type(size), "blksize must be an int")
+            if size < MIN_BLKSIZE or size > MAX_BLKSIZE:
+                raise TftpException, "Invalid blksize: %d" % size
+        else:
+            self.options['blksize'] = DEF_BLKSIZE
+        # Support other options here? timeout time, retries, etc?
         
     def gethost(self):
         "Simple getter method."
@@ -444,6 +472,7 @@ class TftpClient(TftpSession):
         """This method initiates a tftp download from the configured remote
         host, requesting the filename passed."""
         # Open the output file.
+        # FIXME - need to support alternate return formats than files?
         outputfile = open(output, "wb")
         recvpkt = None
         curblock = 0
@@ -459,6 +488,7 @@ class TftpClient(TftpSession):
         pkt = TftpPacketRRQ()
         pkt.filename = filename
         pkt.mode = "octet" # FIXME - shouldn't hardcode this
+        pkt.options = self.options
         sock.sendto(pkt.encode().buffer, (self.host, self.port))
         self.state.state = 'rrq'
         
@@ -523,19 +553,42 @@ class TftpClient(TftpSession):
 
             # Check other packet types.
             elif isinstance(recvpkt, TftpPacketOACK):
-                tftpassert(False, "Options currently unsupported")
+                if not self.state.state == 'rrq':
+                    self.errors += 1
+                    logger.error("Received OACK in state %s" % self.state.state)
+                    continue
+                
+                self.state.state = 'oack'
+                if recvpkt.options.keys() > 0:
+                    if recvpkt.match_options(self.options):
+                        logger.debug("sending ACK to OACK")
+                        ackpkt = TftpPacketACK()
+                        ackpkt.blocknumber = 0
+                        sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
+                        self.state.state = 'ack'
+                    else:
+                        logger.error("failed to negotiate options")
+                        errpkt = TftpPacketERR()
+                        errpkt.errorcode = 8
+                        sock.sendto(errpkt.encode().buffer, (self.host, self.port))
+                        self.state.state = 'err'
+                        raise TftpException, "Failed to negotiate options"
 
             elif isinstance(recvpkt, TftpPacketACK):
                 # Umm, we ACK, the server doesn't.
+                self.state.state = 'err'
                 tftpassert(False, "Received ACK from server while in download")
 
             elif isinstance(recvpkt, TftpPacketERR):
+                self.state.state = 'err'
                 tftpassert(False, "Received ERR from server: " + recvpkt)
 
             elif isinstance(recvpkt, TftpPacketWRQ):
+                self.state.state = 'err'
                 tftpassert(False, "Received WRQ from server: " + recvpkt)
 
             else:
+                self.state.state = 'err'
                 tftpassert(False, "Received unknown packet type from server: "
                         + recvpkt)
 
