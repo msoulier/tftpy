@@ -1,5 +1,11 @@
 Copyright, Michael P. Soulier, 2006.
 
+About Release 0.2:
+==================
+This release adds variable block sizes, and general option support,
+implementing RFCs 2347 and 2348. This is accessible in the TftpClient class
+via the options dict, or in the sample client via the --blocksize option.
+
 About Release 0.1:
 ==================
 
