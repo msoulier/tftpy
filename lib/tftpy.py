@@ -144,6 +144,7 @@ class TftpPacketInitial(TftpPacket):
         logger.debug("size of struct is %d" % struct.calcsize(format))
 
         self.buffer = struct.pack(format, self.opcode, self.filename, self.mode, *options_list)
+        logger.debug("buffer is " + self.buffer)
         return self
     
     def decode(self):
@@ -172,6 +173,7 @@ class TftpPacketInitial(TftpPacket):
         # length should now be the end of the mode.
         tftpassert(nulls == 2, "malformed packet")
         shortbuf = self.buffer[2:tlength]
+        logger.debug("about to unpack buffer with format: %s" % format)
         mystruct = struct.unpack(format, shortbuf)
         for key in mystruct:
             logger.debug("option name is %s, value is %s" 
