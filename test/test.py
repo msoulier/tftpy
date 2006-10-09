@@ -1,12 +1,13 @@
 """Unit tests for tftpy."""
 
 import unittest
+import logging
 import tftpy
 
 class TestTftpy(unittest.TestCase):
 
     def setUp(self):
-        pass
+        tftpy.setLogLevel(logging.INFO)
 
     def testTftpPacketRRQ(self):
         options = {}

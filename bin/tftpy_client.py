@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, logging
+import sys, logging, os
 from optparse import OptionParser
 import tftpy
 
@@ -34,12 +34,14 @@ def main():
                       '--output',
                       action='store',
                       dest='output',
-                      help='output file (default: out)',
-                      default='out')
+                      help='output file (default: same as requested filename)')
     options, args = parser.parse_args()
     if not options.host or not options.filename:
         parser.print_help()
         sys.exit(1)
+
+    if not options.output:
+        options.output = os.path.basename(options.filename)
 
     class Progress(object):
         def __init__(self, out):
@@ -49,7 +51,7 @@ def main():
             self.progress += len(pkt.data)
             self.out("Downloaded %d bytes" % self.progress)
         
-    tftpy.setLogLevel(logging.DEBUG)
+    tftpy.setLogLevel(logging.INFO)
 
     progresshook = Progress(tftpy.logger.info).progresshook
 
