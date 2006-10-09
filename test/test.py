@@ -22,5 +22,18 @@ class TestTftpy(unittest.TestCase):
         self.assertEqual(rrq.mode, "octet", "Mode correct")
         self.assertEqual(rrq.options, options, "Options correct")
 
+    def testTftpPacketWRQ(self):
+        options = {}
+        wrq = tftpy.TftpPacketWRQ()
+        wrq.filename = 'myfilename'
+        wrq.mode = 'octet'
+        wrq.options = options
+        wrq.encode()
+        self.assert_(wrq.buffer != None, "Buffer populated")
+        wrq.decode()
+        self.assertEqual(wrq.filename, "myfilename", "Filename correct")
+        self.assertEqual(wrq.mode, "octet", "Mode correct")
+        self.assertEqual(wrq.options, options, "Options correct")
+
 if __name__ == '__main__':
     unittest.main()
