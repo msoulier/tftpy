@@ -125,6 +125,14 @@ class TftpPacketInitial(TftpPacket):
         """Encode the packet's buffer from the instance variables."""
         tftpassert(self.filename, "filename required in initial packet")
         tftpassert(self.mode, "mode required in initial packet")
+
+        ptype = None
+        if self.opcode == 1: ptype = "RRQ"
+        else:                ptype = "WRQ"
+        logger.debug("Encoding %s packet, filename = %s, mode = %s"
+                     % (ptype, self.filename, self.mode))
+        for key in self.options:
+            logger.debug("    Option %s = %s" % (key, self.options[key]))
         
         format = "!H"
         format += "%dsx" % len(self.filename)
@@ -239,7 +247,7 @@ DATA  | 03    |   Block #  |    Data    |
         # We know the first 2 bytes are the opcode. The second two are the
         # block number.
         (self.blocknumber,) = struct.unpack("!H", self.buffer[2:4])
-        logger.info("decoding DAT packet, block number %d" % self.blocknumber)
+        logger.debug("decoding DAT packet, block number %d" % self.blocknumber)
         logger.debug("should be %d bytes in the packet total" 
                      % len(self.buffer))
         # Everything else is data.
