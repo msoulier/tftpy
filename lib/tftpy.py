@@ -537,7 +537,8 @@ class TftpClient(TftpSession):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.settimeout(SOCK_TIMEOUT)
 
-        logger.debug("Sending tftp download request to %s" % self.host)
+        logger.info("Sending tftp download request to %s" % self.host)
+        logger.info("    filename -> %s" % filename)
         pkt = TftpPacketRRQ()
         pkt.filename = filename
         pkt.mode = "octet" # FIXME - shouldn't hardcode this
@@ -612,8 +613,12 @@ class TftpClient(TftpSession):
                     continue
                 
                 self.state.state = 'oack'
+                logger.info("Received OACK from server.")
                 if recvpkt.options.keys() > 0:
                     if recvpkt.match_options(self.options):
+                        logger.info("Successful negotiation of options")
+                        for key in self.options:
+                            logger.info("    %s = %s" % (key, self.options[key]))
                         logger.debug("sending ACK to OACK")
                         ackpkt = TftpPacketACK()
                         ackpkt.blocknumber = 0
