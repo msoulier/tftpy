@@ -116,6 +116,24 @@ class TestTftpy(unittest.TestCase):
         self.assertEqual(oack.options['blksize'],
                          '4096',
                          "OACK blksize option is correct")
+        
+    def testTftpPacketFactory(self):
+        log.debug("===> Running testcase testTftpPacketFactory")
+        # Make sure that the correct class is created for the correct opcode.
+        classes = {
+            1: tftpy.TftpPacketRRQ,
+            2: tftpy.TftpPacketWRQ,
+            3: tftpy.TftpPacketDAT,
+            4: tftpy.TftpPacketACK,
+            5: tftpy.TftpPacketERR,
+            6: tftpy.TftpPacketOACK
+            }
+        factory = tftpy.TftpPacketFactory()
+        for opcode in classes:
+            self.assert_(isinstance(factory.create(opcode),
+                                    classes[opcode]),
+                                    "opcode %d returns the correct class" % opcode)
+
 
 if __name__ == '__main__':
     unittest.main()
