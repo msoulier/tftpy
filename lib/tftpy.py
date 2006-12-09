@@ -509,6 +509,9 @@ class TftpClient(TftpSession):
             self.options['blksize'] = DEF_BLKSIZE
         # Support other options here? timeout time, retries, etc?
         
+        # The remote sending port, to identify the connection.
+        self.rport = None
+        
     def gethost(self):
         "Simple getter method."
         return self.__host
@@ -569,12 +572,21 @@ class TftpClient(TftpSession):
             logger.debug("Received %d bytes from %s:%s" 
                          % (len(buffer), raddress, rport))
             
-            if rport != self.port or raddress != self.address:
+            # Check for known "connection".
+            if raddress != self.address:
+                logger.warn("Received traffic from %s, expected host %s. Discarding"
+                            % (raddress, self.host))
+                continue
+            if self.rport and self.rport != rport:
                 logger.warn("Received traffic from %s:%s but we're "
                             "connected to %s:%s. Discarding."
                             % (raddress, rport,
-                               self.host, self.port))
+                            self.host, self.rport))
                 continue
+            
+            if not self.rport and self.state.state == 'rrq':
+                self.rport = rport
+                logger.debug("Set remote port for session to %s" % rport)
             
             if isinstance(recvpkt, TftpPacketDAT):
                 logger.debug("recvpkt.blocknumber = %d" % recvpkt.blocknumber)
@@ -583,12 +595,14 @@ class TftpClient(TftpSession):
                     logger.debug("good, received block %d in sequence" 
                                 % recvpkt.blocknumber)
                     curblock += 1
+
+                        
                     # ACK the packet, and save the data.
                     logger.info("sending ACK to block %d" % curblock)
                     logger.debug("ip = %s, port = %s" % (self.host, self.port))
                     ackpkt = TftpPacketACK()
                     ackpkt.blocknumber = curblock
-                    sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
+                    sock.sendto(ackpkt.encode().buffer, (self.host, self.rport))
                     
                     logger.debug("writing %d bytes to output file" 
                                 % len(recvpkt.data))
@@ -613,7 +627,7 @@ class TftpClient(TftpSession):
                     logger.debug("ACKing block %d again, just in case" % curblock)
                     ackpkt = TftpPacketACK()
                     ackpkt.blocknumber = curblock
-                    sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
+                    sock.sendto(ackpkt.encode().buffer, (self.host, self.rport))
 
                 else:
                     msg = "Whoa! Received block %d but expected %d" % (recvpkt.blocknumber, 
@@ -638,13 +652,13 @@ class TftpClient(TftpSession):
                         logger.debug("sending ACK to OACK")
                         ackpkt = TftpPacketACK()
                         ackpkt.blocknumber = 0
-                        sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
+                        sock.sendto(ackpkt.encode().buffer, (self.host, self.rport))
                         self.state.state = 'ack'
                     else:
                         logger.error("failed to negotiate options")
                         errpkt = TftpPacketERR()
                         errpkt.errorcode = 8
-                        sock.sendto(errpkt.encode().buffer, (self.host, self.port))
+                        sock.sendto(errpkt.encode().buffer, (self.host, self.rport))
                         self.state.state = 'err'
                         raise TftpException, "Failed to negotiate options"
 
