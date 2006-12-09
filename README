@@ -1,5 +1,9 @@
 Copyright, Michael P. Soulier, 2006.
 
+About Release 0.3:
+==================
+This release fixes a major RFC 1350 compliance problem with the remote TID.
+
 About Release 0.2:
 ==================
 This release adds variable block sizes, and general option support,
