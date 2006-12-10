@@ -43,6 +43,19 @@ def setLogLevel(level):
     not created."""
     global logger
     logger.setLevel(level)
+    
+class TftpErrors(object):
+    """This class is a convenience for defining the common tftp error codes, and making
+    them more readable in the code."""
+    NotDefined = 0
+    FileNotFound = 1
+    AccessViolation = 2
+    DiskFull = 3
+    IllegalTftpOp = 4
+    UnknownTID = 5
+    FileAlreadyExists = 6
+    NoSuchUser = 7
+    FailedNegotiation = 8
 
 class TftpException(Exception):
     """This class is the parent class of all exceptions regarding the handling
@@ -336,6 +349,7 @@ ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
     5         Unknown transfer ID.
     6         File already exists.
     7         No such user.
+    8         Failed to negotiate options
     """
     def __init__(self):
         TftpPacket.__init__(self)
@@ -487,14 +501,21 @@ class TftpSession(object):
     code should be in this class."""
 
     def __init__(self):
-        "Class constructor. Note that the state property must be a TftpState
-        object."
+        """Class constructor. Note that the state property must be a TftpState
+        object."""
         self.options = None
         self.state = TftpState()
         self.dups = 0
         self.errors = 0
+        
+    def senderror(self, sock, errorcode, address, port):
+        """This method uses the socket passed, and uses the errorcode, address and port to
+        compose and send an error packet."""
+        errpkt = TftpPacketERR()
+        errpkt.errorcode = errorcode
+        self.sock.send(errpkt.encode().buffer, (address, port))
 
-class TftpServer(object):
+class TftpServer(TftpSession):
     """This class implements a tftp server object."""
 
     def __init__(self):
@@ -513,55 +534,106 @@ class TftpServer(object):
         """Start a server listening on the supplied interface and port. This
         defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
         supply a different socket timeout value, if desired."""
+        import select
+        
+        tftp_factory = TftpPacketFactory()
+        
         logger.info("Server requested on ip %s, port %s" % (listenip, listenport))
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         logger.info("Starting receive loop...")
         while True:
-            (buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
-            recvpkt = tftp_factory.parse(buffer)
-            key = "%s:%s" % (raddress, rport)
+            # Build the inputlist array of sockets to select() on.
+            inputlist = []
+            inputlist.append(self.sock)
+            for key in self.handlers:
+                inputlist.append(self.handlers[key].sock)
+                
+            # Block until some socket has input on it.
+            logger.debug("Performing select on this inputlist: %s" % inputlist)
+            readyinput, readyoutput, readyspecial = select.select(inputlist, [], [])
+            
+            #(buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
+            #recvpkt = tftp_factory.parse(buffer)
+            #key = "%s:%s" % (raddress, rport)
+            
+            for readysock in readyinput:
+                if readysock == self.sock:
+                    logger.debug("Data ready on our main socket")
+                    buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
+                    logger.debug("Read %d bytes" % len(buffer))
+                    recvpkt = tftp_factory.parse(buffer)
+                    key = "%s:%s" % (raddress, rport)
 
-            if isinstance(recvpkt, TftpPacketRRQ):
-                logger.debug("RRQ packet from %s:%s" % (raddress, rport))
-                if not self.handlers.has_key(key):
-                    logger.debug("New download request, session key = %s" % key)
-                    self.handlers[key] = TftpServerHandler(key)
-                    self.handlers[key].handle(recvpkt)
-            elif isinstance(recvpkt, TftpPacketWRQ):
-                logger.error("Write requests not implemented at this time.")
-                errpkt = TftpPacketERR()
-                errpkt.errorcode = 4
-                self.sock.sendto(errpkt.encode().buffer, (raddress, rport))
-                continue
-
-            if not self.handlers.has_key(key):
-                logger.error("No existing session with key %s" % key)
-                errpkt = TftpPacketERR()
-                errpkt.errorcode = 5
-                self.sock.sendto(errpkt.encode().buffer, (raddress, rport))
-                continue
-            else:
-                self.handlers[key].handle(recvpkt)
+                    if isinstance(recvpkt, TftpPacketRRQ):
+                        logger.debug("RRQ packet from %s:%s" % (raddress, rport))
+                        if not self.handlers.has_key(key):
+                            logger.debug("New download request, session key = %s" % key)
+                            self.handlers[key] = TftpServerHandler(key, TftpState('rrq'))
+                            self.handlers[key].handle((recvpkt, raddress, rport))
+                        else:
+                            logger.warn("Received RRQ for existing session!")
+                            self.senderror(self.sock, TftpErrors.IllegalTftpOp, raddress, rport)
+                            continue
+                        
+                    elif isinstance(recvpkt, TftpPacketWRQ):
+                        logger.error("Write requests not implemented at this time.")
+                        self.senderror(self.sock, TftpErrors.IllegalTftpOp, raddress, rport)
+                        continue
+                    else:
+                        # FIXME - this will have to change if we do symmetric UDP
+                        logger.error("Should only receive RRQ or WRQ packets on main listen port."
+                                     " Received %s" % recvpkt)
+                        self.senderror(self.sock, TftpErrors.IllegalTftpOp, raddress, rport)
+                        continue
+                    
+                else:
+                    for key in self.handlers:
+                        if readysock == self.handlers[key].sock:
+                            self.handlers[key].handle()
+                            break
+                    else:
+                        raise TftpException, "Can't find the owner for this traffic!"
 
 class TftpServerHandler(TftpSession):
     """This class implements a handler for a given server session, handling
     the work for one download."""
 
-    def __init__(self, key):
+    def __init__(self, key, state):
         TftpSession.__init__(self)
         self.key = key
         self.sock = self.gensock()
-
-    def handle(self, pkt):
-        logger.debug("Handler %s requested to handle packet %s"
-                % (self.key, pkt))
+        # Note, correct state here is important as it tells the handler whether it's
+        # handling a download or an upload.
+        self.state = state
 
     def gensock(self):
         """This method generates a new UDP socket, whose listening port must
         be randomly generated, and not conflict with any already in use. For
         now, let the OS do this."""
         return socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    def handle(self, pkttuple=None):
+        """This method informs a handler instance that it has data waiting on its socket that
+        it must read and process."""
+        recvpkt = raddress = rport = None
+        if pkttuple:
+            logger.debug("Handed pkt %s for handler %s" % (pkt, self.key))
+            recvpkt, raddress, rport = pkt
+        else:
+            logger.debug("Data ready for handler %s" % self.key)
+            buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
+            logger.debug("Read %d bytes" % len(buffer))
+            recvpkt = tftp_factory.parse(buffer)
+            
+        if isinstance(recvpkt, TftpPacketRRQ):
+            logger.debug("Handler %s received RRQ packet" % self.key)
+            logger.debug("Requested file is %s, mode is %s" % (recvpkt.filename, recvpkt.mode))
+            # FIXME - only octet mode is supported at this time.
+            if recvpkt.mode != 'octet':
+                self.senderror(self.sock, TftpErrors.IllegalTftpOp, raddress, rport)
+                raise TftpException, "Unsupported mode: %s" % recvpkt.mode
+                
 
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client."""
@@ -728,27 +800,29 @@ class TftpClient(TftpSession):
                         self.state.state = 'ack'
                     else:
                         logger.error("failed to negotiate options")
-                        errpkt = TftpPacketERR()
-                        errpkt.errorcode = 8
-                        sock.sendto(errpkt.encode().buffer, (self.host, self.port))
+                        self.senderror(sock, TftpErrors.FailedNegotiation, self.host, self.port)
                         self.state.state = 'err'
                         raise TftpException, "Failed to negotiate options"
 
             elif isinstance(recvpkt, TftpPacketACK):
                 # Umm, we ACK, the server doesn't.
                 self.state.state = 'err'
+                self.senderror(sock, TftpErrors.IllegalTftpOp, self.host, self.port)
                 tftpassert(False, "Received ACK from server while in download")
 
             elif isinstance(recvpkt, TftpPacketERR):
                 self.state.state = 'err'
+                self.senderror(sock, TftpErrors.IllegalTftpOp, self.host, self.port)
                 tftpassert(False, "Received ERR from server: " + recvpkt)
 
             elif isinstance(recvpkt, TftpPacketWRQ):
                 self.state.state = 'err'
+                self.senderror(sock, TftpErrors.IllegalTftpOp, self.host, self.port)
                 tftpassert(False, "Received WRQ from server: " + recvpkt)
 
             else:
                 self.state.state = 'err'
+                self.senderror(sock, TftpErrors.IllegalTftpOp, self.host, self.port)
                 tftpassert(False, "Received unknown packet type from server: "
                         + recvpkt)
 

@@ -21,19 +21,31 @@ planned for 0.2.
 About Tftpy:
 ============
 
+Purpose:
+--------
 Tftpy is a TFTP library for the Python programming language. It includes
 client and server classes, with sample implementations. Hooks are included for
 easy inclusion in a UI for populating progress indicators. It supports RFCs
 1350, 2347 and 2348.
 
+Dependencies:
+-------------
 This library was developed against Python 2.3.
 
+Trifles:
+--------
 Project page: http://sourceforge.net/projects/tftpy/
 
 License is the CNRI Python License.
 http://www.opensource.org/licenses/pythonpl.php
 
 See COPYING in this distribution.
+
+Limitations:
+------------
+- Server is not yet implemented
+- Only 'octet' mode is supported
+- Uploading is not yet tested
 
 Author:
 =======
