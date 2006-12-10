@@ -18,6 +18,7 @@ MAX_BLKSIZE = 65536
 SOCK_TIMEOUT = 5
 MAX_DUPS = 20
 TIMEOUT_RETRIES = 5
+DEF_TFTP_PORT = 69
 
 # Initialize the logger.
 logging.basicConfig(
@@ -484,12 +485,83 @@ class TftpState(object):
 class TftpSession(object):
     """This class is the base class for the tftp client and server. Any shared
     code should be in this class."""
+
     def __init__(self):
-        "Class constructor. Note that the state property must be a TftpState object."
+        "Class constructor. Note that the state property must be a TftpState
+        object."
         self.options = None
         self.state = TftpState()
         self.dups = 0
         self.errors = 0
+
+class TftpServer(object):
+    """This class implements a tftp server object."""
+
+    def __init__(self):
+        "Class constructor."
+        self.listenip = None
+        self.listenport = None
+        self.sock = None
+        # A dict of handlers, where each session is keyed by a string like
+        # ip:tid for the remote end.
+        self.handlers = {}
+
+    def listen(self,
+               listenip=socket.INADDR_ANY,
+               listenport=DEF_TFTP_PORT,
+               timeout=SOCK_TIMEOUT):
+        """Start a server listening on the supplied interface and port. This
+        defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
+        supply a different socket timeout value, if desired."""
+        logger.info("Server requested on ip %s, port %s" % (listenip, listenport))
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        logger.info("Starting receive loop...")
+        while True:
+            (buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
+            recvpkt = tftp_factory.parse(buffer)
+            key = "%s:%s" % (raddress, rport)
+
+            if isinstance(recvpkt, TftpPacketRRQ):
+                logger.debug("RRQ packet from %s:%s" % (raddress, rport))
+                if not self.handlers.has_key(key):
+                    logger.debug("New download request, session key = %s" % key)
+                    self.handlers[key] = TftpServerHandler(key)
+                    self.handlers[key].handle(recvpkt)
+            elif isinstance(recvpkt, TftpPacketWRQ):
+                logger.error("Write requests not implemented at this time.")
+                errpkt = TftpPacketERR()
+                errpkt.errorcode = 4
+                self.sock.sendto(errpkt.encode().buffer, (raddress, rport))
+                continue
+
+            if not self.handlers.has_key(key):
+                logger.error("No existing session with key %s" % key)
+                errpkt = TftpPacketERR()
+                errpkt.errorcode = 5
+                self.sock.sendto(errpkt.encode().buffer, (raddress, rport))
+                continue
+            else:
+                self.handlers[key].handle(recvpkt)
+
+class TftpServerHandler(TftpSession):
+    """This class implements a handler for a given server session, handling
+    the work for one download."""
+
+    def __init__(self, key):
+        TftpSession.__init__(self)
+        self.key = key
+        self.sock = self.gensock()
+
+    def handle(self, pkt):
+        logger.debug("Handler %s requested to handle packet %s"
+                % (self.key, pkt))
+
+    def gensock(self):
+        """This method generates a new UDP socket, whose listening port must
+        be randomly generated, and not conflict with any already in use. For
+        now, let the OS do this."""
+        return socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client."""

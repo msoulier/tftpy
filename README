@@ -26,7 +26,7 @@ client and server classes, with sample implementations. Hooks are included for
 easy inclusion in a UI for populating progress indicators. It supports RFCs
 1350, 2347 and 2348.
 
-This library was developed against Python 2.4.1.
+This library was developed against Python 2.3.
 
 Project page: http://sourceforge.net/projects/tftpy/
 
