@@ -4,7 +4,7 @@ At the moment it implements only a client class, but will include a server,
 with support for variable block sizes.
 """
 
-import struct, socket, logging, time, sys, types
+import struct, socket, logging, time, sys, types, re
 
 # Make sure that this is at least Python 2.4
 verlist = sys.version_info
@@ -518,14 +518,34 @@ class TftpSession(object):
 class TftpServer(TftpSession):
     """This class implements a tftp server object."""
 
-    def __init__(self):
-        "Class constructor."
+    def __init__(self, tftproot='/tftproot'):
+        """Class constructor. It takes a single optional argument, which is
+        the path to the tftproot directory to serve files from and/or write
+        them to."""
         self.listenip = None
         self.listenport = None
         self.sock = None
+        self.root = tftproot
         # A dict of handlers, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.handlers = {}
+
+        if os.path.exists(self.root):
+            logger.debug("tftproot %s does exist" % self.root)
+            if not os.path.isdir(self.root):
+                raise TftpException, "The tftproot must be a directory."
+            else:
+                logger.debug("tftproot %s is a directory" % self.root)
+                if os.access(self.root, os.R_OK):
+                    logger.debug("tftproot %s is readable" % self.root)
+                else:
+                    raise TftpException, "The tftproot must be readable"
+                if os.access(self.root, os.W_OK):
+                    logger.debug("tftproot %s is writable" % self.root)
+                else:
+                    logger.warning("The tftproot %s is not writable" % self.root)
+        else:
+            raise TftpException, "The tftproot does not exist."
 
     def listen(self,
                listenip=socket.INADDR_ANY,
@@ -551,7 +571,9 @@ class TftpServer(TftpSession):
                 
             # Block until some socket has input on it.
             logger.debug("Performing select on this inputlist: %s" % inputlist)
-            readyinput, readyoutput, readyspecial = select.select(inputlist, [], [])
+            readyinput, readyoutput, readyspecial = select.select(inputlist,
+                                                                  [],
+                                                                  [])
             
             #(buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
             #recvpkt = tftp_factory.parse(buffer)
@@ -568,30 +590,48 @@ class TftpServer(TftpSession):
                     if isinstance(recvpkt, TftpPacketRRQ):
                         logger.debug("RRQ packet from %s:%s" % (raddress, rport))
                         if not self.handlers.has_key(key):
-                            logger.debug("New download request, session key = %s" % key)
-                            self.handlers[key] = TftpServerHandler(key, TftpState('rrq'))
+                            logger.debug("New download request, session key = %s"
+                                    % key)
+                            self.handlers[key] = TftpServerHandler(key,
+                                                                   TftpState('rrq'),
+                                                                   self.root)
                             self.handlers[key].handle((recvpkt, raddress, rport))
                         else:
                             logger.warn("Received RRQ for existing session!")
-                            self.senderror(self.sock, TftpErrors.IllegalTftpOp, raddress, rport)
+                            self.senderror(self.sock,
+                                           TftpErrors.IllegalTftpOp,
+                                           raddress,
+                                           rport)
                             continue
                         
                     elif isinstance(recvpkt, TftpPacketWRQ):
                         logger.error("Write requests not implemented at this time.")
-                        self.senderror(self.sock, TftpErrors.IllegalTftpOp, raddress, rport)
+                        self.senderror(self.sock,
+                                       TftpErrors.IllegalTftpOp,
+                                       raddress,
+                                       rport)
                         continue
                     else:
                         # FIXME - this will have to change if we do symmetric UDP
-                        logger.error("Should only receive RRQ or WRQ packets on main listen port."
-                                     " Received %s" % recvpkt)
-                        self.senderror(self.sock, TftpErrors.IllegalTftpOp, raddress, rport)
+                        logger.error("Should only receive RRQ or WRQ packets "
+                                     "on main listen port. Received %s" % recvpkt)
+                        self.senderror(self.sock,
+                                       TftpErrors.IllegalTftpOp,
+                                       raddress,
+                                       rport)
                         continue
                     
                 else:
                     for key in self.handlers:
                         if readysock == self.handlers[key].sock:
-                            self.handlers[key].handle()
-                            break
+                            try:
+                                self.handlers[key].handle()
+                                break
+                            except TftpException, err:
+                                logger.error("Fatal exception thrown from handler: %s"
+                                        % str(err))
+                                logger.debug("Deleting handler: %s" % key)
+                                del self.handlers[key]
                     else:
                         raise TftpException, "Can't find the owner for this traffic!"
 
@@ -599,13 +639,16 @@ class TftpServerHandler(TftpSession):
     """This class implements a handler for a given server session, handling
     the work for one download."""
 
-    def __init__(self, key, state):
+    def __init__(self, key, state, root):
         TftpSession.__init__(self)
         self.key = key
         self.sock = self.gensock()
         # Note, correct state here is important as it tells the handler whether it's
         # handling a download or an upload.
         self.state = state
+        self.root = root
+        self.mode = None
+        self.filename = None
 
     def gensock(self):
         """This method generates a new UDP socket, whose listening port must
@@ -628,11 +671,47 @@ class TftpServerHandler(TftpSession):
             
         if isinstance(recvpkt, TftpPacketRRQ):
             logger.debug("Handler %s received RRQ packet" % self.key)
-            logger.debug("Requested file is %s, mode is %s" % (recvpkt.filename, recvpkt.mode))
+            logger.debug("Requested file is %s, mode is %s" % (recvpkt.filename,
+                                                               recvpkt.mode))
             # FIXME - only octet mode is supported at this time.
             if recvpkt.mode != 'octet':
-                self.senderror(self.sock, TftpErrors.IllegalTftpOp, raddress, rport)
+                self.senderror(self.sock,
+                               TftpErrors.IllegalTftpOp,
+                               raddress,
+                               rport)
                 raise TftpException, "Unsupported mode: %s" % recvpkt.mode
+
+            if self.state == 'rrq':
+                logger.debug("Received RRQ. Composing response.")
+                self.filename = self.root + os.sep + recvpkt.filename
+                logger.debug("The path to the desired file is %s" %
+                        self.filename)
+                self.filename = os.path.abspath(self.filename)
+                logger.debug("The absolute path is %s" % self.filename)
+                # Security check. Make sure it's prefixed by the tftproot.
+                if re.match(r'%s' % self.root, self.filename):
+                    logger.debug("The path appears to be safe: %s" %
+                            self.filename)
+
+                    # Everything's ok. Check options and start the download.
+                    # FIXME
+
+                else:
+                    logger.error("Insecure path: %s" % self.filename)
+                    self.errors += 1
+                    self.senderror(self.sock,
+                                   TftpErrors.AccessViolation,
+                                   raddress,
+                                   rport)
+                    raise TftpException, "Insecure path: %s" % self.filename
+            else:
+                # We're receiving an RRQ when we're not expecting one.
+                logger.error("Received an RRQ in handler %s "
+                             "but we're in state %s" % (self.key, self.state))
+                self.errors += 1
+
+        # Handle other packet types.
+        # FIXME
                 
 
 class TftpClient(TftpSession):
