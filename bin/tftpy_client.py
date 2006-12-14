@@ -2,11 +2,7 @@
 
 import sys, logging, os
 from optparse import OptionParser
-try:
-    import tftpy
-except ImportError, err:
-    sys.path.append('../lib')
-    import tftpy
+import tftpy
 
 def main():
     usage=""

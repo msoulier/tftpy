@@ -4,7 +4,7 @@ At the moment it implements only a client class, but will include a server,
 with support for variable block sizes.
 """
 
-import struct, socket, logging, time, sys, types, re
+import struct, socket, logging, time, sys, types, re, random, os
 
 # Make sure that this is at least Python 2.4
 verlist = sys.version_info
@@ -518,7 +518,7 @@ class TftpSession(object):
 class TftpServer(TftpSession):
     """This class implements a tftp server object."""
 
-    def __init__(self, tftproot='/tftproot'):
+    def __init__(self, tftproot='/tftpboot'):
         """Class constructor. It takes a single optional argument, which is
         the path to the tftproot directory to serve files from and/or write
         them to."""
@@ -548,7 +548,7 @@ class TftpServer(TftpSession):
             raise TftpException, "The tftproot does not exist."
 
     def listen(self,
-               listenip=socket.INADDR_ANY,
+               listenip="",
                listenport=DEF_TFTP_PORT,
                timeout=SOCK_TIMEOUT):
         """Start a server listening on the supplied interface and port. This
@@ -559,7 +559,12 @@ class TftpServer(TftpSession):
         tftp_factory = TftpPacketFactory()
         
         logger.info("Server requested on ip %s, port %s" % (listenip, listenport))
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.sock.bind((listenip, listenport))
+        except socket.error, err:
+            # Reraise it for now.
+            raise
 
         logger.info("Starting receive loop...")
         while True:
@@ -594,7 +599,8 @@ class TftpServer(TftpSession):
                                     % key)
                             self.handlers[key] = TftpServerHandler(key,
                                                                    TftpState('rrq'),
-                                                                   self.root)
+                                                                   self.root,
+                                                                   listenip)
                             self.handlers[key].handle((recvpkt, raddress, rport))
                         else:
                             logger.warn("Received RRQ for existing session!")
@@ -639,30 +645,50 @@ class TftpServerHandler(TftpSession):
     """This class implements a handler for a given server session, handling
     the work for one download."""
 
-    def __init__(self, key, state, root):
+    def __init__(self, key, state, root, listenip):
         TftpSession.__init__(self)
+        logger.info("Starting new handler. Key %s." % key)
         self.key = key
-        self.sock = self.gensock()
+        self.listenip = listenip
         # Note, correct state here is important as it tells the handler whether it's
         # handling a download or an upload.
         self.state = state
         self.root = root
         self.mode = None
         self.filename = None
+        self.sock = False
+        count = 0
+        while not self.sock:
+            self.sock = self.gensock(listenip)
+            count += 1
+            if count > 10:
+                raise TftpException, "Failed to bind this handler to any port"
 
-    def gensock(self):
+    def gensock(self, listenip):
         """This method generates a new UDP socket, whose listening port must
         be randomly generated, and not conflict with any already in use. For
         now, let the OS do this."""
-        return socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        random.seed()
+        port = random.randrange(1025, 65536)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        logger.debug("Trying a handler socket on port %d" % port)
+        try:
+            sock.bind((listenip, port))
+            return sock
+        except socket.error, err:
+            if err[0] == 98:
+                logger.warn("Handler %s, port %d was already taken" % (self.key, port))
+                return False
+            else:
+                raise
 
     def handle(self, pkttuple=None):
         """This method informs a handler instance that it has data waiting on its socket that
         it must read and process."""
         recvpkt = raddress = rport = None
         if pkttuple:
-            logger.debug("Handed pkt %s for handler %s" % (pkt, self.key))
-            recvpkt, raddress, rport = pkt
+            logger.debug("Handed pkt %s for handler %s" % (recvpkt, self.key))
+            recvpkt, raddress, rport = pkttuple
         else:
             logger.debug("Data ready for handler %s" % self.key)
             buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
@@ -681,7 +707,7 @@ class TftpServerHandler(TftpSession):
                                rport)
                 raise TftpException, "Unsupported mode: %s" % recvpkt.mode
 
-            if self.state == 'rrq':
+            if self.state.state == 'rrq':
                 logger.debug("Received RRQ. Composing response.")
                 self.filename = self.root + os.sep + recvpkt.filename
                 logger.debug("The path to the desired file is %s" %
