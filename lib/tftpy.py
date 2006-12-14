@@ -511,9 +511,13 @@ class TftpSession(object):
     def senderror(self, sock, errorcode, address, port):
         """This method uses the socket passed, and uses the errorcode, address and port to
         compose and send an error packet."""
+        logger.debug("In senderror, being asked to send error %d to %s:%s"
+                % (errorcode, address, port))
+        #import pdb
+        #pdb.set_trace()
         errpkt = TftpPacketERR()
         errpkt.errorcode = errorcode
-        self.sock.send(errpkt.encode().buffer, (address, port))
+        self.sock.sendto(errpkt.encode().buffer, (address, port))
 
 class TftpServer(TftpSession):
     """This class implements a tftp server object."""
@@ -595,13 +599,20 @@ class TftpServer(TftpSession):
                     if isinstance(recvpkt, TftpPacketRRQ):
                         logger.debug("RRQ packet from %s:%s" % (raddress, rport))
                         if not self.handlers.has_key(key):
-                            logger.debug("New download request, session key = %s"
-                                    % key)
-                            self.handlers[key] = TftpServerHandler(key,
-                                                                   TftpState('rrq'),
-                                                                   self.root,
-                                                                   listenip)
-                            self.handlers[key].handle((recvpkt, raddress, rport))
+                            try:
+                                logger.debug("New download request, session key = %s"
+                                        % key)
+                                self.handlers[key] = TftpServerHandler(key,
+                                                                    TftpState('rrq'),
+                                                                    self.root,
+                                                                    listenip)
+                                self.handlers[key].handle((recvpkt, raddress, rport))
+                            except TftpException, err:
+                                logger.error("Fatal exception thrown from handler: %s"
+                                        % str(err))
+                                logger.debug("Deleting handler: %s" % key)
+                                if self.handlers.has_key(key):
+                                    del self.handlers[key]
                         else:
                             logger.warn("Received RRQ for existing session!")
                             self.senderror(self.sock,
@@ -630,6 +641,7 @@ class TftpServer(TftpSession):
                 else:
                     for key in self.handlers:
                         if readysock == self.handlers[key].sock:
+                            # FIXME - violating DRY principle with above code
                             try:
                                 self.handlers[key].handle()
                                 break
@@ -637,7 +649,8 @@ class TftpServer(TftpSession):
                                 logger.error("Fatal exception thrown from handler: %s"
                                         % str(err))
                                 logger.debug("Deleting handler: %s" % key)
-                                del self.handlers[key]
+                                if self.handlers.has_key(key):
+                                    del self.handlers[key]
                     else:
                         raise TftpException, "Can't find the owner for this traffic!"
 
@@ -718,10 +731,6 @@ class TftpServerHandler(TftpSession):
                 if re.match(r'%s' % self.root, self.filename):
                     logger.debug("The path appears to be safe: %s" %
                             self.filename)
-
-                    # Everything's ok. Check options and start the download.
-                    # FIXME
-
                 else:
                     logger.error("Insecure path: %s" % self.filename)
                     self.errors += 1
@@ -730,6 +739,21 @@ class TftpServerHandler(TftpSession):
                                    raddress,
                                    rport)
                     raise TftpException, "Insecure path: %s" % self.filename
+
+                # Does the file exist?
+                if os.path.exists(self.filename):
+                    logger.debug("File %s exists." % self.filename)
+
+                    # FIXME - Check options, start upload.
+                else:
+                    logger.error("Requested file %s does not exist." %
+                            self.filename)
+                    self.senderror(self.sock,
+                                   TftpErrors.FileNotFound,
+                                   raddress,
+                                   rport)
+                    raise TftpException, "Requested file not found: %s" % self.filename
+
             else:
                 # We're receiving an RRQ when we're not expecting one.
                 logger.error("Received an RRQ in handler %s "
@@ -760,6 +784,7 @@ class TftpClient(TftpSession):
         
         # The remote sending port, to identify the connection.
         self.port = None
+        self.sock = None
         
     def gethost(self):
         "Simple getter method."
@@ -792,8 +817,8 @@ class TftpClient(TftpSession):
         bytes = 0
 
         tftp_factory = TftpPacketFactory()
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.settimeout(timeout)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.settimeout(timeout)
 
         logger.info("Sending tftp download request to %s" % self.host)
         logger.info("    filename -> %s" % filename)
@@ -801,13 +826,13 @@ class TftpClient(TftpSession):
         pkt.filename = filename
         pkt.mode = "octet" # FIXME - shouldn't hardcode this
         pkt.options = self.options
-        sock.sendto(pkt.encode().buffer, (self.host, self.iport))
+        self.sock.sendto(pkt.encode().buffer, (self.host, self.iport))
         self.state.state = 'rrq'
         
         timeouts = 0
         while True:
             try:
-                (buffer, (raddress, rport)) = sock.recvfrom(MAX_BLKSIZE)
+                (buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
             except socket.timeout, err:
                 timeouts += 1
                 if timeouts >= TIMEOUT_RETRIES:
@@ -851,7 +876,7 @@ class TftpClient(TftpSession):
                     logger.debug("ip = %s, port = %s" % (self.host, self.port))
                     ackpkt = TftpPacketACK()
                     ackpkt.blocknumber = curblock
-                    sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
+                    self.sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
                     
                     logger.debug("writing %d bytes to output file" 
                                 % len(recvpkt.data))
@@ -876,7 +901,7 @@ class TftpClient(TftpSession):
                     logger.debug("ACKing block %d again, just in case" % curblock)
                     ackpkt = TftpPacketACK()
                     ackpkt.blocknumber = curblock
-                    sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
+                    self.sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
 
                 else:
                     msg = "Whoa! Received block %d but expected %d" % (recvpkt.blocknumber, 
@@ -901,35 +926,35 @@ class TftpClient(TftpSession):
                         logger.debug("sending ACK to OACK")
                         ackpkt = TftpPacketACK()
                         ackpkt.blocknumber = 0
-                        sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
+                        self.sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
                         self.state.state = 'ack'
                     else:
                         logger.error("failed to negotiate options")
-                        self.senderror(sock, TftpErrors.FailedNegotiation, self.host, self.port)
+                        self.senderror(self.sock, TftpErrors.FailedNegotiation, self.host, self.port)
                         self.state.state = 'err'
                         raise TftpException, "Failed to negotiate options"
 
             elif isinstance(recvpkt, TftpPacketACK):
                 # Umm, we ACK, the server doesn't.
                 self.state.state = 'err'
-                self.senderror(sock, TftpErrors.IllegalTftpOp, self.host, self.port)
+                self.senderror(self.sock, TftpErrors.IllegalTftpOp, self.host, self.port)
                 tftpassert(False, "Received ACK from server while in download")
 
             elif isinstance(recvpkt, TftpPacketERR):
                 self.state.state = 'err'
-                self.senderror(sock, TftpErrors.IllegalTftpOp, self.host, self.port)
-                tftpassert(False, "Received ERR from server: " + recvpkt)
+                self.senderror(self.sock, TftpErrors.IllegalTftpOp, self.host, self.port)
+                tftpassert(False, "Received ERR from server: " + str(recvpkt))
 
             elif isinstance(recvpkt, TftpPacketWRQ):
                 self.state.state = 'err'
-                self.senderror(sock, TftpErrors.IllegalTftpOp, self.host, self.port)
-                tftpassert(False, "Received WRQ from server: " + recvpkt)
+                self.senderror(self.sock, TftpErrors.IllegalTftpOp, self.host, self.port)
+                tftpassert(False, "Received WRQ from server: " + str(recvpkt))
 
             else:
                 self.state.state = 'err'
-                self.senderror(sock, TftpErrors.IllegalTftpOp, self.host, self.port)
+                self.senderror(self.sock, TftpErrors.IllegalTftpOp, self.host, self.port)
                 tftpassert(False, "Received unknown packet type from server: "
-                        + recvpkt)
+                        + str(recvpkt))
 
 
         # end while
