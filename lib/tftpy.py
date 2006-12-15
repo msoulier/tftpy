@@ -450,7 +450,9 @@ class TftpPacketFactory(object):
     def create(self, opcode):
         tftpassert(self.classes.has_key(opcode), 
                    "Unsupported opcode: %d" % opcode)
+
         packet = self.classes[opcode]()
+
         logger.debug("packet is %s" % packet)
         return packet
 
@@ -467,14 +469,18 @@ class TftpPacketFactory(object):
 class TftpState(object):
     """This class represents a particular state for a TFTP Session. It encapsulates a
     state, kind of like an enum. The states mean the following:
-    nil - Session not yet established
-    rrq - Just sent RRQ in a download, waiting for response
-    wrq - Just sent WRQ in an upload, waiting for response
-    dat - Transferring data
-    oack - Received oack, negotiating options
-    ack - Acknowledged oack, awaiting response
-    err - Fatal problems, giving up
-    fin - Transfer completed
+    nil - Client/Server - Session not yet established
+    rrq - Client - Just sent RRQ in a download, waiting for response
+          Server - Just received an RRQ
+    wrq - Client - Just sent WRQ in an upload, waiting for response
+          Server - Just received a WRQ
+    dat - Client/Server - Transferring data
+    oack - Client - Just received oack
+           Server - Just sent OACK
+    ack - Client - Acknowledged oack, awaiting response
+          Server - Just received ACK to OACK
+    err - Client/Server - Fatal problems, giving up
+    fin - Client/Server - Transfer completed
     """
     states = ['nil',
               'rrq',
@@ -583,7 +589,8 @@ class TftpServer(TftpSession):
             logger.debug("Performing select on this inputlist: %s" % inputlist)
             readyinput, readyoutput, readyspecial = select.select(inputlist,
                                                                   [],
-                                                                  [])
+                                                                  [],
+                                                                  SOCK_TIMEOUT)
             
             #(buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
             #recvpkt = tftp_factory.parse(buffer)
@@ -655,6 +662,11 @@ class TftpServer(TftpSession):
                     else:
                         raise TftpException, "Can't find the owner for this traffic!"
 
+            logger.debug("Looping on all handlers to check for timeouts")
+            now = time.time()
+            for key in self.handlers:
+                self.handlers[key].check_timeout(now)
+
 class TftpServerHandler(TftpSession):
     """This class implements a handler for a given server session, handling
     the work for one download."""
@@ -663,6 +675,7 @@ class TftpServerHandler(TftpSession):
         TftpSession.__init__(self)
         logger.info("Starting new handler. Key %s." % key)
         self.key = key
+        self.host, self.port = self.key.split(':')
         self.listenip = listenip
         # Note, correct state here is important as it tells the handler whether it's
         # handling a download or an upload.
@@ -671,12 +684,43 @@ class TftpServerHandler(TftpSession):
         self.mode = None
         self.filename = None
         self.sock = False
+        self.options = []
+        self.blocknumber = 0
+        self.buffer = None
+        self.fileobj = None
+        self.timesent = 0
+        self.timeouts = 0
         count = 0
         while not self.sock:
             self.sock = self.gensock(listenip)
             count += 1
             if count > 10:
                 raise TftpException, "Failed to bind this handler to any port"
+
+    def check_timeout(self, now):
+        """This method checks to see if we've timed-out waiting for traffic
+        from the client."""
+        if self.timesent:
+            if now - self.timesent > SOCK_TIMEOUT:
+                self.timeout()
+
+    def timeout(self):
+        """This method handles a timeout condition."""
+        logger.debug("Handling timeout for handler %s" % self.key)
+        self.timeouts += 1
+        if self.timeouts > TIMEOUT_RETRIES:
+            raise TftpException, "Hit max retries, giving up."
+
+        if self.state.state == 'dat':
+            logger.debug("Timing out on DAT. Need to resend.")
+            self.send_dat(resend=True)
+        elif self.state.state == 'oack':
+            logger.debug("Timing out on OACK. Need to resend.")
+            self.send_oack()
+        else:
+            tftpassert(False,
+                       "Timing out in unsupported state %s" %
+                       self.state.state)
 
     def gensock(self, listenip):
         """This method generates a new UDP socket, whose listening port must
@@ -697,8 +741,8 @@ class TftpServerHandler(TftpSession):
                 raise
 
     def handle(self, pkttuple=None):
-        """This method informs a handler instance that it has data waiting on its socket that
-        it must read and process."""
+        """This method informs a handler instance that it has data waiting on
+        its socket that it must read and process."""
         recvpkt = raddress = rport = None
         if pkttuple:
             logger.debug("Handed pkt %s for handler %s" % (recvpkt, self.key))
@@ -709,6 +753,7 @@ class TftpServerHandler(TftpSession):
             logger.debug("Read %d bytes" % len(buffer))
             recvpkt = tftp_factory.parse(buffer)
             
+        # FIXME - refactor into another method, this is too big
         if isinstance(recvpkt, TftpPacketRRQ):
             logger.debug("Handler %s received RRQ packet" % self.key)
             logger.debug("Requested file is %s, mode is %s" % (recvpkt.filename,
@@ -745,7 +790,39 @@ class TftpServerHandler(TftpSession):
                 if os.path.exists(self.filename):
                     logger.debug("File %s exists." % self.filename)
 
-                    # FIXME - Check options, start upload.
+                    # Check options. Currently we only support the blksize
+                    # option.
+                    if recvpkt.options.has_key('blksize'):
+                        logger.debug("RRQ includes a blksize option")
+                        blksize = recvpkt.options['blksize']
+                        if blksize >= MIN_BLKSIZE and blksize <= MAX_BLKSIZE:
+                            logger.debug("Client requested blksize = %d"
+                                    % blksize)
+                            self.options['blksize'] = blksize
+                        else:
+                            logger.warning("Client %s requested invalid "
+                                           "blocksize %d, responding with default"
+                                           % (self.key, blksize))
+                            self.options['blksize'] = DEF_BLKSIZE
+
+                        logger.debug("Composing and sending OACK packet")
+                        self.send_oack()
+
+                    elif len(recvpkt.options.keys()) > 0:
+                        logger.warning("Client %s requested unsupported options: %s"
+                                % (self.key, recvpkt.options))
+                        logger.warning("Responding with negotiation error")
+                        self.senderror(self.sock,
+                                       TftpErrors.FailedNegotiation,
+                                       self.host,
+                                       self.port)
+                        raise TftpException, "Failed option negotiation"
+
+                    else:
+                        logger.debug("Client %s requested no options."
+                                % self.key)
+                        self.start_download()
+
                 else:
                     logger.error("Requested file %s does not exist." %
                             self.filename)
@@ -761,10 +838,81 @@ class TftpServerHandler(TftpSession):
                              "but we're in state %s" % (self.key, self.state))
                 self.errors += 1
 
-        # Handle other packet types.
-        # FIXME
-                
+        # Next packet type
+        elif isinstance(recvpkt, TftpPacketACK):
+            logger.debug("Received an ACK from the client.")
+            if recvpkt.blocknumber == 0 and self.state.state == 'oack':
+                logger.debug("Received ACK with 0 blocknumber, starting download")
+                self.start_download()
+            else:
+                if self.state.state == 'dat':
+                    if self.blocknumber == recvpkt.blocknumber:
+                        logger.debug("Received ACK for block %d, "
+                                     "sending next DAT" % recvpkt.blocknumber)
+                        self.send_dat()
+                    elif recvpkt.blocknumber < self.blocknumber:
+                        logger.warn("Received old ACK for block number %d"
+                                % recvpkt.blocknumber)
+                    else:
+                        logger.warn("Received ACK for block number "
+                                    "%d, apparently from the future"
+                                    % recvpkt.blocknumber)
+                else:
+                    logger.error("Received ACK with block number %d "
+                                 "while in state %s"
+                                 % (recvpkt.blocknumber,
+                                    self.state.state))
 
+        elif isinstance(recvpkt, TftpPacketERR):
+            logger.error("Received error packet from client: %s" % recvpkt)
+            self.state.state = 'err'
+            raise TftpException, "Received error from client"
+
+        # Handle other packet types.
+        else:
+            logger.error("Received packet %s while handling a download"
+                    % recvpkt)
+            self.senderror(self.sock,
+                           TftpErrors.IllegalTftpOp,
+                           self.host,
+                           self.port)
+            raise TftpException, "Invalid packet received during download"
+
+    def start_download(self):
+        """This method opens self.filename, stores the resulting file object
+        in self.fileobj, and calls send_dat()."""
+        self.state.state = 'dat'
+        self.fileobj = open(self.filename, "r")
+        self.send_dat()
+
+    def send_dat(self, resend=False):
+        """This method reads sends a DAT packet based on what is in self.buffer."""
+        if not resend:
+            self.buffer = self.fileobj.read(int(self.options['blksize']))
+            if not self.buffer:
+                logger.info("Reached EOF on file %s" % self.filename)
+            self.blocknumber += 1
+            if self.blocknumber > 65535:
+                self.blocknumber = 0
+        else:
+            logger.warn("Resending block number %d" % self.blocknumber)
+        dat = TftpPacketDAT()
+        dat.buffer = self.buffer
+        dat.blocknumber = self.blocknumber
+        logger.debug("Sending DAT packet %d" % self.blocknumber)
+        self.sock.sendto(dat.encode().buffer, (self.host, self.port))
+        self.timesent = time.time()
+
+    def send_oack(self):
+        """This method sends an OACK packet based on current params."""
+        logger.debug("Composing and sending OACK packet")
+        oack = TftpPacketOACK()
+        oack.options = self.options
+        self.sock.sendto(oack.encode().buffer,
+                         (self.host, self.port))
+        self.timesent = time.time()
+        self.state.state = 'oack'
+                
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client."""
     def __init__(self, host, port, options={}):

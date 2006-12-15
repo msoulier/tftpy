@@ -41,8 +41,22 @@ def main():
                       dest='debug',
                       default=False,
                       help='upgrade logging from info to debug')
+    parser.add_option('-q',
+                      '--quiet',
+                      action='store_true',
+                      dest='quiet',
+                      default=False,
+                      help="downgrade logging from info to warning")
     options, args = parser.parse_args()
     if not options.host or not options.filename:
+        sys.stderr.write("Both the --host and --filename options "
+                         "are required.\n")
+        parser.print_help()
+        sys.exit(1)
+
+    if options.debug and options.quiet:
+        sys.stderr.write("The --debug and --quiet options are "
+                         "mutually exclusive.\n")
         parser.print_help()
         sys.exit(1)
 
@@ -59,6 +73,8 @@ def main():
         
     if options.debug:
         tftpy.setLogLevel(logging.DEBUG)
+    elif options.quiet:
+        tftpy.setLogLevel(logging.WARNING)
     else:
         tftpy.setLogLevel(logging.INFO)
 

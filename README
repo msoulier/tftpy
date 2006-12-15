@@ -45,7 +45,8 @@ Limitations:
 ------------
 - Server is not yet implemented
 - Only 'octet' mode is supported
-- Uploading is not yet tested
+- Uploading in the client is not yet implemented
+- The only option supported is blksize
 
 Author:
 =======
