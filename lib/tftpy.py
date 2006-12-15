@@ -356,6 +356,7 @@ ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
         self.opcode = 5
         self.errorcode = 0
         self.errmsg = None
+        # FIXME - integrate in TftpErrors references?
         self.errmsgs = {
             1: "File not found",
             2: "Access violation",
@@ -603,9 +604,9 @@ class TftpServer(TftpSession):
                                 logger.debug("New download request, session key = %s"
                                         % key)
                                 self.handlers[key] = TftpServerHandler(key,
-                                                                    TftpState('rrq'),
-                                                                    self.root,
-                                                                    listenip)
+                                                                       TftpState('rrq'),
+                                                                       self.root,
+                                                                       listenip)
                                 self.handlers[key].handle((recvpkt, raddress, rport))
                             except TftpException, err:
                                 logger.error("Fatal exception thrown from handler: %s"
@@ -865,10 +866,14 @@ class TftpClient(TftpSession):
             if isinstance(recvpkt, TftpPacketDAT):
                 logger.debug("recvpkt.blocknumber = %d" % recvpkt.blocknumber)
                 logger.debug("curblock = %d" % curblock)
-                if recvpkt.blocknumber == curblock+1:
+                expected_block = curblock + 1
+                if expected_block > 65535:
+                    logger.debug("block number rollover to 0 again")
+                    expected_block = 0
+                if recvpkt.blocknumber == expected_block:
                     logger.debug("good, received block %d in sequence" 
                                 % recvpkt.blocknumber)
-                    curblock += 1
+                    curblock = expected_block
 
                         
                     # ACK the packet, and save the data.
