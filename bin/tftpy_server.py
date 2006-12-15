@@ -42,7 +42,10 @@ def main():
         tftpy.setLogLevel(logging.INFO)
 
     server = tftpy.TftpServer(options.root)
-    server.listen(options.ip, options.port)
+    try:
+        server.listen(options.ip, options.port)
+    except KeyboardInterrupt:
+        pass
 
 if __name__ == '__main__':
     main()

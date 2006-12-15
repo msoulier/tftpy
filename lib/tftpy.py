@@ -285,7 +285,7 @@ DATA  | 03    |   Block #  |    Data    |
         """Encode the DAT packet. This method populates self.buffer, and
         returns self for easy method chaining."""
         if len(self.data) == 0:
-            logger.warning("Encoding an empty DAT packet")
+            logger.debug("Encoding an empty DAT packet")
         format = "!HH%ds" % len(self.data)
         self.buffer = struct.pack(format, 
                                   self.opcode, 
@@ -570,7 +570,8 @@ class TftpServer(TftpSession):
         
         tftp_factory = TftpPacketFactory()
         
-        logger.info("Server requested on ip %s, port %s" % (listenip, listenport))
+        logger.info("Server requested on ip %s, port %s"
+                % (listenip if listenip else '0.0.0.0', listenport))
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sock.bind((listenip, listenport))
