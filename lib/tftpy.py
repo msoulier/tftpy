@@ -284,7 +284,8 @@ DATA  | 03    |   Block #  |    Data    |
     def encode(self):
         """Encode the DAT packet. This method populates self.buffer, and
         returns self for easy method chaining."""
-        tftpassert(len(self.data) > 0, "no point encoding empty data packet")
+        if len(self.data) == 0:
+            logger.warning("Encoding an empty DAT packet")
         format = "!HH%ds" % len(self.data)
         self.buffer = struct.pack(format, 
                                   self.opcode, 
@@ -595,6 +596,8 @@ class TftpServer(TftpSession):
             #(buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
             #recvpkt = tftp_factory.parse(buffer)
             #key = "%s:%s" % (raddress, rport)
+
+            deletion_list = []
             
             for readysock in readyinput:
                 if readysock == self.sock:
@@ -613,14 +616,15 @@ class TftpServer(TftpSession):
                                 self.handlers[key] = TftpServerHandler(key,
                                                                        TftpState('rrq'),
                                                                        self.root,
-                                                                       listenip)
+                                                                       listenip,
+                                                                       tftp_factory)
                                 self.handlers[key].handle((recvpkt, raddress, rport))
                             except TftpException, err:
                                 logger.error("Fatal exception thrown from handler: %s"
                                         % str(err))
                                 logger.debug("Deleting handler: %s" % key)
-                                if self.handlers.has_key(key):
-                                    del self.handlers[key]
+                                deletion_list.append(key)
+
                         else:
                             logger.warn("Received RRQ for existing session!")
                             self.senderror(self.sock,
@@ -654,28 +658,44 @@ class TftpServer(TftpSession):
                                 self.handlers[key].handle()
                                 break
                             except TftpException, err:
-                                logger.error("Fatal exception thrown from handler: %s"
-                                        % str(err))
-                                logger.debug("Deleting handler: %s" % key)
-                                if self.handlers.has_key(key):
-                                    del self.handlers[key]
+                                deletion_list.append(key)
+                                if self.handlers[key].state.state == 'fin':
+                                    logger.info("Successful transfer.")
+                                    break
+                                else:
+                                    logger.error("Fatal exception thrown from handler: %s"
+                                            % str(err))
+
                     else:
-                        raise TftpException, "Can't find the owner for this traffic!"
+                        logger.error("Can't find the owner for this packet.  Discarding.")
 
             logger.debug("Looping on all handlers to check for timeouts")
             now = time.time()
             for key in self.handlers:
-                self.handlers[key].check_timeout(now)
+                try:
+                    self.handlers[key].check_timeout(now)
+                except TftpException, err:
+                    logger.error("Fatal exception thrown from handler: %s"
+                            % str(err))
+                    deletion_list.append(key)
+
+            logger.debug("Iterating deletion list.")
+            for key in deletion_list:
+                if self.handlers.has_key(key):
+                    logger.debug("Deleting handler %s" % key)
+                    del self.handlers[key]
+            deletion_list = []
 
 class TftpServerHandler(TftpSession):
     """This class implements a handler for a given server session, handling
     the work for one download."""
 
-    def __init__(self, key, state, root, listenip):
+    def __init__(self, key, state, root, listenip, factory):
         TftpSession.__init__(self)
         logger.info("Starting new handler. Key %s." % key)
         self.key = key
         self.host, self.port = self.key.split(':')
+        self.port = int(self.port)
         self.listenip = listenip
         # Note, correct state here is important as it tells the handler whether it's
         # handling a download or an upload.
@@ -684,12 +704,13 @@ class TftpServerHandler(TftpSession):
         self.mode = None
         self.filename = None
         self.sock = False
-        self.options = []
+        self.options = {}
         self.blocknumber = 0
         self.buffer = None
         self.fileobj = None
         self.timesent = 0
         self.timeouts = 0
+        self.tftp_factory = factory
         count = 0
         while not self.sock:
             self.sock = self.gensock(listenip)
@@ -711,7 +732,9 @@ class TftpServerHandler(TftpSession):
         if self.timeouts > TIMEOUT_RETRIES:
             raise TftpException, "Hit max retries, giving up."
 
-        if self.state.state == 'dat':
+        # FIXME - still need to handle Sorceror's Apprentice problem
+
+        if self.state.state == 'dat' or self.state.state == 'fin':
             logger.debug("Timing out on DAT. Need to resend.")
             self.send_dat(resend=True)
         elif self.state.state == 'oack':
@@ -751,7 +774,7 @@ class TftpServerHandler(TftpSession):
             logger.debug("Data ready for handler %s" % self.key)
             buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
             logger.debug("Read %d bytes" % len(buffer))
-            recvpkt = tftp_factory.parse(buffer)
+            recvpkt = self.tftp_factory.parse(buffer)
             
         # FIXME - refactor into another method, this is too big
         if isinstance(recvpkt, TftpPacketRRQ):
@@ -794,7 +817,7 @@ class TftpServerHandler(TftpSession):
                     # option.
                     if recvpkt.options.has_key('blksize'):
                         logger.debug("RRQ includes a blksize option")
-                        blksize = recvpkt.options['blksize']
+                        blksize = int(recvpkt.options['blksize'])
                         if blksize >= MIN_BLKSIZE and blksize <= MAX_BLKSIZE:
                             logger.debug("Client requested blksize = %d"
                                     % blksize)
@@ -845,11 +868,14 @@ class TftpServerHandler(TftpSession):
                 logger.debug("Received ACK with 0 blocknumber, starting download")
                 self.start_download()
             else:
-                if self.state.state == 'dat':
+                if self.state.state == 'dat' or self.state.state == 'fin':
                     if self.blocknumber == recvpkt.blocknumber:
-                        logger.debug("Received ACK for block %d, "
-                                     "sending next DAT" % recvpkt.blocknumber)
-                        self.send_dat()
+                        logger.debug("Received ACK for block %d"
+                                % recvpkt.blocknumber)
+                        if self.state.state == 'fin':
+                            raise TftpException, "Successful transfer."
+                        else:
+                            self.send_dat()
                     elif recvpkt.blocknumber < self.blocknumber:
                         logger.warn("Received old ACK for block number %d"
                                 % recvpkt.blocknumber)
@@ -889,15 +915,18 @@ class TftpServerHandler(TftpSession):
         """This method reads sends a DAT packet based on what is in self.buffer."""
         if not resend:
             self.buffer = self.fileobj.read(int(self.options['blksize']))
+            logger.debug("Read %d bytes into buffer" % len(self.buffer))
             if not self.buffer:
                 logger.info("Reached EOF on file %s" % self.filename)
+                self.state.state = 'fin'
             self.blocknumber += 1
             if self.blocknumber > 65535:
+                logger.debug("Blocknumber rolled over to zero")
                 self.blocknumber = 0
         else:
             logger.warn("Resending block number %d" % self.blocknumber)
         dat = TftpPacketDAT()
-        dat.buffer = self.buffer
+        dat.data = self.buffer
         dat.blocknumber = self.blocknumber
         logger.debug("Sending DAT packet %d" % self.blocknumber)
         self.sock.sendto(dat.encode().buffer, (self.host, self.port))
