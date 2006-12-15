@@ -914,9 +914,10 @@ class TftpServerHandler(TftpSession):
     def send_dat(self, resend=False):
         """This method reads sends a DAT packet based on what is in self.buffer."""
         if not resend:
-            self.buffer = self.fileobj.read(int(self.options['blksize']))
+            blksize = int(self.options['blksize'])
+            self.buffer = self.fileobj.read(blksize)
             logger.debug("Read %d bytes into buffer" % len(self.buffer))
-            if not self.buffer:
+            if self.buffer == "" or self.buffer < blksize:
                 logger.info("Reached EOF on file %s" % self.filename)
                 self.state.state = 'fin'
             self.blocknumber += 1
