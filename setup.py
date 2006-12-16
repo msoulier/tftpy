@@ -9,7 +9,7 @@ setup(name='tftpy',
       author_email='msoulier@digitaltorque.ca',
       url='http://digitaltorque.ca',
       py_modules=['lib/tftpy'],
-      scripts=['bin/tftpy_client.py'],
+      scripts=['bin/tftpy_client.py','bin/tftpy_server.py'],
       classifiers=[
         'Development Status :: Alpha',
         'License :: OSI Approved :: CNRI Python License',
