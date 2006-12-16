@@ -573,6 +573,7 @@ class TftpServer(TftpSession):
         logger.info("Server requested on ip %s, port %s"
                 % (listenip if listenip else '0.0.0.0', listenport))
         try:
+            # FIXME - sockets should be non-blocking?
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sock.bind((listenip, listenport))
         except socket.error, err:
@@ -752,6 +753,7 @@ class TftpServerHandler(TftpSession):
         now, let the OS do this."""
         random.seed()
         port = random.randrange(1025, 65536)
+        # FIXME - sockets should be non-blocking?
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         logger.debug("Trying a handler socket on port %d" % port)
         try:

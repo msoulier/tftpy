@@ -1,5 +1,13 @@
 Copyright, Michael P. Soulier, 2006.
 
+About Release 0.4:
+==================
+This release adds a TftpServer class with a sample implementation in bin.
+The server uses a single thread with multiple handlers and a select() loop to
+handle multiple clients simultaneously.
+
+Only downloads are supported at this time.
+
 About Release 0.3:
 ==================
 This release fixes a major RFC 1350 compliance problem with the remote TID.
@@ -43,9 +51,9 @@ See COPYING in this distribution.
 
 Limitations:
 ------------
-- Server is not yet implemented
+- Server only supports downloads.
+- Client only supports downloads.
 - Only 'octet' mode is supported
-- Uploading in the client is not yet implemented
 - The only option supported is blksize
 
 Author:
