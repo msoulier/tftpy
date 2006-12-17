@@ -3,12 +3,12 @@
 from distutils.core import setup
 
 setup(name='tftpy',
-      version='0.4',
+      version='0.5',
       description='Python TFTP library',
       author='Michael P. Soulier',
       author_email='msoulier@digitaltorque.ca',
       url='http://digitaltorque.ca',
-      py_modules=['lib/tftpy'],
+      py_modules=['tftpy'],
       scripts=['bin/tftpy_client.py','bin/tftpy_server.py'],
       classifiers=[
         'Development Status :: Alpha',
