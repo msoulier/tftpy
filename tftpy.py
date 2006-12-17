@@ -29,6 +29,8 @@ logging.basicConfig(
 # long as it conforms to Python's logging.
 logger = logging.getLogger('tftpy')
 
+# FIXME - rename methods to fit standard Python style
+
 def tftpassert(condition, msg):
     """This function is a simple utility that will check the condition
     passed for a false state. If it finds one, it throws a TftpException
