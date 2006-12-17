@@ -8,7 +8,7 @@ setup(name='tftpy',
       author='Michael P. Soulier',
       author_email='msoulier@digitaltorque.ca',
       url='http://digitaltorque.ca',
-      py_modules=['tftpy'],
+      packages=['tftpy'],
       scripts=['bin/tftpy_client.py','bin/tftpy_server.py'],
       classifiers=[
         'Development Status :: Alpha',
