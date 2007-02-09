@@ -46,8 +46,11 @@ class TftpServer(TftpSession):
         
         tftp_factory = TftpPacketFactory()
         
+        # Don't use new 2.5 ternary operator yet
+        # listenip = listenip if listenip else '0.0.0.0'
+        if not listenip: listenip = '0.0.0.0'
         logger.info("Server requested on ip %s, port %s"
-                % (listenip if listenip else '0.0.0.0', listenport))
+                % (listenip, listenport))
         try:
             # FIXME - sockets should be non-blocking?
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

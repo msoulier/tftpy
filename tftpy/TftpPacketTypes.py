@@ -321,8 +321,11 @@ ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
 
     def decode(self):
         "Decode self.buffer, populating instance variables and return self."
-        tftpassert(len(self.buffer) >= 5, "malformed ERR packet")
+        tftpassert(len(self.buffer) > 4, "malformed ERR packet, too short")
+        logger.debug("Decoding ERR packet, length %s bytes" %
+                len(self.buffer))
         format = "!HH%dsx" % (len(self.buffer) - 5)
+        logger.debug("Decoding ERR packet with format: %s" % format)
         self.opcode, self.errorcode, self.errmsg = struct.unpack(format, 
                                                                  self.buffer)
         logger.error("ERR packet - errorcode: %d, message: %s"

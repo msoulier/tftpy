@@ -10,10 +10,11 @@ TIMEOUT_RETRIES = 5
 DEF_TFTP_PORT = 69
 
 # Initialize the logger.
-logging.basicConfig(
-    level=LOG_LEVEL,
-    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-    datefmt='%m-%d %H:%M:%S')
+#logging.basicConfig(
+#    level=LOG_LEVEL,
+#    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+#    datefmt='%m-%d %H:%M:%S')
+logging.basicConfig()
 # The logger used by this library. Feel free to clobber it with your own, if you like, as
 # long as it conforms to Python's logging.
 logger = logging.getLogger('tftpy')
