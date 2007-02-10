@@ -271,6 +271,18 @@ class TftpServerHandler(TftpSession):
                                rport)
                 raise TftpException, "Unsupported mode: %s" % recvpkt.mode
 
+            # test host/port of client end
+            if self.host != raddress or self.port != rport:
+                self.senderror(self.sock,
+                               TftpErrors.UnknownTID,
+                               raddress,
+                               rport)
+                logger.error("Expected traffic from %s:%s but received it "
+                             "from %s:%s instead."
+                             % (self.host, self.port, raddress, rport))
+                self.errors += 1
+                return
+
             if self.state.state == 'rrq':
                 logger.debug("Received RRQ. Composing response.")
                 self.filename = self.root + os.sep + recvpkt.filename
@@ -310,7 +322,6 @@ class TftpServerHandler(TftpSession):
                                            % (self.key, blksize))
                             self.options['blksize'] = DEF_BLKSIZE
 
-                        logger.debug("Composing and sending OACK packet")
                         self.send_oack()
 
                     elif len(recvpkt.options.keys()) > 0:
@@ -415,6 +426,7 @@ class TftpServerHandler(TftpSession):
         self.sock.sendto(dat.encode().buffer, (self.host, self.port))
         self.timesent = time.time()
 
+    # FIXME - should these be factored-out into the session class?
     def send_oack(self):
         """This method sends an OACK packet based on current params."""
         logger.debug("Composing and sending OACK packet")

@@ -1,4 +1,5 @@
 import logging
+from tftpy import TftpPacketERR
 
 LOG_LEVEL = logging.NOTSET
 MIN_BLKSIZE = 8
