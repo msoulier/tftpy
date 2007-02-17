@@ -1,6 +1,27 @@
 import struct
 from TftpShared import *
 
+class TftpSession(object):
+    """This class is the base class for the tftp client and server. Any shared
+    code should be in this class."""
+
+    def __init__(self):
+        """Class constructor. Note that the state property must be a TftpState
+        object."""
+        self.options = None
+        self.state = TftpState()
+        self.dups = 0
+        self.errors = 0
+        
+    def senderror(self, sock, errorcode, address, port):
+        """This method uses the socket passed, and uses the errorcode, address
+        and port to compose and send an error packet."""
+        logger.debug("In senderror, being asked to send error %d to %s:%s"
+                % (errorcode, address, port))
+        errpkt = TftpPacketERR()
+        errpkt.errorcode = errorcode
+        self.sock.sendto(errpkt.encode().buffer, (address, port))
+
 class TftpPacketWithOptions(object):
     """This class exists to permit some TftpPacket subclasses to share code
     regarding options handling. It does not inherit from TftpPacket, as the
