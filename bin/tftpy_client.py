@@ -29,7 +29,6 @@ def main():
                       dest='blocksize',
                       help='udp packet size to use (default: 512)',
                       default=512)
-    # FIXME - default should be same as --filename
     parser.add_option('-o',
                       '--output',
                       action='store',

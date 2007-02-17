@@ -185,7 +185,7 @@ class TftpServerHandler(TftpSession):
         self.mode = None
         self.filename = None
         self.sock = False
-        self.options = {}
+        self.options = { 'blksize': DEF_BLKSIZE }
         self.blocknumber = 0
         self.buffer = None
         self.fileobj = None
