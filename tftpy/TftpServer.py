@@ -213,8 +213,6 @@ class TftpServerHandler(TftpSession):
         if self.timeouts > TIMEOUT_RETRIES:
             raise TftpException, "Hit max retries, giving up."
 
-        # FIXME - still need to handle Sorceror's Apprentice problem
-
         if self.state.state == 'dat' or self.state.state == 'fin':
             logger.debug("Timing out on DAT. Need to resend.")
             self.send_dat(resend=True)
@@ -370,6 +368,8 @@ class TftpServerHandler(TftpSession):
                         else:
                             self.send_dat()
                     elif recvpkt.blocknumber < self.blocknumber:
+                        # Don't resend a DAT due to an old ACK. Fixes the
+                        # sorceror's apprentice problem.
                         logger.warn("Received old ACK for block number %d"
                                 % recvpkt.blocknumber)
                     else:
