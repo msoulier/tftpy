@@ -3,7 +3,8 @@ from TftpShared import *
 from TftpPacketFactory import *
 
 class TftpClient(TftpSession):
-    """This class is an implementation of a tftp client."""
+    """This class is an implementation of a tftp client. Once instantiated, a
+    download can be initiated via the download() method."""
     def __init__(self, host, port, options={}):
         """This constructor returns an instance of TftpClient, taking the
         remote host, the remote port, and the filename to fetch."""
@@ -25,7 +26,7 @@ class TftpClient(TftpSession):
         self.sock = None
         
     def gethost(self):
-        "Simple getter method."
+        "Simple getter method for use in a property."
         return self.__host
     
     def sethost(self, host):
@@ -47,6 +48,7 @@ class TftpClient(TftpSession):
         wait for a receive packet to arrive."""
         # Open the output file.
         # FIXME - need to support alternate return formats than files?
+        # File-like objects would be ideal, ala duck-typing.
         outputfile = open(output, "wb")
         recvpkt = None
         curblock = 0

@@ -26,6 +26,7 @@ class TftpPacketWithOptions(object):
     """This class exists to permit some TftpPacket subclasses to share code
     regarding options handling. It does not inherit from TftpPacket, as the
     goal is just to share code here, and not cause diamond inheritance."""
+
     def __init__(self):
         self.options = None
 

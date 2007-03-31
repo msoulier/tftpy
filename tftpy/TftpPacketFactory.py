@@ -2,7 +2,9 @@ from TftpShared import *
 from TftpPacketTypes import *
 
 class TftpPacketFactory(object):
-    """This class generates TftpPacket objects."""
+    """This class generates TftpPacket objects. It is responsible for parsing
+    raw buffers off of the wire and returning objects representing them, via
+    the parse() method."""
     def __init__(self):
         self.classes = {
             1: TftpPacketRRQ,
@@ -13,7 +15,20 @@ class TftpPacketFactory(object):
             6: TftpPacketOACK
             }
 
-    def create(self, opcode):
+    def parse(self, buffer):
+        """This method is used to parse an existing datagram into its
+        corresponding TftpPacket object. The buffer is the raw bytes off of
+        the network."""
+        logger.debug("parsing a %d byte packet" % len(buffer))
+        (opcode,) = struct.unpack("!H", buffer[:2])
+        logger.debug("opcode is %d" % opcode)
+        packet = self.__create(opcode)
+        packet.buffer = buffer
+        return packet.decode()
+
+    def __create(self, opcode):
+        """This method returns the appropriate class object corresponding to
+        the passed opcode."""
         tftpassert(self.classes.has_key(opcode), 
                    "Unsupported opcode: %d" % opcode)
 
@@ -21,13 +36,3 @@ class TftpPacketFactory(object):
 
         logger.debug("packet is %s" % packet)
         return packet
-
-    def parse(self, buffer):
-        """This method is used to parse an existing datagram into its
-        corresponding TftpPacket object."""
-        logger.debug("parsing a %d byte packet" % len(buffer))
-        (opcode,) = struct.unpack("!H", buffer[:2])
-        logger.debug("opcode is %d" % opcode)
-        packet = self.create(opcode)
-        packet.buffer = buffer
-        return packet.decode()
