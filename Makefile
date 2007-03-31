@@ -1,7 +1,7 @@
 PY=/usr/bin/env python
 PYTHONPATH=lib
 
-all: test sdist
+all: test sdist epydoc
 
 sdist:
 	PYTHONPATH=$(PYTHONPATH) $(PY) setup.py sdist
@@ -9,5 +9,8 @@ sdist:
 test:
 	PYTHONPATH=$(PYTHONPATH) $(PY) t/test.py
 
+epydoc:
+	PYTHONPATH=$(PYTHONPATH) epydoc --html -o epydoc tftpy
+
 clean:
-	rm -rf dist src
+	rm -rf dist src epydoc MANIFEST
