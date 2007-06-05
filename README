@@ -1,5 +1,10 @@
 Copyright, Michael P. Soulier, 2006.
 
+About Release 0.4.2:
+====================
+Bugfix release for some small installation issues with earlier Python
+releases.
+
 About Release 0.4.1:
 ====================
 Bugfix release to fix the installation path, with some restructuring into a
