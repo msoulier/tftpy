@@ -130,7 +130,7 @@ class TestTftpy(unittest.TestCase):
             }
         factory = tftpy.TftpPacketFactory()
         for opcode in classes:
-            self.assert_(isinstance(factory.create(opcode),
+            self.assert_(isinstance(factory._TftpPacketFactory__create(opcode),
                                     classes[opcode]),
                                     "opcode %d returns the correct class" % opcode)
 
