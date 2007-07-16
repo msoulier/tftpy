@@ -410,7 +410,7 @@ class TftpServerHandler(TftpSession):
             blksize = int(self.options['blksize'])
             self.buffer = self.fileobj.read(blksize)
             logger.debug("Read %d bytes into buffer" % len(self.buffer))
-            if self.buffer == "" or self.buffer < blksize:
+            if self.buffer == "" or len(self.buffer) < blksize:
                 logger.info("Reached EOF on file %s" % self.filename)
                 self.state.state = 'fin'
             self.blocknumber += 1
