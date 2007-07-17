@@ -1,3 +1,12 @@
+2007-07-16 22:53  msoulier
+
+	* tftpy/TftpServer.py: Fixing string/integer comparison.
+	  Thanks to Simon P. Ditner, bug #1755146.
+
+2007-06-05 02:12  msoulier
+
+	* ChangeLog, README, setup.py: Updated for 0.4.2
+
 2007-06-05 02:09  msoulier
 
 	* t/test.py: Fixed unit test for factory
