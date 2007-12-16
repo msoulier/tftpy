@@ -322,18 +322,13 @@ class TftpServerHandler(TftpSession):
 
                         self.send_oack()
 
-                    elif len(recvpkt.options.keys()) > 0:
-                        logger.warning("Client %s requested unsupported options: %s"
-                                % (self.key, recvpkt.options))
-                        logger.warning("Responding with negotiation error")
-                        self.senderror(self.sock,
-                                       TftpErrors.FailedNegotiation,
-                                       self.host,
-                                       self.port)
-                        raise TftpException, "Failed option negotiation"
-
                     else:
-                        logger.debug("Client %s requested no options."
+                        if len(recvpkt.options.keys()) > 0:
+                            logger.warning("Client %s requested unsupported options: %s"
+                                % (self.key, recvpkt.options))
+                            logger.debug("Ignoring options, responding with DAT")
+                        else:
+                            logger.debug("Client %s requested no options."
                                 % self.key)
                         self.start_download()
 
