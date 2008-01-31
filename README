@@ -1,8 +1,12 @@
 Copyright, Michael P. Soulier, 2006.
 
+About Release 0.4.4:
+====================
+Bugfix release for poor tolerance of unsupported options in the server.
+
 About Release 0.4.3:
 ====================
-Buxfix release for an issue with the server's detection of the end of the file
+Bugfix release for an issue with the server's detection of the end of the file
 during a download.
 
 About Release 0.4.2:
