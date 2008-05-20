@@ -289,7 +289,7 @@ class TftpServerHandler(TftpSession):
                 self.filename = os.path.abspath(self.filename)
                 logger.debug("The absolute path is %s" % self.filename)
                 # Security check. Make sure it's prefixed by the tftproot.
-                if re.match(r'%s' % self.root, self.filename):
+                if self.filename.find(self.root) == 0:
                     logger.debug("The path appears to be safe: %s" %
                             self.filename)
                 else:
