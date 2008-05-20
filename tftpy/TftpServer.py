@@ -396,7 +396,7 @@ class TftpServerHandler(TftpSession):
         """This method opens self.filename, stores the resulting file object
         in self.fileobj, and calls send_dat()."""
         self.state.state = 'dat'
-        self.fileobj = open(self.filename, "r")
+        self.fileobj = open(self.filename, "rb")
         self.send_dat()
 
     def send_dat(self, resend=False):
