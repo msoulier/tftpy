@@ -202,15 +202,18 @@ class TftpClient(TftpSession):
 
 
         # end while
+        outputfile.close()
 
         end_time = time.time()
         duration = end_time - start_time
-        outputfile.close()
-        logger.info('')
-        logger.info("Downloaded %d bytes in %d seconds" % (bytes, duration))
-        bps = (bytes * 8.0) / duration
-        kbps = bps / 1024.0
-        logger.info("Average rate: %.2f kbps" % kbps)
+        if duration == 0:
+            logger.info("Duration too short, rate undetermined")
+        else:
+            logger.info('')
+            logger.info("Downloaded %d bytes in %d seconds" % (bytes, duration))
+            bps = (bytes * 8.0) / duration
+            kbps = bps / 1024.0
+            logger.info("Average rate: %.2f kbps" % kbps)
         dupcount = 0
         for key in dups:
             dupcount += dups[key]
