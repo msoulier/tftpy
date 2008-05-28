@@ -20,7 +20,7 @@ class TftpSession(object):
                 % (errorcode, address, port))
         errpkt = TftpPacketERR()
         errpkt.errorcode = errorcode
-        self.sock.sendto(errpkt.encode().buffer, (address, port))
+        sock.sendto(errpkt.encode().buffer, (address, port))
 
 class TftpPacketWithOptions(object):
     """This class exists to permit some TftpPacket subclasses to share code
