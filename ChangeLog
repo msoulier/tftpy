@@ -1,3 +1,31 @@
+2008-05-20 02:20  msoulier
+
+	* tftpy/TftpServer.py: Fix for [ 1932310 ] security check always
+	  fail for windows.
+
+2008-05-20 02:12  msoulier
+
+	* tftpy/TftpClient.py: Fixed division by zero error in rate
+	  calculations in download function of
+	  client. Thanks to Stefaan Vanheesbeke for the report.
+
+2008-05-20 02:00  msoulier
+
+	* tftpy/TftpServer.py: Fix for bug [ 1932330 ] binary downloads
+	  fail in Windows.
+
+2008-01-31 02:27  msoulier
+
+	* README: Updated README.
+
+2008-01-31 02:21  msoulier
+
+	* ChangeLog: Updated ChangeLog
+
+2008-01-31 02:21  msoulier
+
+	* setup.py: Updating version to 0.4.4
+
 2007-12-16 15:48  msoulier
 
 	* tftpy/TftpServer.py: Fixing 1851544 - server not tolerant of

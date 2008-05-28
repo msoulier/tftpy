@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='tftpy',
-      version='0.4.4',
+      version='0.4.5',
       description='Python TFTP library',
       author='Michael P. Soulier',
       author_email='msoulier@digitaltorque.ca',
@@ -15,7 +15,7 @@ setup(name='tftpy',
         'License :: OSI Approved :: CNRI Python License',
         'Topic :: Networking :: TFTP',
         'Intended Audience :: Developers',
-        'Operating System :: POSIX',
+        'Operating System :: Any',
         'Environment :: Console',
         ]
       )

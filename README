@@ -1,5 +1,9 @@
 Copyright, Michael P. Soulier, 2006.
 
+About Release 0.4.5:
+====================
+Bugfix release for compatability issues on Win32, among other small issues.
+
 About Release 0.4.4:
 ====================
 Bugfix release for poor tolerance of unsupported options in the server.
@@ -57,7 +61,7 @@ easy inclusion in a UI for populating progress indicators. It supports RFCs
 
 Dependencies:
 -------------
-This library was developed against Python 2.3.
+This library was developed against Python 2.3+.
 
 Trifles:
 --------
@@ -75,7 +79,12 @@ Limitations:
 - Only 'octet' mode is supported
 - The only option supported is blksize
 
+Future:
+-------
+- Upload support
+- netascii support
+- More complete test harness
+
 Author:
 =======
-
 Michael P. Soulier <msoulier@digitaltorque.ca>
