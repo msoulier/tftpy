@@ -43,9 +43,9 @@ class TftpServer(TftpSession):
         defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
         supply a different socket timeout value, if desired."""
         import select
-        
+
         tftp_factory = TftpPacketFactory()
-        
+
         # Don't use new 2.5 ternary operator yet
         # listenip = listenip if listenip else '0.0.0.0'
         if not listenip: listenip = '0.0.0.0'
@@ -66,20 +66,20 @@ class TftpServer(TftpSession):
             inputlist.append(self.sock)
             for key in self.handlers:
                 inputlist.append(self.handlers[key].sock)
-                
+
             # Block until some socket has input on it.
             logger.debug("Performing select on this inputlist: %s" % inputlist)
             readyinput, readyoutput, readyspecial = select.select(inputlist,
                                                                   [],
                                                                   [],
                                                                   SOCK_TIMEOUT)
-            
+
             #(buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
             #recvpkt = tftp_factory.parse(buffer)
             #key = "%s:%s" % (raddress, rport)
 
             deletion_list = []
-            
+
             for readysock in readyinput:
                 if readysock == self.sock:
                     logger.debug("Data ready on our main socket")
@@ -113,7 +113,7 @@ class TftpServer(TftpSession):
                                            raddress,
                                            rport)
                             continue
-                        
+
                     elif isinstance(recvpkt, TftpPacketWRQ):
                         logger.error("Write requests not implemented at this time.")
                         self.senderror(self.sock,
@@ -130,7 +130,7 @@ class TftpServer(TftpSession):
                                        raddress,
                                        rport)
                         continue
-                    
+
                 else:
                     for key in self.handlers:
                         if readysock == self.handlers[key].sock:
@@ -255,7 +255,7 @@ class TftpServerHandler(TftpSession):
             buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
             logger.debug("Read %d bytes" % len(buffer))
             recvpkt = self.tftp_factory.parse(buffer)
-            
+
         # FIXME - refactor into another method, this is too big
         if isinstance(recvpkt, TftpPacketRRQ):
             logger.debug("Handler %s received RRQ packet" % self.key)
@@ -319,18 +319,19 @@ class TftpServerHandler(TftpSession):
                                            "blocksize %d, responding with default"
                                            % (self.key, blksize))
                             self.options['blksize'] = DEF_BLKSIZE
+                    if recvpkt.options.has_key('tsize'):
+                        logger.debug('RRQ includes received tsize')
+                        self.options['tsize'] = os.stat(self.filename).st_size
+                    self.send_oack()
 
-                        self.send_oack()
-
+                    if len(recvpkt.options.keys()) > 0:
+                        logger.warning("Client %s requested unsupported options: %s"
+                                       % (self.key, recvpkt.options))
+                        logger.debug("Ignoring options, responding with DAT")
                     else:
-                        if len(recvpkt.options.keys()) > 0:
-                            logger.warning("Client %s requested unsupported options: %s"
-                                % (self.key, recvpkt.options))
-                            logger.debug("Ignoring options, responding with DAT")
-                        else:
-                            logger.debug("Client %s requested no options."
-                                % self.key)
-                        self.start_download()
+                        logger.debug("Client %s requested no options."
+                                     % self.key)
+                    self.start_download()
 
                 else:
                     logger.error("Requested file %s does not exist." %
