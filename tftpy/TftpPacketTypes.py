@@ -28,7 +28,7 @@ class TftpPacketWithOptions(object):
     goal is just to share code here, and not cause diamond inheritance."""
 
     def __init__(self):
-        self.options = None
+        self.options = []
 
     def setoptions(self, options):
         logger.debug("in TftpPacketWithOptions.setoptions")
@@ -41,11 +41,11 @@ class TftpPacketWithOptions(object):
                          % (newkey, myoptions[newkey]))
 
         logger.debug("setting options hash to: " + str(myoptions))
-        self.__options = myoptions
+        self._options = myoptions
 
     def getoptions(self):
         logger.debug("in TftpPacketWithOptions.getoptions")
-        return self.__options
+        return self._options
 
     # Set up getter and setter on options to ensure that they are the proper
     # type. They should always be strings, but we don't need to force the
@@ -123,6 +123,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
     they share quite a bit of code."""
     def __init__(self):
         TftpPacket.__init__(self)
+        TftpPacketWithOptions.__init__(self)
         self.filename = None
         self.mode = None
         
@@ -151,11 +152,14 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
             logger.debug("there are options to encode")
             for key in self.options:
                 format += "%dsx" % len(key)
-                format += "%dsx" % len(str(self.options[key]))
                 options_list.append(key)
-                options_list.append(str(self.options[key]))
+                # Not all options have values.
+                if key != 'tsize':
+                    format += "%dsx" % len(str(self.options[key]))
+                    options_list.append(str(self.options[key]))
 
         logger.debug("format is %s" % format)
+        logger.debug("options_list is %s" % options_list)
         logger.debug("size of struct is %d" % struct.calcsize(format))
 
         self.buffer = struct.pack(format,
@@ -212,22 +216,36 @@ class TftpPacketRRQ(TftpPacketInitial):
         2 bytes    string   1 byte     string   1 byte
         -----------------------------------------------
 RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |
-WRQ    -----------------------------------------------
+WRQ     -----------------------------------------------
     """
     def __init__(self):
         TftpPacketInitial.__init__(self)
         self.opcode = 1
+
+    def __str__(self):
+        s = 'RRQ packet: filename = %s' % self.filename
+        s += ' mode = %s' % self.mode
+        if self.options:
+            s += '\n    options = %s' % self.options
+        return s
 
 class TftpPacketWRQ(TftpPacketInitial):
     """
         2 bytes    string   1 byte     string   1 byte
         -----------------------------------------------
 RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |
-WRQ    -----------------------------------------------
+WRQ     -----------------------------------------------
     """
     def __init__(self):
         TftpPacketInitial.__init__(self)
         self.opcode = 2
+
+    def __str__(self):
+        s = 'WRQ packet: filename = %s' % self.filename
+        s += ' mode = %s' % self.mode
+        if self.options:
+            s += '\n    options = %s' % self.options
+        return s
 
 class TftpPacketDAT(TftpPacket):
     """
@@ -241,6 +259,12 @@ DATA  | 03    |   Block #  |    Data    |
         self.opcode = 3
         self.blocknumber = 0
         self.data = None
+
+    def __str__(self):
+        s = 'DAT packet: block %s' % self.blocknumber
+        if self.data:
+            s += '\n    data: %d bytes' % len(self.data)
+        return s
 
     def encode(self):
         """Encode the DAT packet. This method populates self.buffer, and
@@ -280,6 +304,9 @@ ACK   | 04    |   Block #  |
         TftpPacket.__init__(self)
         self.opcode = 4
         self.blocknumber = 0
+
+    def __str__(self):
+        return 'ACK packet: block %d' % self.blocknumber
 
     def encode(self):
         logger.debug("encoding ACK: opcode = %d, block = %d" 
@@ -330,6 +357,9 @@ ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
             8: "Failed to negotiate options"
             }
 
+    def __str__(self):
+        return 'ERR packet: errorcode = %d' % self.errorcode
+
     def encode(self):
         """Encode the DAT packet based on instance variables, populating
         self.buffer, returning self."""
@@ -362,7 +392,11 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
     """
     def __init__(self):
         TftpPacket.__init__(self)
+        TftpPacketWithOptions.__init__(self)
         self.opcode = 6
+
+    def __str__(self):
+        return 'OACK packet:\n    options = %s' % self.options
         
     def encode(self):
         format = "!H" # opcode

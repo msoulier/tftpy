@@ -34,6 +34,11 @@ def main():
                       action='store_true',
                       default=False,
                       help="downgrade logging from info to warning")
+    parser.add_option('-t',
+                      '--tsize',
+                      action='store_true',
+                      default=False,
+                      help="ask client to send tsize option in download")
     options, args = parser.parse_args()
     if not options.host or not options.filename:
         sys.stderr.write("Both the --host and --filename options "
@@ -55,8 +60,11 @@ def main():
             self.progress = 0
             self.out = out
         def progresshook(self, pkt):
-            self.progress += len(pkt.data)
-            self.out("Downloaded %d bytes" % self.progress)
+            if isinstance(pkt, tftpy.TftpPacketDAT):
+                self.progress += len(pkt.data)
+                self.out("Downloaded %d bytes" % self.progress)
+            elif isinstance(pkt, tftpy.TftpPacketOACK):
+                self.out("Received OACK, options are: %s" % pkt.options)
         
     if options.debug:
         tftpy.setLogLevel(logging.DEBUG)
@@ -70,6 +78,8 @@ def main():
     tftp_options = {}
     if options.blocksize:
         tftp_options['blksize'] = int(options.blocksize)
+    if options.tsize:
+        tftp_options['tsize'] = 1
 
     tclient = tftpy.TftpClient(options.host,
                                int(options.port),

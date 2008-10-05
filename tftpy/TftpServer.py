@@ -320,7 +320,7 @@ class TftpServerHandler(TftpSession):
                                            % (self.key, blksize))
                             self.options['blksize'] = DEF_BLKSIZE
                     if recvpkt.options.has_key('tsize'):
-                        logger.debug('RRQ includes received tsize')
+                        logger.debug('RRQ includes tsize option')
                         self.options['tsize'] = os.stat(self.filename).st_size
                     self.send_oack()
 

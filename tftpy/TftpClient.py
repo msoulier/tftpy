@@ -97,6 +97,13 @@ class TftpClient(TftpSession):
                             % (raddress, rport,
                             self.host, self.port))
                 continue
+
+            # If there is a packethook defined, call it. We unconditionally
+            # pass all packets, it's up to the client to screen out different
+            # kinds of packets. This way, the client is privy to things like
+            # negotiated options.
+            if packethook:
+                packethook(recvpkt)
             
             if not self.port and self.state.state == 'rrq':
                 self.port = rport
@@ -126,11 +133,8 @@ class TftpClient(TftpSession):
                                 % len(recvpkt.data))
                     outputfile.write(recvpkt.data)
                     bytes += len(recvpkt.data)
-                    # If there is a packethook defined, call it.
-                    if packethook:
-                        packethook(recvpkt)
                     # Check for end-of-file, any less than full data packet.
-                    if len(recvpkt.data) < self.options['blksize']:
+                    if len(recvpkt.data) < int(self.options['blksize']):
                         logger.info("end of file detected")
                         break
 
@@ -165,6 +169,8 @@ class TftpClient(TftpSession):
                 if recvpkt.options.keys() > 0:
                     if recvpkt.match_options(self.options):
                         logger.info("Successful negotiation of options")
+                        # Set options to OACK options
+                        self.options = recvpkt.options
                         for key in self.options:
                             logger.info("    %s = %s" % (key, self.options[key]))
                         logger.debug("sending ACK to OACK")
