@@ -358,7 +358,9 @@ ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
             }
 
     def __str__(self):
-        return 'ERR packet: errorcode = %d' % self.errorcode
+        s = 'ERR packet: errorcode = %d' % self.errorcode
+        s += '\n    msg = %s' % self.errmsgs.get(self.errorcode, '')
+        return s
 
     def encode(self):
         """Encode the DAT packet based on instance variables, populating

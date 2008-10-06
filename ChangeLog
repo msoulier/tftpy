@@ -1,333 +1,141 @@
-2008-05-20 02:20  msoulier
 
-	* tftpy/TftpServer.py: Fix for [ 1932310 ] security check always
-	  fail for windows.
-
-2008-05-20 02:12  msoulier
-
-	* tftpy/TftpClient.py: Fixed division by zero error in rate
-	  calculations in download function of
-	  client. Thanks to Stefaan Vanheesbeke for the report.
-
-2008-05-20 02:00  msoulier
-
-	* tftpy/TftpServer.py: Fix for bug [ 1932330 ] binary downloads
-	  fail in Windows.
-
-2008-01-31 02:27  msoulier
-
-	* README: Updated README.
-
-2008-01-31 02:21  msoulier
-
-	* ChangeLog: Updated ChangeLog
-
-2008-01-31 02:21  msoulier
-
-	* setup.py: Updating version to 0.4.4
-
-2007-12-16 15:48  msoulier
-
-	* tftpy/TftpServer.py: Fixing 1851544 - server not tolerant of
-	  unsupported options
-	  Thanks to Landon Jurgens for the report.
-
-2007-07-17 01:17  msoulier
-
-	* ChangeLog, README, setup.py: Updated for 0.4.3 release.
-
-2007-07-16 22:55  msoulier
-
-	* tftpy/TftpServer.py: Removed redundant comparison.
-
-2007-07-16 22:53  msoulier
-
-	* tftpy/TftpServer.py: Fixing string/integer comparison.
-	  Thanks to Simon P. Ditner, bug #1755146.
-
-2007-06-05 02:12  msoulier
-
-	* ChangeLog, README, setup.py: Updated for 0.4.2
-
-2007-06-05 02:09  msoulier
-
-	* t/test.py: Fixed unit test for factory
-
-2007-03-31 02:03  msoulier
-
-	* tftpy/TftpClient.py, tftpy/TftpPacketFactory.py,
-	  tftpy/TftpPacketTypes.py: Updating docs for epydoc.
-
-2007-03-31 01:51  msoulier
-
-	* Makefile: Updated build process.
-
-2007-03-31 01:40  msoulier
-
-	* Makefile: Adding epydoc target.
-
-2007-03-15 00:01  msoulier
-
-	* ChangeLog: Updated ChangeLog
-
-2007-02-23 02:09  msoulier
-
-	* bin/tftpy_client.py, bin/tftpy_server.py: Simplifying use of
-	  optparse. Thanks to Steven Bethard for the suggestions.
-
-2007-02-17 03:10  msoulier
-
-	* tftpy/TftpServer.py: Removed mention of sorceror's apprentice
-	  problem.
-
-2007-02-17 03:04  msoulier
-
-	* tftpy/TftpPacketTypes.py, tftpy/TftpShared.py: Rearranged
-	  packaging a bit to fix an importing problem.
-
-2007-02-17 01:40  msoulier
-
-	* bin/tftpy_client.py, tftpy/TftpServer.py: Supplying a default
-	  blksize options in the server.
-	  Fix for 1633625.
-
-2007-02-10 02:27  msoulier
-
-	* tftpy/TftpServer.py, tftpy/TftpShared.py: Added a check for rogue
-	  packets in the server.
-
-2007-02-09 18:48  msoulier
-
-	* tftpy/TftpPacketTypes.py, tftpy/TftpServer.py,
-	  tftpy/TftpShared.py, tftpy/__init__.py: Making the lib
-	  backwards-compatible to Python 2.3.
-
-2006-12-17 17:09  msoulier
-
-	* ChangeLog, README, setup.py: Rolling to version 0.4.1.
-
-2006-12-17 06:12  msoulier
-
-	* setup.py: Restructuring single lib into a package.
-
-2006-12-17 06:10  msoulier
-
-	* tftpy.py: Restructuring single lib into a package.
-
-2006-12-17 06:08  msoulier
-
-	* tftpy/TftpClient.pyc, tftpy/TftpPacketFactory.pyc,
-	  tftpy/TftpPacketTypes.pyc, tftpy/TftpServer.pyc,
-	  tftpy/TftpShared.pyc, tftpy/__init__.pyc: Restructuring single
-	  lib into a package.
-
-2006-12-17 06:08  msoulier
-
-	* tftpy, tftpy.py, tftpy/TftpClient.py, tftpy/TftpClient.pyc,
-	  tftpy/TftpPacketFactory.py, tftpy/TftpPacketFactory.pyc,
-	  tftpy/TftpPacketTypes.py, tftpy/TftpPacketTypes.pyc,
-	  tftpy/TftpServer.py, tftpy/TftpServer.pyc, tftpy/TftpShared.py,
-	  tftpy/TftpShared.pyc, tftpy/__init__.py, tftpy/__init__.pyc:
-	  Restructuring single lib into a package.
-
-2006-12-17 05:02  msoulier
-
-	* lib/tftpy.py, setup.py, tftpy.py: Fixing install location of
-	  library.
-
-2006-12-16 04:29  msoulier
-
-	* setup.py: Added server to package.
-
-2006-12-16 04:26  msoulier
-
-	* ChangeLog, README, lib/tftpy.py, setup.py: Updated ChangeLog, and
-	  rolled version to 0.4
-
-2006-12-15 23:35  msoulier
-
-	* bin/tftpy_server.py, lib/tftpy.py: Making server exit gracefully.
-
-2006-12-15 04:08  msoulier
-
-	* lib/tftpy.py: Tweak to EOF handling in server.
-
-2006-12-15 04:01  msoulier
-
-	* lib/tftpy.py: First working server tests with two clients.
-
-2006-12-15 03:04  msoulier
-
-	* README, bin/tftpy_client.py, lib/tftpy.py: Added lots in the
-	  server to support a download, with timeouts.
-	  Not yet tested with a client, but the damn thing runs.
-
-2006-12-15 00:44  msoulier
-
-	* lib/tftpy.py: Fixed a bug in handling block number rollovers.
-
-2006-12-14 02:45  msoulier
-
-	* lib/tftpy.py: Got handling of file not found working in server.
-
-2006-12-14 02:30  msoulier
-
-	* bin/tftpy_server.py: Starting on sample server.
-
-2006-12-14 02:29  msoulier
-
-	* bin/tftpy_client.py, lib/tftpy.py: Successful test on basic
-	  select loop
-
-2006-12-11 02:59  msoulier
-
-	* lib/tftpy.py: Added some security checks around the tftproot.
-	  Further fleshed-out the handler. Still not actually starting the
-	  transfer.
-
-2006-12-10 23:23  msoulier
-
-	* README, lib/tftpy.py: Fleshing out server handler implementation.
-
-2006-12-10 19:12  msoulier
-
-	* README, bin/tftpy_client.py, lib/tftpy.py: Started on the server
-
-2006-12-09 21:42  msoulier
-
-	* bin/tftpy_client.py: Added --debug option to sample client.
-
-2006-12-09 02:15  msoulier
-
-	* MANIFEST.in: Adding license
-
-2006-12-09 01:54  msoulier
-
-	* ChangeLog, MANIFEST.in, README: Adding ChangeLog
-
-2006-12-09 01:17  msoulier
-
-	* setup.py: Bumped the version.
-
-2006-12-09 01:11  msoulier
-
-	* lib/tftpy.py: Changed the port variables to something more
-	  intelligent.
-
-2006-12-09 00:45  msoulier
-
-	* lib/tftpy.py: Fixing poor TID implementation.
-
-2006-10-25 01:41  msoulier
-
-	* t/test.py: Added testcase for TftpPacketFactory.
-
-2006-10-13 01:54  msoulier
-
-	* lib/tftpy.py: Implemented retries on download timeouts.
-
-2006-10-13 01:38  msoulier
-
-	* lib/tftpy.py: Added some info statements regarding option
-	  negotiation.
-
-2006-10-13 01:27  msoulier
-
-	* lib/tftpy.py, t/test.py: Updated testcases, fixed one error in
-	  decode_options
-
-2006-10-11 03:58  msoulier
-
-	* lib/tftpy.py, t/test.py: Updated testcases
-
-2006-10-11 03:40  msoulier
-
-	* Makefile, src: Updated makefile
-
-2006-10-11 03:32  msoulier
-
-	* Makefile, t, test: Adding makefile
-
-2006-10-10 02:17  msoulier
-
-	* COPYING, LICENSE, README: Moved LICENSE to COPYING
-
-2006-10-09 02:47  msoulier
-
-	* test/test.py: Added test for WRQ packet
-
-2006-10-09 02:44  msoulier
-
-	* bin/tftpy_client.py, lib/tftpy.py, test/test.py: Fixed broken
-	  decode, and adjusted the client options.
-
-2006-10-08 13:58  msoulier
-
-	* lib/tftpy.py, test, test/test.py: Starting on unit tests
-
-2006-10-05 16:38  msoulier
-
-	* bin/tftpy_client.py: Fixed handling of port
-
-2006-10-05 16:32  msoulier
-
-	* bin/tftpy_client.py, lib/tftpy_twisted.py: Updating for
-	  production
-
-2006-10-05 16:16  msoulier
-
-	* README: Freezing 0.2
-
-2006-10-05 14:18  msoulier
-
-	* lib/tftpy.py: Fixed poor EOF detection
-
-2006-10-05 03:38  msoulier
-
-	* bin/tftpy_client.py, lib/tftpy.py: Got variable blocksizes
-	  working.
-
-2006-10-04 22:16  msoulier
-
-	* lib/tftpy.py: Added confirmation of incoming traffic to known
-	  remote host.
-
-2006-10-04 17:32  msoulier
-
-	* lib/tftpy.py: Restructured in preparation for tftp options
-
-2006-10-04 03:54  msoulier
-
-	* README: Updated README
-
-2006-10-04 03:46  msoulier
-
-	* README: Updated README
-
-2006-10-04 03:02  msoulier
-
-	* lib/tftpy.py: Added seconds to logs
-
-2006-10-04 02:44  msoulier
-
-	* setup.py: Upping version to 0.2
-
-2006-10-04 02:43  msoulier
-
-	* bin/tftpy_client.py, lib/tftpy.py: Added OACK packet, and
-	  factored-out client code.
-
-2006-10-03 19:13  msoulier
-
-	* lib/tftpy.py: Updated a comment
-
-2006-10-03 19:11  msoulier
-
-	* LICENSE, MANIFEST.in, README, bin, doc, lib, setup.py, src,
-	  LICENSE, MANIFEST.in, README, bin, doc, lib, setup.py, src:
-	  Restructuring
-
-2006-10-03 19:10  msoulier
-
-	* branches, tags, .: Restructuring
-
+2008-10-04	Michael P. Soulier
+	07416bf: Rebased tsize branch and added a --tsize option to the client.
+
+2008-07-30	Michael P. Soulier
+	8a0162b: Adding transfer size option patch from Kuba Kończyk.
+
+2008-10-03	Michael P. Soulier
+	c408389: Merged from SVN trunk after register to PyPi
+
+2008-10-04	msoulier
+	65ef2d9: Updated for PyPi
+
+2008-05-28	msoulier
+	33b1353: Tagging 0.4.5. 
+	936e4df: Updated for v0.4.5 release.
+	caff30d: Fix for bug 1967647, referencing self.sock instead of sock.
+
+2008-05-20	msoulier
+	70f22b1: Fix for [ 1932310 ] security check always fail for windows.
+	596af40: Fixed division by zero error in rate calculations in download function of
+	3b1bae3: Fix for bug [ 1932330 ] binary downloads fail in Windows.
+
+2008-01-31	msoulier
+	648564c: Updated README.
+	792df2d: Updated ChangeLog
+	941f5bf: Updating version to 0.4.4
+
+2007-12-16	msoulier
+	f8af287: Fixing 1851544 - server not tolerant of unsupported options
+
+2007-07-17	msoulier
+	89a8382: Updated for 0.4.3 release.
+
+2007-07-16	msoulier
+	2a98d72: Removed redundant comparison.
+	955ced3: Fixing string/integer comparison.
+
+2007-06-05	msoulier
+	493dcac: Updated for 0.4.2
+	bb47795: Fixed unit test for factory
+
+2007-03-31	msoulier
+	d9665e1: Updating docs for epydoc.
+	b68ceca: Updated build process.
+	d8730c7: Adding epydoc target.
+
+2007-03-15	msoulier
+	0b41ffb: Updated ChangeLog
+
+2007-02-23	msoulier
+	8f5595c: Simplifying use of optparse. Thanks to Steven Bethard for the suggestions.
+
+2007-02-17	msoulier
+	5c52975: Removed mention of sorceror's apprentice problem.
+	c8df0fd: Rearranged packaging a bit to fix an importing problem.
+	c7d86d3: Supplying a default blksize options in the server.
+
+2007-02-10	msoulier
+	07906cd: Added a check for rogue packets in the server.
+
+2007-02-09	msoulier
+	f53e68b: Making the lib backwards-compatible to Python 2.3.
+
+2006-12-17	msoulier
+	efd248f: Rolling to version 0.4.1.
+	95b6a72: Restructuring single lib into a package.
+	a1ad552: Restructuring single lib into a package.
+	c43a24c: Restructuring single lib into a package.
+	5e6d8fe: Restructuring single lib into a package.
+	6eb1501: Fixing install location of library.
+
+2006-12-16	msoulier
+	15023eb: Added server to package.
+	ac2faa3: Updated ChangeLog, and rolled version to 0.4
+
+2006-12-15	msoulier
+	f79a1e9: Making server exit gracefully.
+	16ebbf2: Tweak to EOF handling in server.
+	7723705: First working server tests with two clients.
+	5cfbae3: Added lots in the server to support a download, with timeouts.
+	d5b7276: Fixed a bug in handling block number rollovers.
+
+2006-12-14	msoulier
+	7441f0a: Got handling of file not found working in server.
+	3b4d177: Starting on sample server.
+	94ef067: Successful test on basic select loop
+
+2006-12-11	msoulier
+	6f186f2: Added some security checks around the tftproot.
+
+2006-12-10	msoulier
+	b5a96ec: Fleshing out server handler implementation.
+	fc2a587: Started on the server
+
+2006-12-09	msoulier
+	aece5aa: Added --debug option to sample client.
+	204cce4: Adding license
+	4fc510b: Adding ChangeLog
+	07e2976: Bumped the version.
+	104dfe0: Changed the port variables to something more intelligent.
+	15c5a0f: Fixing poor TID implementation.
+
+2006-10-25	msoulier
+	8e6cd77: Added testcase for TftpPacketFactory.
+
+2006-10-13	msoulier
+	7486502: Implemented retries on download timeouts.
+	0528b1b: Added some info statements regarding option negotiation.
+	4c73041: Updated testcases, fixed one error in decode_options
+
+2006-10-11	msoulier
+	f2b7d5d: Updated testcases
+	837344c: Updated makefile
+	08af50a: Adding makefile
+
+2006-10-10	msoulier
+	99b3bbd: Moved LICENSE to COPYING
+
+2006-10-09	msoulier
+	2e42f99: Added test for WRQ packet
+	6ebd6fc: Fixed broken decode, and adjusted the client options.
+
+2006-10-08	msoulier
+	6db1b2c: Starting on unit tests
+
+2006-10-05	msoulier
+	e771f67: Fixed handling of port
+	cb75a4b: Updating for production
+	19e8f0f: Freezing 0.2
+	0a13eb5: Fixed poor EOF detection
+	ed15161: Got variable blocksizes working.
+
+2006-10-04	msoulier
+	c24bba2: Added confirmation of incoming traffic to known remote host.
+	c11ac3a: Restructured in preparation for tftp options
+	2827cf1: Updated README
+	c6094b0: Updated README
+	09de253: Added seconds to logs
+	82821e5: Upping version to 0.2
+	88c387b: Added OACK packet, and factored-out client code.
