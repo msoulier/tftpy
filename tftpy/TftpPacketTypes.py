@@ -151,12 +151,12 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         if self.options.keys() > 0:
             logger.debug("there are options to encode")
             for key in self.options:
+                # Populate the option name
                 format += "%dsx" % len(key)
                 options_list.append(key)
-                # Not all options have values.
-                if key != 'tsize':
-                    format += "%dsx" % len(str(self.options[key]))
-                    options_list.append(str(self.options[key]))
+                # Populate the option value
+                format += "%dsx" % len(str(self.options[key]))
+                options_list.append(str(self.options[key]))
 
         logger.debug("format is %s" % format)
         logger.debug("options_list is %s" % options_list)

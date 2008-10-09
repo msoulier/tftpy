@@ -79,7 +79,7 @@ def main():
     if options.blocksize:
         tftp_options['blksize'] = int(options.blocksize)
     if options.tsize:
-        tftp_options['tsize'] = 1
+        tftp_options['tsize'] = 0
 
     tclient = tftpy.TftpClient(options.host,
                                int(options.port),
