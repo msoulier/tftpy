@@ -1,0 +1,6 @@
+- site is /home/groups/t/tf/tftpy/htdocs
+    - ssh to msoulier,tftpy@shell.sourceforge.net
+    - sftp to msoulier,tftpy@web.sourceforge.net
+    - push to site
+        - rsync -vr --delete ~/work/tftpy/html/ \
+            msoulier,tftpy@web.sourceforge.net:/home/groups/t/tf/tftpy/htdocs
