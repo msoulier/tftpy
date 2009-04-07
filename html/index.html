@@ -1,23 +1,109 @@
 <!-- vim: ts=4 sw=4 et
 -->
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
     <head>
-        <title>Tftpy - A Pure Python TFTP Implementation</title>
+        <title>TFTPy - A Pure Python TFTP Implementation</title>
+        <link href="main.css" name="main" type="text/css" rel="stylesheet" />
     </head>
-    <body bgcolor="#ffffff">
-        <h1>Tftpy - A Pure Python TFTP Implementation</h1>
-        <p>More to come.</p>
-        <p><a href="http://www.sf.net/projects/tftpy/">Project Page</a></p>
-        <p>The project sourcecode is hosted on <a
-        href="http://github.com">Github</a>. To clone the repository, run the
-        following command using git
-           <pre>
-    git clone git://github.com/msoulier/tftpy.git
-            </pre>
-           Patches welcome, even if I can't guarantee response time. You can
-           of course send me the url of a public git repository to pull from
-           as well.
-           The Github project page is <a href="http://github.com/msoulier/tftpy/tree/master">right here</a>.
+    <body>
+    <div class="banner">
+        <h1>TFTPy - A Pure Python TFTP Implementation</h1>
+    </div>
+    <div class="menu">
+        <ul>
+            <li><a href="#about">About TFTPy</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#plans">Future Plans</a></li>
+            <li><a href="#code">The Code</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <a name="about" />
+        <h2>About TFTPy</h2>
+        <p>TFTPy is a pure Python implementation of the
+        <a href="http://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol">Trivial FTP protocol</a>.</p>
+        <p>I wrote it because the VoIP company that I work for uses
+        TFTP to pull firmware loads for our sets, and at times when this
+        doesn't work we use a Windows-based diagnostic tool to troubleshoot
+        the connection.</p>
+        <p>As all of the computers in my home run some flavour of
+        <a href="http://en.wikipedia.org/wiki/Linux">Linux</a> or
+        <a href="http://en.wikipedia.org/wiki/Freebsd">FreeBSD</a>,
+        this tool wasn't much use to me, so I started one of my own.
+        I decided to use <a href="http://www.python.org">Python</a>
+        since it's comfortable and available for the platforms that I care
+        about, and was surprised to not find a pre-existing TFTP library for
+        it. So, I wrote one, and here it is.  It's not 1.0 yet, but
+        downloading is production-ready IMHO, as some of the people using it
+        tell me.</p>
+
+        <a name="features" />
+        <h2>Features</h2>
+        <p>At this time, it supports the following RFCs:
+        <ul>
+            <li>
+                <a href="http://www.faqs.org/rfcs/rfc1350.html">1350</a>
+                The TFTP Protocol, revision 2 (downloads only, octet mode only)
+            </li>
+            <li>
+                <a href="http://www.faqs.org/rfcs/rfc2347.html">2347</a>
+                TFTP Option Extension
+            </li>
+            <li>
+                <a href="http://www.faqs.org/rfcs/rfc2348.html">2348</a>
+                TFTP Blocksize Option
+            </li>
+            <li>
+                <a href="http://www.faqs.org/rfcs/rfc2349.html">2349</a>
+                TFTP Timeout Interval and Transfer Size Options (just the
+                tsize option right now)
+            </li>
+        </ul>
         </p>
+
+        <a name="plans" />
+        <h2>Future Plans</h2>
+        <p>I do have plans for this code before a 1.0 release, including the
+        following:
+        <ul>
+            <li>Full RFC 1350 compliance, including netascii mode (I could
+            care less about "mail" mode), and uploads (uploads are
+            experimental right now and are on the "upload-patch" branch on
+            Github).</li>
+            <li>Symmetric UDP support. I don't know of an RFC for this but
+            it's a no-brainer for NAT traversal. In this mode the server
+            should always respond on the port that the RRQ was sent to, so
+            stateful firewalls will permit the response.</li>
+        </ul>
+        </p>
+
+        <a name="code" />
+        <h2>The Code</h2>
+        <p>You can find the latest release at the SourceForge
+        <a href="http://www.sf.net/projects/tftpy/">Project Page</a>, as a
+        source tarball. It should also be in <a
+        href="http://pypi.python.org/pypi">PyPi</a>, so you can use
+        easy_install if you prefer.</p>
+
+        <p>The latest code though is always on the master branch
+        in <a href="http://github.com">Github</a>. I did use SVN in
+        SourceForge for a while, but after discovering Git I couldn't go back.
+        To clone the repository, run the following command using git
+        <pre>
+    git clone git://github.com/msoulier/tftpy.git
+        </pre>
+        Patches welcome, even if I can't guarantee response time. You can
+        of course send me the url of a public git repository to pull from
+        as well.</p>
+
+        <p>The Github project page is <a
+        href="http://github.com/msoulier/tftpy/tree/master">right
+        here</a>.</p>
+        </p>
+        <p>Last updated: March 15, 2009.</p>
+    </div>
     </body>
 </html>
