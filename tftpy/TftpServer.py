@@ -310,8 +310,10 @@ class TftpServerHandler(TftpSession):
                     if recvpkt.options.has_key('blksize'):
                         logger.debug("RRQ includes a blksize option")
                         blksize = int(recvpkt.options['blksize'])
+                        # Delete the option now that it's handled.
+                        del recvpkt.options['blksize']
                         if blksize >= MIN_BLKSIZE and blksize <= MAX_BLKSIZE:
-                            logger.debug("Client requested blksize = %d"
+                            logger.info("Client requested blksize = %d"
                                     % blksize)
                             self.options['blksize'] = blksize
                         else:
@@ -319,19 +321,24 @@ class TftpServerHandler(TftpSession):
                                            "blocksize %d, responding with default"
                                            % (self.key, blksize))
                             self.options['blksize'] = DEF_BLKSIZE
+
                     if recvpkt.options.has_key('tsize'):
-                        logger.debug('RRQ includes tsize option')
+                        logger.info('RRQ includes tsize option')
                         self.options['tsize'] = os.stat(self.filename).st_size
-                    self.send_oack()
+                        # Delete the option now that it's handled.
+                        del recvpkt.options['tsize']
 
                     if len(recvpkt.options.keys()) > 0:
                         logger.warning("Client %s requested unsupported options: %s"
                                        % (self.key, recvpkt.options))
-                        logger.debug("Ignoring options, responding with DAT")
+
+                    if self.options:
+                        logger.info("Options requested, sending OACK")
+                        self.send_oack()
                     else:
                         logger.debug("Client %s requested no options."
                                      % self.key)
-                    self.start_download()
+                        self.start_download()
 
                 else:
                     logger.error("Requested file %s does not exist." %
