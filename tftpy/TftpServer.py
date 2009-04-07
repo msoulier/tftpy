@@ -13,7 +13,7 @@ class TftpServer(TftpSession):
         self.listenip = None
         self.listenport = None
         self.sock = None
-        self.root = tftproot
+        self.root = os.path.abspath(tftproot)
         # A dict of handlers, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.handlers = {}
