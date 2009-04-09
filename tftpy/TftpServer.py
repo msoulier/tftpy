@@ -95,7 +95,7 @@ class TftpServer(TftpSession):
                                 logger.debug("New download request, session key = %s"
                                         % key)
                                 self.handlers[key] = TftpServerHandler(key,
-                                                                       TftpState('rrq'),
+                                                                       'rrq',
                                                                        self.root,
                                                                        listenip,
                                                                        tftp_factory)

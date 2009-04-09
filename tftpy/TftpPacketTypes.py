@@ -6,10 +6,9 @@ class TftpSession(object):
     code should be in this class."""
 
     def __init__(self):
-        """Class constructor. Note that the state property must be a TftpState
-        object."""
+        """Class constructor."""
         self.options = None
-        self.state = TftpState()
+        self.state = None
         self.dups = 0
         self.errors = 0
         
