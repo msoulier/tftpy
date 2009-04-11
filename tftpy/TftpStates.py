@@ -30,6 +30,7 @@ class TftpMetrics(object):
         self.bps = (self.bytes * 8.0) / self.duration
         self.kbps = self.bps / 1024.0
         logger.debug("TftpMetrics.compute: kbps is %s" % self.kbps)
+        dupcount = 0
         for key in self.dups:
             dupcount += self.dups[key]
 
@@ -269,12 +270,12 @@ class TftpStateSentRRQ(TftpStateDownload):
         if isinstance(pkt, TftpPacketOACK):
             logger.info("Received OACK from server.")
             if pkt.options.keys() > 0:
-                if pkt.match_options(self.options):
+                if pkt.match_options(self.context.options):
                     logger.info("Successful negotiation of options")
                     # Set options to OACK options
-                    self.options = pkt.options
-                    for key in self.options:
-                        logger.info("    %s = %s" % (key, self.options[key]))
+                    self.context.options = pkt.options
+                    for key in self.context.options:
+                        logger.info("    %s = %s" % (key, self.context.options[key]))
                     logger.debug("sending ACK to OACK")
 
                     self.context.sendAck(blocknumber=0)
