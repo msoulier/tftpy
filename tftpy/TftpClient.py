@@ -15,11 +15,8 @@ class TftpClient(TftpSession):
         self.iport = port
         self.filename = None
         self.options = options
-        self.blocknumber = 0
-        self.fileobj = None
-        self.timesent = 0
-        self.buffer = None
-        self.bytes = 0
+        # FIXME: If the blksize is DEF_BLKSIZE, we should just skip sending
+        # it.
         if self.options.has_key('blksize'):
             size = self.options['blksize']
             tftpassert(types.IntType == type(size), "blksize must be an int")
@@ -74,7 +71,7 @@ class TftpClient(TftpSession):
             logger.info("Duration too short, rate undetermined")
         else:
             logger.info('')
-            logger.info("Downloaded %d bytes in %d seconds" % (metrics.bytes, metrics.duration))
+            logger.info("Downloaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
             logger.info("Average rate: %.2f kbps" % metrics.kbps)
         logger.info("Received %d duplicate packets" % metrics.dupcount)
 

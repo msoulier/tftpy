@@ -34,5 +34,4 @@ class TftpPacketFactory(object):
 
         packet = self.classes[opcode]()
 
-        logger.debug("packet is %s" % packet)
         return packet
