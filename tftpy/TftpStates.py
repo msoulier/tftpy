@@ -74,7 +74,7 @@ class TftpContext(object):
         logger.info("sending ack to block %d" % blocknumber)
         ackpkt = TftpPacketACK()
         ackpkt.blocknumber = blocknumber
-        self.sock.sendto(ackpkt.encode().buffer, (self.host, self.port))
+        self.sock.sendto(ackpkt.encode().buffer, (self.host, self.tidport))
 
     def senderror(self, errorcode):
         """This method uses the socket passed, and uses the errorcode to
@@ -126,6 +126,7 @@ class TftpContextClientDownload(TftpContext):
         """Initiate the download."""
         logger.info("sending tftp download request to %s" % self.host)
         logger.info("    filename -> %s" % self.requested_file)
+        logger.info("    options -> %s" % self.options)
 
         self.metrics.start_time = time.time()
         logger.debug("set metrics.start_time to %s" % self.metrics.start_time)
@@ -179,11 +180,11 @@ class TftpContextClientDownload(TftpContext):
             logger.warn("Received traffic from %s, expected host %s. Discarding"
                         % (raddress, self.host))
 
-        if self.port and self.port != rport:
+        if self.tidport and self.tidport != rport:
             logger.warn("Received traffic from %s:%s but we're "
                         "connected to %s:%s. Discarding."
                         % (raddress, rport,
-                        self.host, self.port))
+                        self.host, self.tidport))
 
         # If there is a packethook defined, call it. We unconditionally
         # pass all packets, it's up to the client to screen out different
@@ -268,7 +269,7 @@ class TftpStateSentRRQ(TftpStateDownload):
 
         # Now check the packet type and dispatch it properly.
         if isinstance(pkt, TftpPacketOACK):
-            logger.info("Received OACK from server.")
+            logger.info("received OACK from server.")
             if pkt.options.keys() > 0:
                 if pkt.match_options(self.context.options):
                     logger.info("Successful negotiation of options")
@@ -288,6 +289,12 @@ class TftpStateSentRRQ(TftpStateDownload):
                     raise TftpException, "Failed to negotiate options"
 
         elif isinstance(pkt, TftpPacketDAT):
+            # If there are any options set, then the server didn't honour any
+            # of them.
+            logger.info("received DAT from server")
+            if self.context.options:
+                logger.info("server ignored options, falling back to defaults")
+                self.context.options = { 'blksize': DEF_BLKSIZE }
             return self.handleDat(pkt)
 
         # Every other packet type is a problem.
