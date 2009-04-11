@@ -87,18 +87,22 @@ def main():
     tclient = tftpy.TftpClient(options.host,
                                int(options.port),
                                tftp_options)
-    if(options.filename):
-      if not options.output:
-          options.output = os.path.basename(options.filename)
-      tclient.download(options.filename,
-                       options.output,
-                       progresshook)
-    elif(options.upload):
-      if not options.input:
-          options.input = os.path.basename(options.upload)
-      tclient.upload(options.upload,
-                       options.input,
-                       progresshook)
+    try:
+        if options.filename:
+            if not options.output:
+                options.output = os.path.basename(options.filename)
+            tclient.download(options.filename,
+                            options.output,
+                            progresshook)
+        elif options.upload:
+            if not options.input:
+                options.input = os.path.basename(options.upload)
+            tclient.upload(options.upload,
+                        options.input,
+                        progresshook)
+    except tftpy.TftpException, err:
+        sys.stderr.write("%s\n" % str(err))
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()

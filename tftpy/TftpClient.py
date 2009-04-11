@@ -119,6 +119,12 @@ class TftpClient(TftpSession):
             if isinstance(recvpkt, TftpPacketDAT):
                 logger.debug("recvpkt.blocknumber = %d" % recvpkt.blocknumber)
                 logger.debug("curblock = %d" % curblock)
+
+                if self.state.state == 'rrq' and self.options:
+                    logger.info("no OACK, our options were ignored")
+                    self.options = { 'blksize': DEF_BLKSIZE }
+                    self.state.state = 'ack'
+
                 expected_block = curblock + 1
                 if expected_block > 65535:
                     logger.debug("block number rollover to 0 again")
