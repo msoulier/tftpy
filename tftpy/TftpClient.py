@@ -24,22 +24,6 @@ class TftpClient(TftpSession):
                 raise TftpException, "Invalid blksize: %d" % size
         else:
             self.options['blksize'] = DEF_BLKSIZE
-        # Support other options here? timeout time, retries, etc?
-        # The remote sending port, to identify the connection.
-        self.port = None
-        self.sock = None
-
-    def gethost(self):
-        "Simple getter method for use in a property."
-        return self.__host
-
-    def sethost(self, host):
-        """Setter method that also sets the address property as a result
-        of the host that is set."""
-        self.__host = host
-        self.address = socket.gethostbyname(host)
-
-    host = property(gethost, sethost)
 
     def download(self, filename, output, packethook=None, timeout=SOCK_TIMEOUT):
         """This method initiates a tftp download from the configured remote
@@ -77,6 +61,8 @@ class TftpClient(TftpSession):
 
     def upload(self, filename, input, packethook=None, timeout=SOCK_TIMEOUT):
         # Open the input file.
+        # FIXME: As of the state machine, this is now broken. Need to
+        # implement with new state machine.
         self.fileobj = open(input, "rb")
         recvpkt = None
         curblock = 0
