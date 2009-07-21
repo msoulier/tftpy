@@ -6,14 +6,17 @@ from TftpPacketFactory import *
 class TftpServer(TftpSession):
     """This class implements a tftp server object."""
 
-    def __init__(self, tftproot='/tftpboot'):
-        """Class constructor. It takes a single optional argument, which is
+    def __init__(self, tftproot='/tftpboot', dyn_file_func=None):
+        """Class constructor. It takes two optional arguments. tftproot is
         the path to the tftproot directory to serve files from and/or write
-        them to."""
+        them to. dyn_file_func is a callable that must return a file-like
+        object to read from during downloads. This permits the serving of
+        dynamic content."""
         self.listenip = None
         self.listenport = None
         self.sock = None
         self.root = os.path.abspath(tftproot)
+        self.dynfunc = dyn_file_func
         # A dict of handlers, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.handlers = {}
@@ -98,7 +101,8 @@ class TftpServer(TftpSession):
                                                                        'rrq',
                                                                        self.root,
                                                                        listenip,
-                                                                       tftp_factory)
+                                                                       tftp_factory,
+                                                                       self.dynfunc)
                                 self.handlers[key].handle((recvpkt, raddress, rport))
                             except TftpException, err:
                                 logger.error("Fatal exception thrown from handler: %s"
@@ -171,7 +175,7 @@ class TftpServerHandler(TftpSession):
     """This class implements a handler for a given server session, handling
     the work for one download."""
 
-    def __init__(self, key, state, root, listenip, factory):
+    def __init__(self, key, state, root, listenip, factory, dyn_file_func):
         TftpSession.__init__(self)
         logger.info("Starting new handler. Key %s." % key)
         self.key = key
@@ -192,6 +196,7 @@ class TftpServerHandler(TftpSession):
         self.timesent = 0
         self.timeouts = 0
         self.tftp_factory = factory
+        self.dynfunc = dyn_file_func
         count = 0
         while not self.sock:
             self.sock = self.gensock(listenip)
@@ -302,7 +307,7 @@ class TftpServerHandler(TftpSession):
                     raise TftpException, "Insecure path: %s" % self.filename
 
                 # Does the file exist?
-                if os.path.exists(self.filename):
+                if(os.path.exists(self.filename) or not self.dynfunc is None):
                     logger.debug("File %s exists." % self.filename)
 
                     # Check options. Currently we only support the blksize
@@ -404,7 +409,10 @@ class TftpServerHandler(TftpSession):
         """This method opens self.filename, stores the resulting file object
         in self.fileobj, and calls send_dat()."""
         self.state.state = 'dat'
-        self.fileobj = open(self.filename, "rb")
+        if os.path.exists(self.filename):
+            self.fileobj = open(self.filename, "rb")
+        else:
+            self.fileobj = self.dynfunc(self.filename)
         self.send_dat()
 
     def send_dat(self, resend=False):
