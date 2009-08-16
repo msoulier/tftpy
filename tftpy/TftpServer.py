@@ -3,6 +3,7 @@ import select
 from TftpShared import *
 from TftpPacketTypes import *
 from TftpPacketFactory import *
+from TftpStates import *
 
 class TftpServer(TftpSession):
     """This class implements a tftp server object."""
@@ -19,9 +20,9 @@ class TftpServer(TftpSession):
         # FIXME: What about multiple roots?
         self.root = os.path.abspath(tftproot)
         self.dyn_file_func = dyn_file_func
-        # A dict of handlers, where each session is keyed by a string like
+        # A dict of sessions, where each session is keyed by a string like
         # ip:tid for the remote end.
-        self.handlers = {}
+        self.sessions = {}
 
         if os.path.exists(self.root):
             log.debug("tftproot %s does exist" % self.root)
@@ -89,8 +90,8 @@ class TftpServer(TftpSession):
                     log.debug("Read %d bytes" % len(buffer))
 
                     recvpkt = tftp_factory.parse(buffer)
-                    # FIXME: Is this the best way to do a session key? What
-                    # about symmetric udp?
+                    # Forge a session key based on the client's IP and port,
+                    # which should safely work through NAT.
                     key = "%s:%s" % (raddress, rport)
 
                     if not self.sessions.has_key(key):
@@ -108,36 +109,37 @@ class TftpServer(TftpSession):
 
                 else:
                     # Must find the owner of this traffic.
-                    for key in self.session:
-                        if readysock == self.session[key].sock:
+                    for key in self.sessions:
+                        if readysock == self.sessions[key].sock:
+                            log.info("Matched input to session key %s"
+                                % key)
                             try:
-                                self.session[key].cycle()
-                                if self.session[key].state == None:
+                                self.sessions[key].cycle()
+                                if self.sessions[key].state == None:
                                     log.info("Successful transfer.")
                                     deletion_list.append(key)
-                                break
                             except TftpException, err:
                                 deletion_list.append(key)
                                 log.error("Fatal exception thrown from "
-                                          "handler: %s" % str(err))
+                                          "session %s: %s"
+                                          % (key, str(err)))
+                            break
 
                     else:
                         log.error("Can't find the owner for this packet. "
                                   "Discarding.")
 
-            log.debug("Looping on all handlers to check for timeouts")
+            log.debug("Looping on all sessions to check for timeouts")
             now = time.time()
             for key in self.sessions:
                 try:
                     self.sessions[key].checkTimeout(now)
                 except TftpException, err:
-                    log.error("Fatal exception thrown from handler: %s"
-                            % str(err))
+                    log.error(str(err))
                     deletion_list.append(key)
 
             log.debug("Iterating deletion list.")
             for key in deletion_list:
                 if self.sessions.has_key(key):
-                    log.debug("Deleting handler %s" % key)
+                    log.debug("Deleting session %s" % key)
                     del self.sessions[key]
-            deletion_list = []

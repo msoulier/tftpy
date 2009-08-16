@@ -20,8 +20,8 @@ def main():
     parser.add_option('-r',
                       '--root',
                       type='string',
-                      help='path to serve from (default: /tftpboot)',
-                      default="/tftpboot")
+                      help='path to serve from',
+                      default=None)
     parser.add_option('-d',
                       '--debug',
                       action='store_true',
@@ -34,9 +34,16 @@ def main():
     else:
         tftpy.setLogLevel(logging.INFO)
 
+    if not options.root:
+        parser.print_help()
+        sys.exit(1)
+
     server = tftpy.TftpServer(options.root)
     try:
         server.listen(options.ip, options.port)
+    except tftpy.TftpException, err:
+        sys.stderr.write("%s\n" % str(err))
+        sys.exit(1)
     except KeyboardInterrupt:
         pass
 

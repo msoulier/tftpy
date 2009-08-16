@@ -35,6 +35,11 @@ class TftpClient(TftpSession):
         SOCK_TIMEOUT setting, which is the amount of time that the client will
         wait for a receive packet to arrive."""
         # We're downloading.
+        log.debug("Creating download context with the following params:")
+        log.debug("host = %s, port = %s, filename = %s, output = %s"
+            % (self.host, self.iport, filename, output))
+        log.debug("options = %s, packethook = %s, timeout = %s"
+            % (self.options, packethook, timeout))
         self.context = TftpContextClientDownload(self.host,
                                                  self.iport,
                                                  filename,

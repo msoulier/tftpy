@@ -21,7 +21,7 @@ def main():
                       '--upload',
                       help='filename to upload')
     parser.add_option('-b',
-                      '--blocksize',
+                      '--blksize',
                       help='udp packet size to use (default: 512)',
                       default=512)
     parser.add_option('-o',
@@ -76,11 +76,11 @@ def main():
     else:
         tftpy.setLogLevel(logging.INFO)
 
-    progresshook = Progress(tftpy.logger.info).progresshook
+    progresshook = Progress(tftpy.log.info).progresshook
 
     tftp_options = {}
-    if options.blocksize:
-        tftp_options['blksize'] = int(options.blocksize)
+    if options.blksize:
+        tftp_options['blksize'] = int(options.blksize)
     if options.tsize:
         tftp_options['tsize'] = 0
 
@@ -103,6 +103,8 @@ def main():
     except tftpy.TftpException, err:
         sys.stderr.write("%s\n" % str(err))
         sys.exit(1)
+    except KeyboardInterrupt:
+        pass
 
 if __name__ == '__main__':
     main()

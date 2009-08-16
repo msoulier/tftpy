@@ -4,22 +4,8 @@ from TftpShared import *
 class TftpSession(object):
     """This class is the base class for the tftp client and server. Any shared
     code should be in this class."""
-
-    def __init__(self):
-        """Class constructor."""
-        self.options = None
-        self.state = None
-        self.dups = 0
-        self.errors = 0
-        
-    def senderror(self, sock, errorcode, address, port):
-        """This method uses the socket passed, and uses the errorcode, address
-        and port to compose and send an error packet."""
-        log.debug("In senderror, being asked to send error %d to %s:%s"
-                % (errorcode, address, port))
-        errpkt = TftpPacketERR()
-        errpkt.errorcode = errorcode
-        sock.sendto(errpkt.encode().buffer, (address, port))
+    # FIXME: do we need this anymore?
+    pass
 
 class TftpPacketWithOptions(object):
     """This class exists to permit some TftpPacket subclasses to share code
