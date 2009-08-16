@@ -52,12 +52,12 @@ class TftpClient(TftpSession):
         # output? This should be in the sample client, but not in the download
         # call.
         if metrics.duration == 0:
-            logger.info("Duration too short, rate undetermined")
+            log.info("Duration too short, rate undetermined")
         else:
-            logger.info('')
-            logger.info("Downloaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
-            logger.info("Average rate: %.2f kbps" % metrics.kbps)
-        logger.info("Received %d duplicate packets" % metrics.dupcount)
+            log.info('')
+            log.info("Downloaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
+            log.info("Average rate: %.2f kbps" % metrics.kbps)
+        log.info("Received %d duplicate packets" % metrics.dupcount)
 
     def upload(self, filename, input, packethook=None, timeout=SOCK_TIMEOUT):
         # Open the input file.
@@ -80,9 +80,9 @@ class TftpClient(TftpSession):
         # output? This should be in the sample client, but not in the download
         # call.
         if metrics.duration == 0:
-            logger.info("Duration too short, rate undetermined")
+            log.info("Duration too short, rate undetermined")
         else:
-            logger.info('')
-            logger.info("Downloaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
-            logger.info("Average rate: %.2f kbps" % metrics.kbps)
-        logger.info("Received %d duplicate packets" % metrics.dupcount)
+            log.info('')
+            log.info("Downloaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
+            log.info("Average rate: %.2f kbps" % metrics.kbps)
+        log.info("Received %d duplicate packets" % metrics.dupcount)

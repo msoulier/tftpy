@@ -17,7 +17,7 @@ DEF_TFTP_PORT = 69
 logging.basicConfig()
 # The logger used by this library. Feel free to clobber it with your own, if you like, as
 # long as it conforms to Python's logging.
-logger = logging.getLogger('tftpy')
+log = logging.getLogger('tftpy')
 
 def tftpassert(condition, msg):
     """This function is a simple utility that will check the condition
@@ -31,8 +31,8 @@ def setLogLevel(level):
     """This function is a utility function for setting the internal log level.
     The log level defaults to logging.NOTSET, so unwanted output to stdout is
     not created."""
-    global logger
-    logger.setLevel(level)
+    global log
+    log.setLevel(level)
     
 class TftpErrors(object):
     """This class is a convenience for defining the common tftp error codes,
