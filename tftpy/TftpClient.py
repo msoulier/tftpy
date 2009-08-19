@@ -59,8 +59,8 @@ class TftpClient(TftpSession):
             log.info("Duration too short, rate undetermined")
         else:
             log.info("Downloaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
-            log.info("%.2f bytes in resent data" % metrics.resend_bytes)
             log.info("Average rate: %.2f kbps" % metrics.kbps)
+        log.info("%.2f bytes in resent data" % metrics.resent_bytes)
         log.info("Received %d duplicate packets" % metrics.dupcount)
 
     def upload(self, filename, input, packethook=None, timeout=SOCK_TIMEOUT):
@@ -86,6 +86,6 @@ class TftpClient(TftpSession):
             log.info("Duration too short, rate undetermined")
         else:
             log.info("Uploaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
-            log.info("%.2f bytes in resent data" % metrics.resend_bytes)
             log.info("Average rate: %.2f kbps" % metrics.kbps)
+        log.info("%.2f bytes in resent data" % metrics.resent_bytes)
         log.info("Resent %d packets" % metrics.dupcount)

@@ -151,9 +151,8 @@ class TftpServer(TftpSession):
                     else:
                         log.info("Transferred %.2f bytes in %.2f seconds"
                             % (metrics.bytes, metrics.duration))
-                        log.info("%.2f bytes in resent data"
-                            % metrics.resend_bytes)
                         log.info("Average rate: %.2f kbps" % metrics.kbps)
+                    log.info("%.2f bytes in resent data" % metrics.resent_bytes)
                     log.info("%d duplicate packets" % metrics.dupcount)
                     log.debug("Deleting session %s" % key)
                     del self.sessions[key]

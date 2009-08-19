@@ -13,7 +13,7 @@ class TftpMetrics(object):
         # Bytes transferred
         self.bytes = 0
         # Bytes re-sent
-        self.resend_bytes = 0
+        self.resent_bytes = 0
         # Duplicate packets received
         self.dups = {}
         self.dupcount = 0
@@ -439,7 +439,7 @@ class TftpState(object):
         if resend:
             log.warn("Resending block number %d" % blocknumber)
             dat = self.context.last_dat_pkt
-            self.context.metrics.resend_bytes += len(dat.data)
+            self.context.metrics.resent_bytes += len(dat.data)
             self.context.metrics.add_dup(dat)
         else:
             blksize = int(self.context.options['blksize'])
