@@ -53,14 +53,13 @@ class TftpClient(TftpSession):
 
         metrics = self.context.metrics
 
-        # FIXME: Should we output this? Shouldn't we let the client control
-        # output? This should be in the sample client, but not in the download
-        # call.
+        log.info('')
+        log.info("Download complete.")
         if metrics.duration == 0:
             log.info("Duration too short, rate undetermined")
         else:
-            log.info('')
             log.info("Downloaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
+            log.info("%.2f bytes in resent data" % metrics.resend_bytes)
             log.info("Average rate: %.2f kbps" % metrics.kbps)
         log.info("Received %d duplicate packets" % metrics.dupcount)
 
@@ -81,13 +80,12 @@ class TftpClient(TftpSession):
 
         metrics = self.context.metrics
 
-        # FIXME: Should we output this? Shouldn't we let the client control
-        # output? This should be in the sample client, but not in the download
-        # call.
+        log.info('')
+        log.info("Upload complete.")
         if metrics.duration == 0:
             log.info("Duration too short, rate undetermined")
         else:
-            log.info('')
-            log.info("Downloaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
+            log.info("Uploaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
+            log.info("%.2f bytes in resent data" % metrics.resend_bytes)
             log.info("Average rate: %.2f kbps" % metrics.kbps)
-        log.info("Received %d duplicate packets" % metrics.dupcount)
+        log.info("Resent %d packets" % metrics.dupcount)

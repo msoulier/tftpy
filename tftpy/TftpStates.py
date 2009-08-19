@@ -12,6 +12,8 @@ class TftpMetrics(object):
     def __init__(self):
         # Bytes transferred
         self.bytes = 0
+        # Bytes re-sent
+        self.resend_bytes = 0
         # Duplicate packets received
         self.dups = {}
         self.dupcount = 0
@@ -74,7 +76,10 @@ class TftpContext(object):
         # Flag when the transfer is pending completion.
         self.pending_complete = False
         # Time when this context last received any traffic.
+        # FIXME: does this belong in metrics?
         self.last_update = 0
+        # The last DAT packet we sent, if applicable, to make resending easy.
+        self.last_dat_pkt = None
 
     def checkTimeout(self, now):
         """Compare current time with last_update time, and raise an exception
@@ -83,10 +88,10 @@ class TftpContext(object):
             raise TftpException, "Timeout waiting for traffic"
 
     def start(self):
-        return NotImplementedError, "Abstract method"
+        raise NotImplementedError, "Abstract method"
 
     def end(self):
-        return NotImplementedError, "Abstract method"
+        raise NotImplementedError, "Abstract method"
 
     def gethost(self):
         "Simple getter method for use in a property."
@@ -196,6 +201,12 @@ class TftpContextServer(TftpContext):
         # FIXME
         # How do we ensure that the server closes files, even on error?
 
+    def end(self):
+        """Finish up the context."""
+        self.metrics.end_time = time.time()
+        log.debug("set metrics.end_time to %s" % self.metrics.end_time)
+        self.metrics.compute()
+
 class TftpContextClientUpload(TftpContext):
     """The upload context for the client during an upload."""
     def __init__(self,
@@ -245,7 +256,10 @@ class TftpContextClientUpload(TftpContext):
             self.fileobj.close()
 
     def end(self):
-        pass
+        """Finish up the context."""
+        self.metrics.end_time = time.time()
+        log.debug("set metrics.end_time to %s" % self.metrics.end_time)
+        self.metrics.compute()
 
 class TftpContextClientDownload(TftpContext):
     """The download context for the client during a download."""
@@ -421,7 +435,13 @@ class TftpState(object):
         finished = False
         blocknumber = self.context.next_block
         tftpassert( blocknumber > 0, "There is no block zero!" )
-        if not resend:
+        dat = None
+        if resend:
+            log.warn("Resending block number %d" % blocknumber)
+            dat = self.context.last_dat_pkt
+            self.context.metrics.resend_bytes += len(dat.data)
+            self.context.metrics.add_dup(dat)
+        else:
             blksize = int(self.context.options['blksize'])
             buffer = self.context.fileobj.read(blksize)
             log.debug("Read %d bytes into buffer" % len(buffer))
@@ -429,17 +449,16 @@ class TftpState(object):
                 log.info("Reached EOF on file %s"
                     % self.context.file_to_transfer)
                 finished = True
-            self.context.metrics.bytes += len(buffer)
-        else:
-            log.warn("Resending block number %d" % blocknumber)
-        dat = TftpPacketDAT()
-        dat.data = buffer
-        dat.blocknumber = blocknumber
-        log.debug("Sending DAT packet %d" % blocknumber)
+            dat = TftpPacketDAT()
+            dat.data = buffer
+            dat.blocknumber = blocknumber
+        self.context.metrics.bytes += len(dat.data)
+        log.debug("Sending DAT packet %d" % dat.blocknumber)
         self.context.sock.sendto(dat.encode().buffer,
                                  (self.context.host, self.context.port))
         if self.context.packethook:
             self.context.packethook(dat)
+        self.context.last_dat_pkt = dat
         return finished
 
     def sendACK(self, blocknumber=None):

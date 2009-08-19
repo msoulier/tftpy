@@ -140,6 +140,23 @@ class TftpServer(TftpSession):
 
             log.debug("Iterating deletion list.")
             for key in deletion_list:
+                log.info('')
+                log.info("Session %s complete" % key)
                 if self.sessions.has_key(key):
+                    log.debug("Gathering up metrics from session before deleting")
+                    self.sessions[key].end()
+                    metrics = self.sessions[key].metrics
+                    if metrics.duration == 0:
+                        log.info("Duration too short, rate undetermined")
+                    else:
+                        log.info("Transferred %.2f bytes in %.2f seconds"
+                            % (metrics.bytes, metrics.duration))
+                        log.info("%.2f bytes in resent data"
+                            % metrics.resend_bytes)
+                        log.info("Average rate: %.2f kbps" % metrics.kbps)
+                    log.info("%d duplicate packets" % metrics.dupcount)
                     log.debug("Deleting session %s" % key)
                     del self.sessions[key]
+                else:
+                    log.warn("Strange, session %s is not on the deletion list"
+                        % key)
