@@ -29,7 +29,7 @@ class TftpPacketFactory(object):
     def __create(self, opcode):
         """This method returns the appropriate class object corresponding to
         the passed opcode."""
-        tftpassert(self.classes.has_key(opcode), 
+        tftpassert(self.classes.has_key(opcode),
                    "Unsupported opcode: %d" % opcode)
 
         packet = self.classes[opcode]()

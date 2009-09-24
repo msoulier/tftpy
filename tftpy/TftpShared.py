@@ -33,7 +33,7 @@ def setLogLevel(level):
     not created."""
     global log
     log.setLevel(level)
-    
+
 class TftpErrors(object):
     """This class is a convenience for defining the common tftp error codes,
     and making them more readable in the code."""
