@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>tftpy.TftpPacketFactory'</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="tftpy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="tftpy-module.html">Package&nbsp;tftpy</a> ::
+        Module&nbsp;TftpPacketFactory'
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="tftpy.TftpPacketFactory%27-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="tftpy.TftpPacketFactory%27-module.html">Module tftpy.TftpPacketFactory'</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module tftpy.TftpShared=tftpy.TftpShared-module.html"><a title="tftpy.TftpShared" class="py-name" href="#" onclick="return doclink('link-0', 'TftpShared', 'link-0');">TftpShared</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name" targets="Module tftpy.TftpPacketTypes=tftpy.TftpPacketTypes-module.html"><a title="tftpy.TftpPacketTypes" class="py-name" href="#" onclick="return doclink('link-1', 'TftpPacketTypes', 'link-1');">TftpPacketTypes</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketFactory"></a><div id="TftpPacketFactory-def"><a name="L4"></a><tt class="py-lineno"> 4</tt> <a class="py-toggle" href="#" id="TftpPacketFactory-toggle" onclick="return toggle('TftpPacketFactory');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketFactory'.TftpPacketFactory-class.html">TftpPacketFactory</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketFactory-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="TftpPacketFactory-expanded"><a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line">    <tt class="py-docstring">"""This class generates TftpPacket objects. It is responsible for parsing</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-docstring">    raw buffers off of the wire and returning objects representing them, via</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-docstring">    the parse() method."""</tt> </tt>
+<a name="TftpPacketFactory.__init__"></a><div id="TftpPacketFactory.__init__-def"><a name="L8"></a><tt class="py-lineno"> 8</tt> <a class="py-toggle" href="#" id="TftpPacketFactory.__init__-toggle" onclick="return toggle('TftpPacketFactory.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketFactory'.TftpPacketFactory-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketFactory.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TftpPacketFactory.__init__-expanded"><a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">classes</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line">            <tt class="py-number">1</tt><tt class="py-op">:</tt> <tt id="link-2" class="py-name" targets="Class tftpy.TftpPacketTypes.TftpPacketRRQ=tftpy.TftpPacketTypes.TftpPacketRRQ-class.html"><a title="tftpy.TftpPacketTypes.TftpPacketRRQ" class="py-name" href="#" onclick="return doclink('link-2', 'TftpPacketRRQ', 'link-2');">TftpPacketRRQ</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line">            <tt class="py-number">2</tt><tt class="py-op">:</tt> <tt id="link-3" class="py-name" targets="Class tftpy.TftpPacketTypes.TftpPacketWRQ=tftpy.TftpPacketTypes.TftpPacketWRQ-class.html"><a title="tftpy.TftpPacketTypes.TftpPacketWRQ" class="py-name" href="#" onclick="return doclink('link-3', 'TftpPacketWRQ', 'link-3');">TftpPacketWRQ</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line">            <tt class="py-number">3</tt><tt class="py-op">:</tt> <tt id="link-4" class="py-name" targets="Class tftpy.TftpPacketTypes.TftpPacketDAT=tftpy.TftpPacketTypes.TftpPacketDAT-class.html"><a title="tftpy.TftpPacketTypes.TftpPacketDAT" class="py-name" href="#" onclick="return doclink('link-4', 'TftpPacketDAT', 'link-4');">TftpPacketDAT</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line">            <tt class="py-number">4</tt><tt class="py-op">:</tt> <tt id="link-5" class="py-name" targets="Class tftpy.TftpPacketTypes.TftpPacketACK=tftpy.TftpPacketTypes.TftpPacketACK-class.html"><a title="tftpy.TftpPacketTypes.TftpPacketACK" class="py-name" href="#" onclick="return doclink('link-5', 'TftpPacketACK', 'link-5');">TftpPacketACK</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">            <tt class="py-number">5</tt><tt class="py-op">:</tt> <tt id="link-6" class="py-name" targets="Class tftpy.TftpPacketTypes.TftpPacketERR=tftpy.TftpPacketTypes.TftpPacketERR-class.html"><a title="tftpy.TftpPacketTypes.TftpPacketERR" class="py-name" href="#" onclick="return doclink('link-6', 'TftpPacketERR', 'link-6');">TftpPacketERR</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">            <tt class="py-number">6</tt><tt class="py-op">:</tt> <tt id="link-7" class="py-name" targets="Class tftpy.TftpPacketTypes.TftpPacketOACK=tftpy.TftpPacketTypes.TftpPacketOACK-class.html"><a title="tftpy.TftpPacketTypes.TftpPacketOACK" class="py-name" href="#" onclick="return doclink('link-7', 'TftpPacketOACK', 'link-7');">TftpPacketOACK</a></tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">            <tt class="py-op">}</tt> </tt>
+</div><a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketFactory.parse"></a><div id="TftpPacketFactory.parse-def"><a name="L18"></a><tt class="py-lineno">18</tt> <a class="py-toggle" href="#" id="TftpPacketFactory.parse-toggle" onclick="return toggle('TftpPacketFactory.parse');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketFactory'.TftpPacketFactory-class.html#parse">parse</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">buffer</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketFactory.parse-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TftpPacketFactory.parse-expanded"><a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt class="py-docstring">"""This method is used to parse an existing datagram into its</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-docstring">        corresponding TftpPacket object. The buffer is the raw bytes off of</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-docstring">        the network."""</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">        <tt id="link-8" class="py-name" targets="Variable tftpy.TftpClient'.log=tftpy.TftpClient%27-module.html#log,Variable tftpy.TftpPacketFactory'.log=tftpy.TftpPacketFactory%27-module.html#log,Variable tftpy.TftpServer'.log=tftpy.TftpServer%27-module.html#log,Variable tftpy.TftpShared.log=tftpy.TftpShared-module.html#log"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-8', 'log', 'link-8');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"parsing a %d byte packet"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt><tt class="py-op">)</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt class="py-string">"!H"</tt><tt class="py-op">,</tt> <tt class="py-name">buffer</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-number">2</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">        <tt id="link-9" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-9', 'log', 'link-8');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"opcode is %d"</tt> <tt class="py-op">%</tt> <tt class="py-name">opcode</tt><tt class="py-op">)</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt class="py-name">packet</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Method tftpy.TftpPacketFactory'.TftpPacketFactory.__create()=tftpy.TftpPacketFactory%27.TftpPacketFactory-class.html#__create"><a title="tftpy.TftpPacketFactory'.TftpPacketFactory.__create" class="py-name" href="#" onclick="return doclink('link-10', '__create', 'link-10');">__create</a></tt><tt class="py-op">(</tt><tt class="py-name">opcode</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-name">packet</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt> <tt class="py-op">=</tt> <tt class="py-name">buffer</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">packet</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Method tftpy.TftpPacketTypes.TftpPacket.decode()=tftpy.TftpPacketTypes.TftpPacket-class.html#decode,Method tftpy.TftpPacketTypes.TftpPacketACK.decode()=tftpy.TftpPacketTypes.TftpPacketACK-class.html#decode,Method tftpy.TftpPacketTypes.TftpPacketDAT.decode()=tftpy.TftpPacketTypes.TftpPacketDAT-class.html#decode,Method tftpy.TftpPacketTypes.TftpPacketERR.decode()=tftpy.TftpPacketTypes.TftpPacketERR-class.html#decode,Method tftpy.TftpPacketTypes.TftpPacketInitial.decode()=tftpy.TftpPacketTypes.TftpPacketInitial-class.html#decode,Method tftpy.TftpPacketTypes.TftpPacketOACK.decode()=tftpy.TftpPacketTypes.TftpPacketOACK-class.html#decode"><a title="tftpy.TftpPacketTypes.TftpPacket.decode
+tftpy.TftpPacketTypes.TftpPacketACK.decode
+tftpy.TftpPacketTypes.TftpPacketDAT.decode
+tftpy.TftpPacketTypes.TftpPacketERR.decode
+tftpy.TftpPacketTypes.TftpPacketInitial.decode
+tftpy.TftpPacketTypes.TftpPacketOACK.decode" class="py-name" href="#" onclick="return doclink('link-11', 'decode', 'link-11');">decode</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketFactory.__create"></a><div id="TftpPacketFactory.__create-def"><a name="L29"></a><tt class="py-lineno">29</tt> <a class="py-toggle" href="#" id="TftpPacketFactory.__create-toggle" onclick="return toggle('TftpPacketFactory.__create');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketFactory'.TftpPacketFactory-class.html#__create">__create</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">opcode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketFactory.__create-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TftpPacketFactory.__create-expanded"><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-docstring">"""This method returns the appropriate class object corresponding to</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-docstring">        the passed opcode."""</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt id="link-12" class="py-name" targets="Function tftpy.TftpShared.tftpassert()=tftpy.TftpShared-module.html#tftpassert"><a title="tftpy.TftpShared.tftpassert" class="py-name" href="#" onclick="return doclink('link-12', 'tftpassert', 'link-12');">tftpassert</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">classes</tt><tt class="py-op">.</tt><tt class="py-name">has_key</tt><tt class="py-op">(</tt><tt class="py-name">opcode</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">                   <tt class="py-string">"Unsupported opcode: %d"</tt> <tt class="py-op">%</tt> <tt class="py-name">opcode</tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">        <tt class="py-name">packet</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">classes</tt><tt class="py-op">[</tt><tt class="py-name">opcode</tt><tt class="py-op">]</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">packet</tt> </tt>
+</div></div><a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="tftpy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Oct 24 00:10:22 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

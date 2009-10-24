@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>tftpy.TftpPacketTypes</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="tftpy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="tftpy-module.html">Package&nbsp;tftpy</a> ::
+        Module&nbsp;TftpPacketTypes
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="tftpy.TftpPacketTypes-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="tftpy.TftpPacketTypes-module.html">Module tftpy.TftpPacketTypes</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">struct</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module tftpy.TftpShared=tftpy.TftpShared-module.html"><a title="tftpy.TftpShared" class="py-name" href="#" onclick="return doclink('link-0', 'TftpShared', 'link-0');">TftpShared</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"> </tt>
+<a name="TftpSession"></a><div id="TftpSession-def"><a name="L4"></a><tt class="py-lineno">  4</tt> <a class="py-toggle" href="#" id="TftpSession-toggle" onclick="return toggle('TftpSession');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpSession-class.html">TftpSession</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpSession-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpSession-expanded"><a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line">    <tt class="py-docstring">"""This class is the base class for the tftp client and server. Any shared</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring">    code should be in this class."""</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line">    <tt class="py-comment"># FIXME: do we need this anymore?</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"></tt>    <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketWithOptions"></a><div id="TftpPacketWithOptions-def"><a name="L10"></a><tt class="py-lineno"> 10</tt> <a class="py-toggle" href="#" id="TftpPacketWithOptions-toggle" onclick="return toggle('TftpPacketWithOptions');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html">TftpPacketWithOptions</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketWithOptions-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpPacketWithOptions-expanded"><a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line">    <tt class="py-docstring">"""This class exists to permit some TftpPacket subclasses to share code</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-docstring">    regarding options handling. It does not inherit from TftpPacket, as the</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-docstring">    goal is just to share code here, and not cause diamond inheritance."""</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketWithOptions.__init__"></a><div id="TftpPacketWithOptions.__init__-def"><a name="L15"></a><tt class="py-lineno"> 15</tt> <a class="py-toggle" href="#" id="TftpPacketWithOptions.__init__-toggle" onclick="return toggle('TftpPacketWithOptions.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketWithOptions.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketWithOptions.__init__-expanded"><a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Variable tftpy.TftpPacketTypes.TftpPacketWithOptions.options=tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html#options"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-1', 'options', 'link-1');">options</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+</div><a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketWithOptions.setoptions"></a><div id="TftpPacketWithOptions.setoptions-def"><a name="L18"></a><tt class="py-lineno"> 18</tt> <a class="py-toggle" href="#" id="TftpPacketWithOptions.setoptions-toggle" onclick="return toggle('TftpPacketWithOptions.setoptions');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html#setoptions">setoptions</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">options</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketWithOptions.setoptions-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketWithOptions.setoptions-expanded"><a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line">        <tt id="link-2" class="py-name" targets="Variable tftpy.TftpClient'.log=tftpy.TftpClient%27-module.html#log,Variable tftpy.TftpPacketFactory'.log=tftpy.TftpPacketFactory%27-module.html#log,Variable tftpy.TftpServer'.log=tftpy.TftpServer%27-module.html#log,Variable tftpy.TftpShared.log=tftpy.TftpShared-module.html#log"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-2', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"in TftpPacketWithOptions.setoptions"</tt><tt class="py-op">)</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line">        <tt id="link-3" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-3', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"options: "</tt> <tt class="py-op">+</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt id="link-4" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-4', 'options', 'link-1');">options</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line">        <tt class="py-name">myoptions</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">key</tt> <tt class="py-keyword">in</tt> <tt id="link-5" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-5', 'options', 'link-1');">options</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line">            <tt class="py-name">newkey</tt> <tt class="py-op">=</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">            <tt class="py-name">myoptions</tt><tt class="py-op">[</tt><tt class="py-name">newkey</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt id="link-6" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-6', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">            <tt id="link-7" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-7', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"populated myoptions with %s = %s"</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">                         <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">newkey</tt><tt class="py-op">,</tt> <tt class="py-name">myoptions</tt><tt class="py-op">[</tt><tt class="py-name">newkey</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">        <tt id="link-8" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-8', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"setting options hash to: "</tt> <tt class="py-op">+</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">myoptions</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_options</tt> <tt class="py-op">=</tt> <tt class="py-name">myoptions</tt> </tt>
+</div><a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketWithOptions.getoptions"></a><div id="TftpPacketWithOptions.getoptions-def"><a name="L31"></a><tt class="py-lineno"> 31</tt> <a class="py-toggle" href="#" id="TftpPacketWithOptions.getoptions-toggle" onclick="return toggle('TftpPacketWithOptions.getoptions');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html#getoptions">getoptions</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketWithOptions.getoptions-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketWithOptions.getoptions-expanded"><a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">        <tt id="link-9" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-9', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"in TftpPacketWithOptions.getoptions"</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_options</tt> </tt>
+</div><a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">    <tt class="py-comment"># Set up getter and setter on options to ensure that they are the proper</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-comment"></tt>    <tt class="py-comment"># type. They should always be strings, but we don't need to force the</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-comment"></tt>    <tt class="py-comment"># client to necessarily enter strings if we can avoid it.</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-comment"></tt>    <tt id="link-10" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-10', 'options', 'link-1');">options</a></tt> <tt class="py-op">=</tt> <tt class="py-name">property</tt><tt class="py-op">(</tt><tt id="link-11" class="py-name" targets="Method tftpy.TftpPacketTypes.TftpPacketWithOptions.getoptions()=tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html#getoptions"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.getoptions" class="py-name" href="#" onclick="return doclink('link-11', 'getoptions', 'link-11');">getoptions</a></tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name" targets="Method tftpy.TftpPacketTypes.TftpPacketWithOptions.setoptions()=tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html#setoptions"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.setoptions" class="py-name" href="#" onclick="return doclink('link-12', 'setoptions', 'link-12');">setoptions</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketWithOptions.decode_options"></a><div id="TftpPacketWithOptions.decode_options-def"><a name="L40"></a><tt class="py-lineno"> 40</tt> <a class="py-toggle" href="#" id="TftpPacketWithOptions.decode_options-toggle" onclick="return toggle('TftpPacketWithOptions.decode_options');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html#decode_options">decode_options</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">buffer</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketWithOptions.decode_options-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketWithOptions.decode_options-expanded"><a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-docstring">"""This method decodes the section of the buffer that contains an</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">        unknown number of options. It returns a dictionary of option names and</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">        values."""</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-name">nulls</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-name">format</tt> <tt class="py-op">=</tt> <tt class="py-string">"!"</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">        <tt id="link-13" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-13', 'options', 'link-1');">options</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt id="link-14" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-14', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"decode_options: buffer is: "</tt> <tt class="py-op">+</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt id="link-15" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-15', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"size of buffer is %d bytes"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">            <tt id="link-16" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-16', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"size of buffer is zero, returning empty hash"</tt><tt class="py-op">)</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-comment"># Count the nulls in the buffer. Each one terminates a string.</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt id="link-17" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-17', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"about to iterate options buffer counting nulls"</tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">        <tt class="py-name">length</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">c</tt> <tt class="py-keyword">in</tt> <tt class="py-name">buffer</tt><tt class="py-op">:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">            <tt class="py-comment">#log.debug("iterating this byte: " + repr(c))</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-comment"></tt>            <tt class="py-keyword">if</tt> <tt class="py-name">ord</tt><tt class="py-op">(</tt><tt class="py-name">c</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">                <tt id="link-18" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-18', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"found a null at length %d"</tt> <tt class="py-op">%</tt> <tt class="py-name">length</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">length</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">                    <tt class="py-name">format</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%dsx"</tt> <tt class="py-op">%</tt> <tt class="py-name">length</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">                    <tt class="py-name">length</tt> <tt class="py-op">=</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">                    <tt class="py-keyword">raise</tt> <tt id="link-19" class="py-name" targets="Class tftpy.TftpShared.TftpException=tftpy.TftpShared.TftpException-class.html"><a title="tftpy.TftpShared.TftpException" class="py-name" href="#" onclick="return doclink('link-19', 'TftpException', 'link-19');">TftpException</a></tt><tt class="py-op">,</tt> <tt class="py-string">"Invalid options in buffer"</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">            <tt class="py-name">length</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt id="link-20" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-20', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"about to unpack, format is: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">format</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-name">mystruct</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">,</tt> <tt class="py-name">buffer</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt id="link-21" class="py-name" targets="Function tftpy.TftpShared.tftpassert()=tftpy.TftpShared-module.html#tftpassert"><a title="tftpy.TftpShared.tftpassert" class="py-name" href="#" onclick="return doclink('link-21', 'tftpassert', 'link-21');">tftpassert</a></tt><tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">mystruct</tt><tt class="py-op">)</tt> <tt class="py-op">%</tt> <tt class="py-number">2</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">                   <tt class="py-string">"packet with odd number of option/value pairs"</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">mystruct</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">            <tt id="link-22" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-22', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"setting option %s to %s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">mystruct</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">mystruct</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">            <tt id="link-23" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-23', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">mystruct</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">mystruct</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-24" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-24', 'options', 'link-1');">options</a></tt> </tt>
+</div></div><a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacket"></a><div id="TftpPacket-def"><a name="L80"></a><tt class="py-lineno"> 80</tt> <a class="py-toggle" href="#" id="TftpPacket-toggle" onclick="return toggle('TftpPacket');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacket-class.html">TftpPacket</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacket-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpPacket-expanded"><a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">    <tt class="py-docstring">"""This class is the parent class of all tftp packet classes. It is an</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"><tt class="py-docstring">    abstract class, providing an interface, and should not be instantiated</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring">    directly."""</tt> </tt>
+<a name="TftpPacket.__init__"></a><div id="TftpPacket.__init__-def"><a name="L84"></a><tt class="py-lineno"> 84</tt> <a class="py-toggle" href="#" id="TftpPacket.__init__-toggle" onclick="return toggle('TftpPacket.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacket-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacket.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacket.__init__-expanded"><a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacket.encode"></a><div id="TftpPacket.encode-def"><a name="L88"></a><tt class="py-lineno"> 88</tt> <a class="py-toggle" href="#" id="TftpPacket.encode-toggle" onclick="return toggle('TftpPacket.encode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacket-class.html#encode">encode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacket.encode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacket.encode-expanded"><a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-docstring">"""The encode method of a TftpPacket takes keyword arguments specific</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt class="py-docstring">        to the type of packet, and packs an appropriate buffer in network-byte</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"><tt class="py-docstring">        order suitable for sending over the wire.</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-docstring">        This is an abstract method."""</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">,</tt> <tt class="py-string">"Abstract method"</tt> </tt>
+</div><a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacket.decode"></a><div id="TftpPacket.decode-def"><a name="L96"></a><tt class="py-lineno"> 96</tt> <a class="py-toggle" href="#" id="TftpPacket.decode-toggle" onclick="return toggle('TftpPacket.decode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacket-class.html#decode">decode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacket.decode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacket.decode-expanded"><a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-docstring">"""The decode method of a TftpPacket takes a buffer off of the wire in</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-docstring">        network-byte order, and decodes it, populating internal properties as</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-docstring">        appropriate. This can only be done once the first 2-byte opcode has</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"><tt class="py-docstring">        already been decoded, but the data section does include the entire</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"><tt class="py-docstring">        datagram.</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"><tt class="py-docstring">        This is an abstract method."""</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">,</tt> <tt class="py-string">"Abstract method"</tt> </tt>
+</div></div><a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketInitial"></a><div id="TftpPacketInitial-def"><a name="L106"></a><tt class="py-lineno">106</tt> <a class="py-toggle" href="#" id="TftpPacketInitial-toggle" onclick="return toggle('TftpPacketInitial');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketInitial-class.html">TftpPacketInitial</a><tt class="py-op">(</tt><tt class="py-base-class">TftpPacket</tt><tt class="py-op">,</tt> <tt class="py-base-class">TftpPacketWithOptions</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketInitial-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpPacketInitial-expanded"><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">    <tt class="py-docstring">"""This class is a common parent class for the RRQ and WRQ packets, as</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"><tt class="py-docstring">    they share quite a bit of code."""</tt> </tt>
+<a name="TftpPacketInitial.__init__"></a><div id="TftpPacketInitial.__init__-def"><a name="L109"></a><tt class="py-lineno">109</tt> <a class="py-toggle" href="#" id="TftpPacketInitial.__init__-toggle" onclick="return toggle('TftpPacketInitial.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketInitial-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketInitial.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketInitial.__init__-expanded"><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt id="link-25" class="py-name" targets="Class tftpy.TftpPacketTypes.TftpPacket=tftpy.TftpPacketTypes.TftpPacket-class.html"><a title="tftpy.TftpPacketTypes.TftpPacket" class="py-name" href="#" onclick="return doclink('link-25', 'TftpPacket', 'link-25');">TftpPacket</a></tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Method tftpy.TftpClient'.TftpClient.__init__()=tftpy.TftpClient%27.TftpClient-class.html#__init__,Method tftpy.TftpPacketFactory'.TftpPacketFactory.__init__()=tftpy.TftpPacketFactory%27.TftpPacketFactory-class.html#__init__,Method tftpy.TftpPacketTypes.TftpPacket.__init__()=tftpy.TftpPacketTypes.TftpPacket-class.html#__init__,Method tftpy.TftpPacketTypes.TftpPacketACK.__init__()=tftpy.TftpPacketTypes.TftpPacketACK-class.html#__init__,Method tftpy.TftpPacketTypes.TftpPacketDAT.__init__()=tftpy.TftpPacketTypes.TftpPacketDAT-class.html#__init__,Method tftpy.TftpPacketTypes.TftpPacketERR.__init__()=tftpy.TftpPacketTypes.TftpPacketERR-class.html#__init__,Method tftpy.TftpPacketTypes.TftpPacketInitial.__init__()=tftpy.TftpPacketTypes.TftpPacketInitial-class.html#__init__,Method tftpy.TftpPacketTypes.TftpPacketOACK.__init__()=tftpy.TftpPacketTypes.TftpPacketOACK-class.html#__init__,Method tftpy.TftpPacketTypes.TftpPacketRRQ.__init__()=tftpy.TftpPacketTypes.TftpPacketRRQ-class.html#__init__,Method tftpy.TftpPacketTypes.TftpPacketWRQ.__init__()=tftpy.TftpPacketTypes.TftpPacketWRQ-class.html#__init__,Method tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__()=tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html#__init__,Method tftpy.TftpServer'.TftpServer.__init__()=tftpy.TftpServer%27.TftpServer-class.html#__init__,Method tftpy.TftpStates.TftpContext.__init__()=tftpy.TftpStates.TftpContext-class.html#__init__,Method tftpy.TftpStates.TftpContextClientDownload.__init__()=tftpy.TftpStates.TftpContextClientDownload-class.html#__init__,Method tftpy.TftpStates.TftpContextClientUpload.__init__()=tftpy.TftpStates.TftpContextClientUpload-class.html#__init__,Method tftpy.TftpStates.TftpContextServer.__init__()=tftpy.TftpStates.TftpContextServer-class.html#__init__,Method tftpy.TftpStates.TftpMetrics.__init__()=tftpy.TftpStates.TftpMetrics-class.html#__init__,Method tftpy.TftpStates.TftpState.__init__()=tftpy.TftpStates.TftpState-class.html#__init__"><a title="tftpy.TftpClient'.TftpClient.__init__
+tftpy.TftpPacketFactory'.TftpPacketFactory.__init__
+tftpy.TftpPacketTypes.TftpPacket.__init__
+tftpy.TftpPacketTypes.TftpPacketACK.__init__
+tftpy.TftpPacketTypes.TftpPacketDAT.__init__
+tftpy.TftpPacketTypes.TftpPacketERR.__init__
+tftpy.TftpPacketTypes.TftpPacketInitial.__init__
+tftpy.TftpPacketTypes.TftpPacketOACK.__init__
+tftpy.TftpPacketTypes.TftpPacketRRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__
+tftpy.TftpServer'.TftpServer.__init__
+tftpy.TftpStates.TftpContext.__init__
+tftpy.TftpStates.TftpContextClientDownload.__init__
+tftpy.TftpStates.TftpContextClientUpload.__init__
+tftpy.TftpStates.TftpContextServer.__init__
+tftpy.TftpStates.TftpMetrics.__init__
+tftpy.TftpStates.TftpState.__init__" class="py-name" href="#" onclick="return doclink('link-26', '__init__', 'link-26');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">        <tt id="link-27" class="py-name" targets="Class tftpy.TftpPacketTypes.TftpPacketWithOptions=tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions" class="py-name" href="#" onclick="return doclink('link-27', 'TftpPacketWithOptions', 'link-27');">TftpPacketWithOptions</a></tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="tftpy.TftpClient'.TftpClient.__init__
+tftpy.TftpPacketFactory'.TftpPacketFactory.__init__
+tftpy.TftpPacketTypes.TftpPacket.__init__
+tftpy.TftpPacketTypes.TftpPacketACK.__init__
+tftpy.TftpPacketTypes.TftpPacketDAT.__init__
+tftpy.TftpPacketTypes.TftpPacketERR.__init__
+tftpy.TftpPacketTypes.TftpPacketInitial.__init__
+tftpy.TftpPacketTypes.TftpPacketOACK.__init__
+tftpy.TftpPacketTypes.TftpPacketRRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__
+tftpy.TftpServer'.TftpServer.__init__
+tftpy.TftpStates.TftpContext.__init__
+tftpy.TftpStates.TftpContextClientDownload.__init__
+tftpy.TftpStates.TftpContextClientUpload.__init__
+tftpy.TftpStates.TftpContextServer.__init__
+tftpy.TftpStates.TftpMetrics.__init__
+tftpy.TftpStates.TftpState.__init__" class="py-name" href="#" onclick="return doclink('link-28', '__init__', 'link-26');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketInitial.encode"></a><div id="TftpPacketInitial.encode-def"><a name="L115"></a><tt class="py-lineno">115</tt> <a class="py-toggle" href="#" id="TftpPacketInitial.encode-toggle" onclick="return toggle('TftpPacketInitial.encode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketInitial-class.html#encode">encode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketInitial.encode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketInitial.encode-expanded"><a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-docstring">"""Encode the packet's buffer from the instance variables."""</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">        <tt id="link-29" class="py-name"><a title="tftpy.TftpShared.tftpassert" class="py-name" href="#" onclick="return doclink('link-29', 'tftpassert', 'link-21');">tftpassert</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-string">"filename required in initial packet"</tt><tt class="py-op">)</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt id="link-30" class="py-name"><a title="tftpy.TftpShared.tftpassert" class="py-name" href="#" onclick="return doclink('link-30', 'tftpassert', 'link-21');">tftpassert</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt><tt class="py-op">,</tt> <tt class="py-string">"mode required in initial packet"</tt><tt class="py-op">)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt class="py-name">ptype</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> <tt class="py-name">ptype</tt> <tt class="py-op">=</tt> <tt class="py-string">"RRQ"</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt>                <tt class="py-name">ptype</tt> <tt class="py-op">=</tt> <tt class="py-string">"WRQ"</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt id="link-31" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-31', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Encoding %s packet, filename = %s, mode = %s"</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">                     <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">ptype</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">key</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-32', 'options', 'link-1');">options</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">            <tt id="link-33" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-33', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"    Option %s = %s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-34', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-name">format</tt> <tt class="py-op">=</tt> <tt class="py-string">"!H"</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-name">format</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%dsx"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt> <tt class="py-op">==</tt> <tt class="py-string">"octet"</tt><tt class="py-op">:</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">            <tt class="py-name">format</tt> <tt class="py-op">+=</tt> <tt class="py-string">"5sx"</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">AssertionError</tt><tt class="py-op">,</tt> <tt class="py-string">"Unsupported mode: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">mode</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-comment"># Add options.</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">options_list</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-35', 'options', 'link-1');">options</a></tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">            <tt id="link-36" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-36', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"there are options to encode"</tt><tt class="py-op">)</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">key</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-37', 'options', 'link-1');">options</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">                <tt class="py-comment"># Populate the option name</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-comment"></tt>                <tt class="py-name">format</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%dsx"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">                <tt class="py-name">options_list</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">                <tt class="py-comment"># Populate the option value</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"><tt class="py-comment"></tt>                <tt class="py-name">format</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%dsx"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-38', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">                <tt class="py-name">options_list</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-39', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">        <tt id="link-40" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-40', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"format is %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">format</tt><tt class="py-op">)</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt id="link-41" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-41', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"options_list is %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">options_list</tt><tt class="py-op">)</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt id="link-42" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-42', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"size of struct is %d"</tt> <tt class="py-op">%</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">calcsize</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">,</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">                                  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">                                  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt><tt class="py-op">,</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">                                  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt><tt class="py-op">,</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">                                  <tt class="py-op">*</tt><tt class="py-name">options_list</tt><tt class="py-op">)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">        <tt id="link-43" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-43', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"buffer is "</tt> <tt class="py-op">+</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div><a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketInitial.decode"></a><div id="TftpPacketInitial.decode-def"><a name="L159"></a><tt class="py-lineno">159</tt> <a class="py-toggle" href="#" id="TftpPacketInitial.decode-toggle" onclick="return toggle('TftpPacketInitial.decode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketInitial-class.html#decode">decode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketInitial.decode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketInitial.decode-expanded"><a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">        <tt id="link-44" class="py-name"><a title="tftpy.TftpShared.tftpassert" class="py-name" href="#" onclick="return doclink('link-44', 'tftpassert', 'link-21');">tftpassert</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">,</tt> <tt class="py-string">"Can't decode, buffer is empty"</tt><tt class="py-op">)</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line"> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">        <tt class="py-comment"># FIXME - this shares a lot of code with decode_options</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">nulls</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">        <tt class="py-name">format</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-name">nulls</tt> <tt class="py-op">=</tt> <tt class="py-name">length</tt> <tt class="py-op">=</tt> <tt class="py-name">tlength</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">        <tt id="link-45" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-45', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"in decode: about to iterate buffer counting nulls"</tt><tt class="py-op">)</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">        <tt class="py-name">subbuf</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">[</tt><tt class="py-number">2</tt><tt class="py-op">:</tt><tt class="py-op">]</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">c</tt> <tt class="py-keyword">in</tt> <tt class="py-name">subbuf</tt><tt class="py-op">:</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">            <tt id="link-46" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-46', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"iterating this byte: "</tt> <tt class="py-op">+</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">c</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">ord</tt><tt class="py-op">(</tt><tt class="py-name">c</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">                <tt class="py-name">nulls</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">                <tt id="link-47" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-47', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"found a null at length %d, now have %d"</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">                             <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">length</tt><tt class="py-op">,</tt> <tt class="py-name">nulls</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">                <tt class="py-name">format</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%dsx"</tt> <tt class="py-op">%</tt> <tt class="py-name">length</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">                <tt class="py-name">length</tt> <tt class="py-op">=</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">                <tt class="py-comment"># At 2 nulls, we want to mark that position for decoding.</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"><tt class="py-comment"></tt>                <tt class="py-keyword">if</tt> <tt class="py-name">nulls</tt> <tt class="py-op">==</tt> <tt class="py-number">2</tt><tt class="py-op">:</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">                    <tt class="py-keyword">break</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">            <tt class="py-name">length</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">            <tt class="py-name">tlength</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line"> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">        <tt id="link-48" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-48', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"hopefully found end of mode at length %d"</tt> <tt class="py-op">%</tt> <tt class="py-name">tlength</tt><tt class="py-op">)</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">        <tt class="py-comment"># length should now be the end of the mode.</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt id="link-49" class="py-name"><a title="tftpy.TftpShared.tftpassert" class="py-name" href="#" onclick="return doclink('link-49', 'tftpassert', 'link-21');">tftpassert</a></tt><tt class="py-op">(</tt><tt class="py-name">nulls</tt> <tt class="py-op">==</tt> <tt class="py-number">2</tt><tt class="py-op">,</tt> <tt class="py-string">"malformed packet"</tt><tt class="py-op">)</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">        <tt class="py-name">shortbuf</tt> <tt class="py-op">=</tt> <tt class="py-name">subbuf</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-name">tlength</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">        <tt id="link-50" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-50', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"about to unpack buffer with format: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">format</tt><tt class="py-op">)</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">        <tt id="link-51" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-51', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"unpacking buffer: "</tt> <tt class="py-op">+</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">shortbuf</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">        <tt class="py-name">mystruct</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">,</tt> <tt class="py-name">shortbuf</tt><tt class="py-op">)</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">        <tt id="link-52" class="py-name"><a title="tftpy.TftpShared.tftpassert" class="py-name" href="#" onclick="return doclink('link-52', 'tftpassert', 'link-21');">tftpassert</a></tt><tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">mystruct</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">2</tt><tt class="py-op">,</tt> <tt class="py-string">"malformed packet"</tt><tt class="py-op">)</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">        <tt id="link-53" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-53', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"setting filename to %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">mystruct</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">        <tt id="link-54" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-54', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"setting mode to %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">mystruct</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt> <tt class="py-op">=</tt> <tt class="py-name">mystruct</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt> <tt class="py-op">=</tt> <tt class="py-name">mystruct</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line"> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-55', 'options', 'link-1');">options</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name" targets="Method tftpy.TftpPacketTypes.TftpPacketWithOptions.decode_options()=tftpy.TftpPacketTypes.TftpPacketWithOptions-class.html#decode_options"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.decode_options" class="py-name" href="#" onclick="return doclink('link-56', 'decode_options', 'link-56');">decode_options</a></tt><tt class="py-op">(</tt><tt class="py-name">subbuf</tt><tt class="py-op">[</tt><tt class="py-name">tlength</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div></div><a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketRRQ"></a><div id="TftpPacketRRQ-def"><a name="L199"></a><tt class="py-lineno">199</tt> <a class="py-toggle" href="#" id="TftpPacketRRQ-toggle" onclick="return toggle('TftpPacketRRQ');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketRRQ-class.html">TftpPacketRRQ</a><tt class="py-op">(</tt><tt class="py-base-class">TftpPacketInitial</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketRRQ-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpPacketRRQ-expanded"><a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line"><tt class="py-docstring">        2 bytes    string   1 byte     string   1 byte</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line"><tt class="py-docstring">        -----------------------------------------------</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line"><tt class="py-docstring">RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line"><tt class="py-docstring">WRQ     -----------------------------------------------</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="TftpPacketRRQ.__init__"></a><div id="TftpPacketRRQ.__init__-def"><a name="L206"></a><tt class="py-lineno">206</tt> <a class="py-toggle" href="#" id="TftpPacketRRQ.__init__-toggle" onclick="return toggle('TftpPacketRRQ.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketRRQ-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketRRQ.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketRRQ.__init__-expanded"><a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">        <tt id="link-57" class="py-name" targets="Class tftpy.TftpPacketTypes.TftpPacketInitial=tftpy.TftpPacketTypes.TftpPacketInitial-class.html"><a title="tftpy.TftpPacketTypes.TftpPacketInitial" class="py-name" href="#" onclick="return doclink('link-57', 'TftpPacketInitial', 'link-57');">TftpPacketInitial</a></tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="tftpy.TftpClient'.TftpClient.__init__
+tftpy.TftpPacketFactory'.TftpPacketFactory.__init__
+tftpy.TftpPacketTypes.TftpPacket.__init__
+tftpy.TftpPacketTypes.TftpPacketACK.__init__
+tftpy.TftpPacketTypes.TftpPacketDAT.__init__
+tftpy.TftpPacketTypes.TftpPacketERR.__init__
+tftpy.TftpPacketTypes.TftpPacketInitial.__init__
+tftpy.TftpPacketTypes.TftpPacketOACK.__init__
+tftpy.TftpPacketTypes.TftpPacketRRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__
+tftpy.TftpServer'.TftpServer.__init__
+tftpy.TftpStates.TftpContext.__init__
+tftpy.TftpStates.TftpContextClientDownload.__init__
+tftpy.TftpStates.TftpContextClientUpload.__init__
+tftpy.TftpStates.TftpContextServer.__init__
+tftpy.TftpStates.TftpMetrics.__init__
+tftpy.TftpStates.TftpState.__init__" class="py-name" href="#" onclick="return doclink('link-58', '__init__', 'link-26');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+</div><a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketRRQ.__str__"></a><div id="TftpPacketRRQ.__str__-def"><a name="L210"></a><tt class="py-lineno">210</tt> <a class="py-toggle" href="#" id="TftpPacketRRQ.__str__-toggle" onclick="return toggle('TftpPacketRRQ.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketRRQ-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketRRQ.__str__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketRRQ.__str__-expanded"><a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">        <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-string">'RRQ packet: filename = %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">        <tt class="py-name">s</tt> <tt class="py-op">+=</tt> <tt class="py-string">' mode = %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-59" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-59', 'options', 'link-1');">options</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">+=</tt> <tt class="py-string">'\n    options = %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-60', 'options', 'link-1');">options</a></tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">s</tt> </tt>
+</div></div><a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketWRQ"></a><div id="TftpPacketWRQ-def"><a name="L217"></a><tt class="py-lineno">217</tt> <a class="py-toggle" href="#" id="TftpPacketWRQ-toggle" onclick="return toggle('TftpPacketWRQ');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketWRQ-class.html">TftpPacketWRQ</a><tt class="py-op">(</tt><tt class="py-base-class">TftpPacketInitial</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketWRQ-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpPacketWRQ-expanded"><a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"><tt class="py-docstring">        2 bytes    string   1 byte     string   1 byte</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line"><tt class="py-docstring">        -----------------------------------------------</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line"><tt class="py-docstring">RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line"><tt class="py-docstring">WRQ     -----------------------------------------------</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="TftpPacketWRQ.__init__"></a><div id="TftpPacketWRQ.__init__-def"><a name="L224"></a><tt class="py-lineno">224</tt> <a class="py-toggle" href="#" id="TftpPacketWRQ.__init__-toggle" onclick="return toggle('TftpPacketWRQ.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketWRQ-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketWRQ.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketWRQ.__init__-expanded"><a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">        <tt id="link-61" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketInitial" class="py-name" href="#" onclick="return doclink('link-61', 'TftpPacketInitial', 'link-57');">TftpPacketInitial</a></tt><tt class="py-op">.</tt><tt id="link-62" class="py-name"><a title="tftpy.TftpClient'.TftpClient.__init__
+tftpy.TftpPacketFactory'.TftpPacketFactory.__init__
+tftpy.TftpPacketTypes.TftpPacket.__init__
+tftpy.TftpPacketTypes.TftpPacketACK.__init__
+tftpy.TftpPacketTypes.TftpPacketDAT.__init__
+tftpy.TftpPacketTypes.TftpPacketERR.__init__
+tftpy.TftpPacketTypes.TftpPacketInitial.__init__
+tftpy.TftpPacketTypes.TftpPacketOACK.__init__
+tftpy.TftpPacketTypes.TftpPacketRRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__
+tftpy.TftpServer'.TftpServer.__init__
+tftpy.TftpStates.TftpContext.__init__
+tftpy.TftpStates.TftpContextClientDownload.__init__
+tftpy.TftpStates.TftpContextClientUpload.__init__
+tftpy.TftpStates.TftpContextServer.__init__
+tftpy.TftpStates.TftpMetrics.__init__
+tftpy.TftpStates.TftpState.__init__" class="py-name" href="#" onclick="return doclink('link-62', '__init__', 'link-26');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt> <tt class="py-op">=</tt> <tt class="py-number">2</tt> </tt>
+</div><a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketWRQ.__str__"></a><div id="TftpPacketWRQ.__str__-def"><a name="L228"></a><tt class="py-lineno">228</tt> <a class="py-toggle" href="#" id="TftpPacketWRQ.__str__-toggle" onclick="return toggle('TftpPacketWRQ.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketWRQ-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketWRQ.__str__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketWRQ.__str__-expanded"><a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">        <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-string">'WRQ packet: filename = %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">filename</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">        <tt class="py-name">s</tt> <tt class="py-op">+=</tt> <tt class="py-string">' mode = %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mode</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-63', 'options', 'link-1');">options</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">+=</tt> <tt class="py-string">'\n    options = %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-64', 'options', 'link-1');">options</a></tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">s</tt> </tt>
+</div></div><a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketDAT"></a><div id="TftpPacketDAT-def"><a name="L235"></a><tt class="py-lineno">235</tt> <a class="py-toggle" href="#" id="TftpPacketDAT-toggle" onclick="return toggle('TftpPacketDAT');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketDAT-class.html">TftpPacketDAT</a><tt class="py-op">(</tt><tt class="py-base-class">TftpPacket</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketDAT-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpPacketDAT-expanded"><a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line"><tt class="py-docstring">        2 bytes    2 bytes       n bytes</tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line"><tt class="py-docstring">        ---------------------------------</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line"><tt class="py-docstring">DATA  | 03    |   Block #  |    Data    |</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line"><tt class="py-docstring">        ---------------------------------</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="TftpPacketDAT.__init__"></a><div id="TftpPacketDAT.__init__-def"><a name="L242"></a><tt class="py-lineno">242</tt> <a class="py-toggle" href="#" id="TftpPacketDAT.__init__-toggle" onclick="return toggle('TftpPacketDAT.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketDAT-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketDAT.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketDAT.__init__-expanded"><a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">        <tt id="link-65" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacket" class="py-name" href="#" onclick="return doclink('link-65', 'TftpPacket', 'link-25');">TftpPacket</a></tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="tftpy.TftpClient'.TftpClient.__init__
+tftpy.TftpPacketFactory'.TftpPacketFactory.__init__
+tftpy.TftpPacketTypes.TftpPacket.__init__
+tftpy.TftpPacketTypes.TftpPacketACK.__init__
+tftpy.TftpPacketTypes.TftpPacketDAT.__init__
+tftpy.TftpPacketTypes.TftpPacketERR.__init__
+tftpy.TftpPacketTypes.TftpPacketInitial.__init__
+tftpy.TftpPacketTypes.TftpPacketOACK.__init__
+tftpy.TftpPacketTypes.TftpPacketRRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__
+tftpy.TftpServer'.TftpServer.__init__
+tftpy.TftpStates.TftpContext.__init__
+tftpy.TftpStates.TftpContextClientDownload.__init__
+tftpy.TftpStates.TftpContextClientUpload.__init__
+tftpy.TftpStates.TftpContextServer.__init__
+tftpy.TftpStates.TftpMetrics.__init__
+tftpy.TftpStates.TftpState.__init__" class="py-name" href="#" onclick="return doclink('link-66', '__init__', 'link-26');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt> <tt class="py-op">=</tt> <tt class="py-number">3</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketDAT.__str__"></a><div id="TftpPacketDAT.__str__-def"><a name="L248"></a><tt class="py-lineno">248</tt> <a class="py-toggle" href="#" id="TftpPacketDAT.__str__-toggle" onclick="return toggle('TftpPacketDAT.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketDAT-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketDAT.__str__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketDAT.__str__-expanded"><a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">        <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-string">'DAT packet: block %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt><tt class="py-op">:</tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">+=</tt> <tt class="py-string">'\n    data: %d bytes'</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt><tt class="py-op">)</tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">s</tt> </tt>
+</div><a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketDAT.encode"></a><div id="TftpPacketDAT.encode-def"><a name="L254"></a><tt class="py-lineno">254</tt> <a class="py-toggle" href="#" id="TftpPacketDAT.encode-toggle" onclick="return toggle('TftpPacketDAT.encode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketDAT-class.html#encode">encode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketDAT.encode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketDAT.encode-expanded"><a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">        <tt class="py-docstring">"""Encode the DAT packet. This method populates self.buffer, and</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line"><tt class="py-docstring">        returns self for easy method chaining."""</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">            <tt id="link-67" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-67', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Encoding an empty DAT packet"</tt><tt class="py-op">)</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">        <tt class="py-name">format</tt> <tt class="py-op">=</tt> <tt class="py-string">"!HH%ds"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt><tt class="py-op">)</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">,</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">                                  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">                                  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt><tt class="py-op">,</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">                                  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt><tt class="py-op">)</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div><a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketDAT.decode"></a><div id="TftpPacketDAT.decode-def"><a name="L266"></a><tt class="py-lineno">266</tt> <a class="py-toggle" href="#" id="TftpPacketDAT.decode-toggle" onclick="return toggle('TftpPacketDAT.decode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketDAT-class.html#decode">decode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketDAT.decode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketDAT.decode-expanded"><a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">        <tt class="py-docstring">"""Decode self.buffer into instance variables. It returns self for</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line"><tt class="py-docstring">        easy method chaining."""</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">        <tt class="py-comment"># We know the first 2 bytes are the opcode. The second two are the</tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-comment"># block number.</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt><tt class="py-op">,</tt><tt class="py-op">)</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt class="py-string">"!H"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">[</tt><tt class="py-number">2</tt><tt class="py-op">:</tt><tt class="py-number">4</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">        <tt id="link-68" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-68', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"decoding DAT packet, block number %d"</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt><tt class="py-op">)</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">        <tt id="link-69" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-69', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"should be %d bytes in the packet total"</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">                     <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">        <tt class="py-comment"># Everything else is data.</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">[</tt><tt class="py-number">4</tt><tt class="py-op">:</tt><tt class="py-op">]</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">        <tt id="link-70" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-70', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"found %d bytes of data"</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line">                     <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div></div><a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketACK"></a><div id="TftpPacketACK-def"><a name="L281"></a><tt class="py-lineno">281</tt> <a class="py-toggle" href="#" id="TftpPacketACK-toggle" onclick="return toggle('TftpPacketACK');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketACK-class.html">TftpPacketACK</a><tt class="py-op">(</tt><tt class="py-base-class">TftpPacket</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketACK-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpPacketACK-expanded"><a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line"><tt class="py-docstring">        2 bytes    2 bytes</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line"><tt class="py-docstring">        -------------------</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line"><tt class="py-docstring">ACK   | 04    |   Block #  |</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line"><tt class="py-docstring">        --------------------</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="TftpPacketACK.__init__"></a><div id="TftpPacketACK.__init__-def"><a name="L288"></a><tt class="py-lineno">288</tt> <a class="py-toggle" href="#" id="TftpPacketACK.__init__-toggle" onclick="return toggle('TftpPacketACK.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketACK-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketACK.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketACK.__init__-expanded"><a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line">        <tt id="link-71" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacket" class="py-name" href="#" onclick="return doclink('link-71', 'TftpPacket', 'link-25');">TftpPacket</a></tt><tt class="py-op">.</tt><tt id="link-72" class="py-name"><a title="tftpy.TftpClient'.TftpClient.__init__
+tftpy.TftpPacketFactory'.TftpPacketFactory.__init__
+tftpy.TftpPacketTypes.TftpPacket.__init__
+tftpy.TftpPacketTypes.TftpPacketACK.__init__
+tftpy.TftpPacketTypes.TftpPacketDAT.__init__
+tftpy.TftpPacketTypes.TftpPacketERR.__init__
+tftpy.TftpPacketTypes.TftpPacketInitial.__init__
+tftpy.TftpPacketTypes.TftpPacketOACK.__init__
+tftpy.TftpPacketTypes.TftpPacketRRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__
+tftpy.TftpServer'.TftpServer.__init__
+tftpy.TftpStates.TftpContext.__init__
+tftpy.TftpStates.TftpContextClientDownload.__init__
+tftpy.TftpStates.TftpContextClientUpload.__init__
+tftpy.TftpStates.TftpContextServer.__init__
+tftpy.TftpStates.TftpMetrics.__init__
+tftpy.TftpStates.TftpState.__init__" class="py-name" href="#" onclick="return doclink('link-72', '__init__', 'link-26');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt> <tt class="py-op">=</tt> <tt class="py-number">4</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+</div><a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketACK.__str__"></a><div id="TftpPacketACK.__str__-def"><a name="L293"></a><tt class="py-lineno">293</tt> <a class="py-toggle" href="#" id="TftpPacketACK.__str__-toggle" onclick="return toggle('TftpPacketACK.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketACK-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketACK.__str__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketACK.__str__-expanded"><a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-string">'ACK packet: block %d'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt> </tt>
+</div><a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketACK.encode"></a><div id="TftpPacketACK.encode-def"><a name="L296"></a><tt class="py-lineno">296</tt> <a class="py-toggle" href="#" id="TftpPacketACK.encode-toggle" onclick="return toggle('TftpPacketACK.encode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketACK-class.html#encode">encode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketACK.encode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketACK.encode-expanded"><a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line">        <tt id="link-73" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-73', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"encoding ACK: opcode = %d, block = %d"</tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line">                     <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-string">"!HH"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt><tt class="py-op">)</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div><a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketACK.decode"></a><div id="TftpPacketACK.decode-def"><a name="L302"></a><tt class="py-lineno">302</tt> <a class="py-toggle" href="#" id="TftpPacketACK.decode-toggle" onclick="return toggle('TftpPacketACK.decode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketACK-class.html#decode">decode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketACK.decode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketACK.decode-expanded"><a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt class="py-string">"!HH"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line">        <tt id="link-74" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-74', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"decoded ACK packet: opcode = %d, block = %d"</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">                     <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">blocknumber</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div></div><a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketERR"></a><div id="TftpPacketERR-def"><a name="L308"></a><tt class="py-lineno">308</tt> <a class="py-toggle" href="#" id="TftpPacketERR-toggle" onclick="return toggle('TftpPacketERR');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketERR-class.html">TftpPacketERR</a><tt class="py-op">(</tt><tt class="py-base-class">TftpPacket</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketERR-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpPacketERR-expanded"><a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line"><tt class="py-docstring">        2 bytes  2 bytes        string    1 byte</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line"><tt class="py-docstring">        ----------------------------------------</tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line"><tt class="py-docstring">ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line"><tt class="py-docstring">        ----------------------------------------</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line"><tt class="py-docstring">    Error Codes</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line"><tt class="py-docstring">    Value     Meaning</tt> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line"><tt class="py-docstring">    0         Not defined, see error message (if any).</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line"><tt class="py-docstring">    1         File not found.</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line"><tt class="py-docstring">    2         Access violation.</tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line"><tt class="py-docstring">    3         Disk full or allocation exceeded.</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line"><tt class="py-docstring">    4         Illegal TFTP operation.</tt> </tt>
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line"><tt class="py-docstring">    5         Unknown transfer ID.</tt> </tt>
+<a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line"><tt class="py-docstring">    6         File already exists.</tt> </tt>
+<a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line"><tt class="py-docstring">    7         No such user.</tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line"><tt class="py-docstring">    8         Failed to negotiate options</tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="TftpPacketERR.__init__"></a><div id="TftpPacketERR.__init__-def"><a name="L328"></a><tt class="py-lineno">328</tt> <a class="py-toggle" href="#" id="TftpPacketERR.__init__-toggle" onclick="return toggle('TftpPacketERR.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketERR-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketERR.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketERR.__init__-expanded"><a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line">        <tt id="link-75" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacket" class="py-name" href="#" onclick="return doclink('link-75', 'TftpPacket', 'link-25');">TftpPacket</a></tt><tt class="py-op">.</tt><tt id="link-76" class="py-name"><a title="tftpy.TftpClient'.TftpClient.__init__
+tftpy.TftpPacketFactory'.TftpPacketFactory.__init__
+tftpy.TftpPacketTypes.TftpPacket.__init__
+tftpy.TftpPacketTypes.TftpPacketACK.__init__
+tftpy.TftpPacketTypes.TftpPacketDAT.__init__
+tftpy.TftpPacketTypes.TftpPacketERR.__init__
+tftpy.TftpPacketTypes.TftpPacketInitial.__init__
+tftpy.TftpPacketTypes.TftpPacketOACK.__init__
+tftpy.TftpPacketTypes.TftpPacketRRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__
+tftpy.TftpServer'.TftpServer.__init__
+tftpy.TftpStates.TftpContext.__init__
+tftpy.TftpStates.TftpContextClientDownload.__init__
+tftpy.TftpStates.TftpContextClientUpload.__init__
+tftpy.TftpStates.TftpContextServer.__init__
+tftpy.TftpStates.TftpMetrics.__init__
+tftpy.TftpStates.TftpState.__init__" class="py-name" href="#" onclick="return doclink('link-76', '__init__', 'link-26');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt> <tt class="py-op">=</tt> <tt class="py-number">5</tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errorcode</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line">        <tt class="py-comment"># FIXME: We don't encode the errmsg...</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errmsg</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line">        <tt class="py-comment"># FIXME - integrate in TftpErrors references?</tt> </tt>
+<a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errmsgs</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line">            <tt class="py-number">1</tt><tt class="py-op">:</tt> <tt class="py-string">"File not found"</tt><tt class="py-op">,</tt> </tt>
+<a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line">            <tt class="py-number">2</tt><tt class="py-op">:</tt> <tt class="py-string">"Access violation"</tt><tt class="py-op">,</tt> </tt>
+<a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line">            <tt class="py-number">3</tt><tt class="py-op">:</tt> <tt class="py-string">"Disk full or allocation exceeded"</tt><tt class="py-op">,</tt> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line">            <tt class="py-number">4</tt><tt class="py-op">:</tt> <tt class="py-string">"Illegal TFTP operation"</tt><tt class="py-op">,</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line">            <tt class="py-number">5</tt><tt class="py-op">:</tt> <tt class="py-string">"Unknown transfer ID"</tt><tt class="py-op">,</tt> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line">            <tt class="py-number">6</tt><tt class="py-op">:</tt> <tt class="py-string">"File already exists"</tt><tt class="py-op">,</tt> </tt>
+<a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line">            <tt class="py-number">7</tt><tt class="py-op">:</tt> <tt class="py-string">"No such user"</tt><tt class="py-op">,</tt> </tt>
+<a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line">            <tt class="py-number">8</tt><tt class="py-op">:</tt> <tt class="py-string">"Failed to negotiate options"</tt> </tt>
+<a name="L344"></a><tt class="py-lineno">344</tt>  <tt class="py-line">            <tt class="py-op">}</tt> </tt>
+</div><a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketERR.__str__"></a><div id="TftpPacketERR.__str__-def"><a name="L346"></a><tt class="py-lineno">346</tt> <a class="py-toggle" href="#" id="TftpPacketERR.__str__-toggle" onclick="return toggle('TftpPacketERR.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketERR-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketERR.__str__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketERR.__str__-expanded"><a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line">        <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-string">'ERR packet: errorcode = %d'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errorcode</tt> </tt>
+<a name="L348"></a><tt class="py-lineno">348</tt>  <tt class="py-line">        <tt class="py-name">s</tt> <tt class="py-op">+=</tt> <tt class="py-string">'\n    msg = %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errmsgs</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errorcode</tt><tt class="py-op">,</tt> <tt class="py-string">''</tt><tt class="py-op">)</tt> </tt>
+<a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">s</tt> </tt>
+</div><a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketERR.encode"></a><div id="TftpPacketERR.encode-def"><a name="L351"></a><tt class="py-lineno">351</tt> <a class="py-toggle" href="#" id="TftpPacketERR.encode-toggle" onclick="return toggle('TftpPacketERR.encode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketERR-class.html#encode">encode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketERR.encode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketERR.encode-expanded"><a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line">        <tt class="py-docstring">"""Encode the DAT packet based on instance variables, populating</tt> </tt>
+<a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line"><tt class="py-docstring">        self.buffer, returning self."""</tt> </tt>
+<a name="L354"></a><tt class="py-lineno">354</tt>  <tt class="py-line">        <tt class="py-name">format</tt> <tt class="py-op">=</tt> <tt class="py-string">"!HH%dsx"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errmsgs</tt><tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errorcode</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L355"></a><tt class="py-lineno">355</tt>  <tt class="py-line">        <tt id="link-77" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-77', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"encoding ERR packet with format %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">format</tt><tt class="py-op">)</tt> </tt>
+<a name="L356"></a><tt class="py-lineno">356</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">,</tt> </tt>
+<a name="L357"></a><tt class="py-lineno">357</tt>  <tt class="py-line">                                  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> </tt>
+<a name="L358"></a><tt class="py-lineno">358</tt>  <tt class="py-line">                                  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errorcode</tt><tt class="py-op">,</tt> </tt>
+<a name="L359"></a><tt class="py-lineno">359</tt>  <tt class="py-line">                                  <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errmsgs</tt><tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errorcode</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L360"></a><tt class="py-lineno">360</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div><a name="L361"></a><tt class="py-lineno">361</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketERR.decode"></a><div id="TftpPacketERR.decode-def"><a name="L362"></a><tt class="py-lineno">362</tt> <a class="py-toggle" href="#" id="TftpPacketERR.decode-toggle" onclick="return toggle('TftpPacketERR.decode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketERR-class.html#decode">decode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketERR.decode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketERR.decode-expanded"><a name="L363"></a><tt class="py-lineno">363</tt>  <tt class="py-line">        <tt class="py-docstring">"Decode self.buffer, populating instance variables and return self."</tt> </tt>
+<a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line">        <tt class="py-name">buflen</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt> </tt>
+<a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line">        <tt id="link-78" class="py-name"><a title="tftpy.TftpShared.tftpassert" class="py-name" href="#" onclick="return doclink('link-78', 'tftpassert', 'link-21');">tftpassert</a></tt><tt class="py-op">(</tt><tt class="py-name">buflen</tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">4</tt><tt class="py-op">,</tt> <tt class="py-string">"malformed ERR packet, too short"</tt><tt class="py-op">)</tt> </tt>
+<a name="L366"></a><tt class="py-lineno">366</tt>  <tt class="py-line">        <tt id="link-79" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-79', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Decoding ERR packet, length %s bytes"</tt> <tt class="py-op">%</tt> <tt class="py-name">buflen</tt><tt class="py-op">)</tt> </tt>
+<a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">buflen</tt> <tt class="py-op">==</tt> <tt class="py-number">4</tt><tt class="py-op">:</tt> </tt>
+<a name="L368"></a><tt class="py-lineno">368</tt>  <tt class="py-line">            <tt id="link-80" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-80', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Allowing this affront to the RFC of a 4-byte packet"</tt><tt class="py-op">)</tt> </tt>
+<a name="L369"></a><tt class="py-lineno">369</tt>  <tt class="py-line">            <tt class="py-name">format</tt> <tt class="py-op">=</tt> <tt class="py-string">"!HH"</tt> </tt>
+<a name="L370"></a><tt class="py-lineno">370</tt>  <tt class="py-line">            <tt id="link-81" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-81', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Decoding ERR packet with format: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">format</tt><tt class="py-op">)</tt> </tt>
+<a name="L371"></a><tt class="py-lineno">371</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errorcode</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">,</tt> </tt>
+<a name="L372"></a><tt class="py-lineno">372</tt>  <tt class="py-line">                                                        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt> </tt>
+<a name="L373"></a><tt class="py-lineno">373</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L374"></a><tt class="py-lineno">374</tt>  <tt class="py-line">            <tt id="link-82" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-82', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Good ERR packet &gt; 4 bytes"</tt><tt class="py-op">)</tt> </tt>
+<a name="L375"></a><tt class="py-lineno">375</tt>  <tt class="py-line">            <tt class="py-name">format</tt> <tt class="py-op">=</tt> <tt class="py-string">"!HH%dsx"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-number">5</tt><tt class="py-op">)</tt> </tt>
+<a name="L376"></a><tt class="py-lineno">376</tt>  <tt class="py-line">            <tt id="link-83" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-83', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Decoding ERR packet with format: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">format</tt><tt class="py-op">)</tt> </tt>
+<a name="L377"></a><tt class="py-lineno">377</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errorcode</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errmsg</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">,</tt> </tt>
+<a name="L378"></a><tt class="py-lineno">378</tt>  <tt class="py-line">                                                                     <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">)</tt> </tt>
+<a name="L379"></a><tt class="py-lineno">379</tt>  <tt class="py-line">        <tt id="link-84" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-84', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">error</tt><tt class="py-op">(</tt><tt class="py-string">"ERR packet - errorcode: %d, message: %s"</tt> </tt>
+<a name="L380"></a><tt class="py-lineno">380</tt>  <tt class="py-line">                     <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errorcode</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errmsg</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L381"></a><tt class="py-lineno">381</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div></div><a name="L382"></a><tt class="py-lineno">382</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketOACK"></a><div id="TftpPacketOACK-def"><a name="L383"></a><tt class="py-lineno">383</tt> <a class="py-toggle" href="#" id="TftpPacketOACK-toggle" onclick="return toggle('TftpPacketOACK');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketOACK-class.html">TftpPacketOACK</a><tt class="py-op">(</tt><tt class="py-base-class">TftpPacket</tt><tt class="py-op">,</tt> <tt class="py-base-class">TftpPacketWithOptions</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketOACK-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TftpPacketOACK-expanded"><a name="L384"></a><tt class="py-lineno">384</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L385"></a><tt class="py-lineno">385</tt>  <tt class="py-line"><tt class="py-docstring">    #  +-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+</tt> </tt>
+<a name="L386"></a><tt class="py-lineno">386</tt>  <tt class="py-line"><tt class="py-docstring">    #  |  opc  |  opt1  | 0 | value1 | 0 |  optN  | 0 | valueN | 0 |</tt> </tt>
+<a name="L387"></a><tt class="py-lineno">387</tt>  <tt class="py-line"><tt class="py-docstring">    #  +-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+</tt> </tt>
+<a name="L388"></a><tt class="py-lineno">388</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="TftpPacketOACK.__init__"></a><div id="TftpPacketOACK.__init__-def"><a name="L389"></a><tt class="py-lineno">389</tt> <a class="py-toggle" href="#" id="TftpPacketOACK.__init__-toggle" onclick="return toggle('TftpPacketOACK.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketOACK-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketOACK.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketOACK.__init__-expanded"><a name="L390"></a><tt class="py-lineno">390</tt>  <tt class="py-line">        <tt id="link-85" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacket" class="py-name" href="#" onclick="return doclink('link-85', 'TftpPacket', 'link-25');">TftpPacket</a></tt><tt class="py-op">.</tt><tt id="link-86" class="py-name"><a title="tftpy.TftpClient'.TftpClient.__init__
+tftpy.TftpPacketFactory'.TftpPacketFactory.__init__
+tftpy.TftpPacketTypes.TftpPacket.__init__
+tftpy.TftpPacketTypes.TftpPacketACK.__init__
+tftpy.TftpPacketTypes.TftpPacketDAT.__init__
+tftpy.TftpPacketTypes.TftpPacketERR.__init__
+tftpy.TftpPacketTypes.TftpPacketInitial.__init__
+tftpy.TftpPacketTypes.TftpPacketOACK.__init__
+tftpy.TftpPacketTypes.TftpPacketRRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__
+tftpy.TftpServer'.TftpServer.__init__
+tftpy.TftpStates.TftpContext.__init__
+tftpy.TftpStates.TftpContextClientDownload.__init__
+tftpy.TftpStates.TftpContextClientUpload.__init__
+tftpy.TftpStates.TftpContextServer.__init__
+tftpy.TftpStates.TftpMetrics.__init__
+tftpy.TftpStates.TftpState.__init__" class="py-name" href="#" onclick="return doclink('link-86', '__init__', 'link-26');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L391"></a><tt class="py-lineno">391</tt>  <tt class="py-line">        <tt id="link-87" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions" class="py-name" href="#" onclick="return doclink('link-87', 'TftpPacketWithOptions', 'link-27');">TftpPacketWithOptions</a></tt><tt class="py-op">.</tt><tt id="link-88" class="py-name"><a title="tftpy.TftpClient'.TftpClient.__init__
+tftpy.TftpPacketFactory'.TftpPacketFactory.__init__
+tftpy.TftpPacketTypes.TftpPacket.__init__
+tftpy.TftpPacketTypes.TftpPacketACK.__init__
+tftpy.TftpPacketTypes.TftpPacketDAT.__init__
+tftpy.TftpPacketTypes.TftpPacketERR.__init__
+tftpy.TftpPacketTypes.TftpPacketInitial.__init__
+tftpy.TftpPacketTypes.TftpPacketOACK.__init__
+tftpy.TftpPacketTypes.TftpPacketRRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWRQ.__init__
+tftpy.TftpPacketTypes.TftpPacketWithOptions.__init__
+tftpy.TftpServer'.TftpServer.__init__
+tftpy.TftpStates.TftpContext.__init__
+tftpy.TftpStates.TftpContextClientDownload.__init__
+tftpy.TftpStates.TftpContextClientUpload.__init__
+tftpy.TftpStates.TftpContextServer.__init__
+tftpy.TftpStates.TftpMetrics.__init__
+tftpy.TftpStates.TftpState.__init__" class="py-name" href="#" onclick="return doclink('link-88', '__init__', 'link-26');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L392"></a><tt class="py-lineno">392</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt> <tt class="py-op">=</tt> <tt class="py-number">6</tt> </tt>
+</div><a name="L393"></a><tt class="py-lineno">393</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketOACK.__str__"></a><div id="TftpPacketOACK.__str__-def"><a name="L394"></a><tt class="py-lineno">394</tt> <a class="py-toggle" href="#" id="TftpPacketOACK.__str__-toggle" onclick="return toggle('TftpPacketOACK.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketOACK-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketOACK.__str__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketOACK.__str__-expanded"><a name="L395"></a><tt class="py-lineno">395</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-string">'OACK packet:\n    options = %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-89', 'options', 'link-1');">options</a></tt> </tt>
+</div><a name="L396"></a><tt class="py-lineno">396</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketOACK.encode"></a><div id="TftpPacketOACK.encode-def"><a name="L397"></a><tt class="py-lineno">397</tt> <a class="py-toggle" href="#" id="TftpPacketOACK.encode-toggle" onclick="return toggle('TftpPacketOACK.encode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketOACK-class.html#encode">encode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketOACK.encode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketOACK.encode-expanded"><a name="L398"></a><tt class="py-lineno">398</tt>  <tt class="py-line">        <tt class="py-name">format</tt> <tt class="py-op">=</tt> <tt class="py-string">"!H"</tt> <tt class="py-comment"># opcode</tt> </tt>
+<a name="L399"></a><tt class="py-lineno">399</tt>  <tt class="py-line">        <tt class="py-name">options_list</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L400"></a><tt class="py-lineno">400</tt>  <tt class="py-line">        <tt id="link-90" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-90', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"in TftpPacketOACK.encode"</tt><tt class="py-op">)</tt> </tt>
+<a name="L401"></a><tt class="py-lineno">401</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">key</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-91" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-91', 'options', 'link-1');">options</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L402"></a><tt class="py-lineno">402</tt>  <tt class="py-line">            <tt id="link-92" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-92', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"looping on option key %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">key</tt><tt class="py-op">)</tt> </tt>
+<a name="L403"></a><tt class="py-lineno">403</tt>  <tt class="py-line">            <tt id="link-93" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-93', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"value is %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-94" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-94', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L404"></a><tt class="py-lineno">404</tt>  <tt class="py-line">            <tt class="py-name">format</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%dsx"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> </tt>
+<a name="L405"></a><tt class="py-lineno">405</tt>  <tt class="py-line">            <tt class="py-name">format</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%dsx"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-95" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-95', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L406"></a><tt class="py-lineno">406</tt>  <tt class="py-line">            <tt class="py-name">options_list</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> </tt>
+<a name="L407"></a><tt class="py-lineno">407</tt>  <tt class="py-line">            <tt class="py-name">options_list</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-96" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-96', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L408"></a><tt class="py-lineno">408</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">opcode</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-name">options_list</tt><tt class="py-op">)</tt> </tt>
+<a name="L409"></a><tt class="py-lineno">409</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div><a name="L410"></a><tt class="py-lineno">410</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketOACK.decode"></a><div id="TftpPacketOACK.decode-def"><a name="L411"></a><tt class="py-lineno">411</tt> <a class="py-toggle" href="#" id="TftpPacketOACK.decode-toggle" onclick="return toggle('TftpPacketOACK.decode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketOACK-class.html#decode">decode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketOACK.decode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketOACK.decode-expanded"><a name="L412"></a><tt class="py-lineno">412</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-97" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-97', 'options', 'link-1');">options</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-98" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.decode_options" class="py-name" href="#" onclick="return doclink('link-98', 'decode_options', 'link-56');">decode_options</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">buffer</tt><tt class="py-op">[</tt><tt class="py-number">2</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L413"></a><tt class="py-lineno">413</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> </tt>
+</div><a name="L414"></a><tt class="py-lineno">414</tt>  <tt class="py-line"> </tt>
+<a name="TftpPacketOACK.match_options"></a><div id="TftpPacketOACK.match_options-def"><a name="L415"></a><tt class="py-lineno">415</tt> <a class="py-toggle" href="#" id="TftpPacketOACK.match_options-toggle" onclick="return toggle('TftpPacketOACK.match_options');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="tftpy.TftpPacketTypes.TftpPacketOACK-class.html#match_options">match_options</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">options</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TftpPacketOACK.match_options-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TftpPacketOACK.match_options-expanded"><a name="L416"></a><tt class="py-lineno">416</tt>  <tt class="py-line">        <tt class="py-docstring">"""This method takes a set of options, and tries to match them with</tt> </tt>
+<a name="L417"></a><tt class="py-lineno">417</tt>  <tt class="py-line"><tt class="py-docstring">        its own. It can accept some changes in those options from the server as</tt> </tt>
+<a name="L418"></a><tt class="py-lineno">418</tt>  <tt class="py-line"><tt class="py-docstring">        part of a negotiation. Changed or unchanged, it will return a dict of</tt> </tt>
+<a name="L419"></a><tt class="py-lineno">419</tt>  <tt class="py-line"><tt class="py-docstring">        the options so that the session can update itself to the negotiated</tt> </tt>
+<a name="L420"></a><tt class="py-lineno">420</tt>  <tt class="py-line"><tt class="py-docstring">        options."""</tt> </tt>
+<a name="L421"></a><tt class="py-lineno">421</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-99', 'options', 'link-1');">options</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L422"></a><tt class="py-lineno">422</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-100" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-100', 'options', 'link-1');">options</a></tt><tt class="py-op">.</tt><tt class="py-name">has_key</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L423"></a><tt class="py-lineno">423</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">name</tt> <tt class="py-op">==</tt> <tt class="py-string">'blksize'</tt><tt class="py-op">:</tt> </tt>
+<a name="L424"></a><tt class="py-lineno">424</tt>  <tt class="py-line">                    <tt class="py-comment"># We can accept anything between the min and max values.</tt> </tt>
+<a name="L425"></a><tt class="py-lineno">425</tt>  <tt class="py-line"><tt class="py-comment"></tt>                    <tt class="py-name">size</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-101" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-101', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">name</tt><tt class="py-op">]</tt> </tt>
+<a name="L426"></a><tt class="py-lineno">426</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt class="py-name">size</tt> <tt class="py-op">&gt;=</tt> <tt id="link-102" class="py-name" targets="Variable tftpy.TftpClient'.MIN_BLKSIZE=tftpy.TftpClient%27-module.html#MIN_BLKSIZE,Variable tftpy.TftpPacketFactory'.MIN_BLKSIZE=tftpy.TftpPacketFactory%27-module.html#MIN_BLKSIZE,Variable tftpy.TftpServer'.MIN_BLKSIZE=tftpy.TftpServer%27-module.html#MIN_BLKSIZE,Variable tftpy.TftpShared.MIN_BLKSIZE=tftpy.TftpShared-module.html#MIN_BLKSIZE"><a title="tftpy.TftpClient'.MIN_BLKSIZE
+tftpy.TftpPacketFactory'.MIN_BLKSIZE
+tftpy.TftpServer'.MIN_BLKSIZE
+tftpy.TftpShared.MIN_BLKSIZE" class="py-name" href="#" onclick="return doclink('link-102', 'MIN_BLKSIZE', 'link-102');">MIN_BLKSIZE</a></tt> <tt class="py-keyword">and</tt> <tt class="py-name">size</tt> <tt class="py-op">&lt;=</tt> <tt id="link-103" class="py-name" targets="Variable tftpy.TftpClient'.MAX_BLKSIZE=tftpy.TftpClient%27-module.html#MAX_BLKSIZE,Variable tftpy.TftpPacketFactory'.MAX_BLKSIZE=tftpy.TftpPacketFactory%27-module.html#MAX_BLKSIZE,Variable tftpy.TftpServer'.MAX_BLKSIZE=tftpy.TftpServer%27-module.html#MAX_BLKSIZE,Variable tftpy.TftpShared.MAX_BLKSIZE=tftpy.TftpShared-module.html#MAX_BLKSIZE"><a title="tftpy.TftpClient'.MAX_BLKSIZE
+tftpy.TftpPacketFactory'.MAX_BLKSIZE
+tftpy.TftpServer'.MAX_BLKSIZE
+tftpy.TftpShared.MAX_BLKSIZE" class="py-name" href="#" onclick="return doclink('link-103', 'MAX_BLKSIZE', 'link-103');">MAX_BLKSIZE</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L427"></a><tt class="py-lineno">427</tt>  <tt class="py-line">                        <tt id="link-104" class="py-name"><a title="tftpy.TftpClient'.log
+tftpy.TftpPacketFactory'.log
+tftpy.TftpServer'.log
+tftpy.TftpShared.log" class="py-name" href="#" onclick="return doclink('link-104', 'log', 'link-2');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"negotiated blksize of %d bytes"</tt> <tt class="py-op">%</tt> <tt class="py-name">size</tt><tt class="py-op">)</tt> </tt>
+<a name="L428"></a><tt class="py-lineno">428</tt>  <tt class="py-line">                        <tt id="link-105" class="py-name"><a title="tftpy.TftpPacketTypes.TftpPacketWithOptions.options" class="py-name" href="#" onclick="return doclink('link-105', 'options', 'link-1');">options</a></tt><tt class="py-op">[</tt><tt class="py-name">blksize</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">size</tt> </tt>
+<a name="L429"></a><tt class="py-lineno">429</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L430"></a><tt class="py-lineno">430</tt>  <tt class="py-line">                    <tt class="py-keyword">raise</tt> <tt id="link-106" class="py-name"><a title="tftpy.TftpShared.TftpException" class="py-name" href="#" onclick="return doclink('link-106', 'TftpException', 'link-19');">TftpException</a></tt><tt class="py-op">,</tt> <tt class="py-string">"Unsupported option: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">name</tt> </tt>
+<a name="L431"></a><tt class="py-lineno">431</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+</div></div><a name="L432"></a><tt class="py-lineno">432</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="tftpy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Oct 24 00:10:22 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
