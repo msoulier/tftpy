@@ -549,12 +549,12 @@ class TftpStateServerRecvRRQ(TftpState):
             # Note: Open in binary mode for win32 portability, since win32
             # blows.
             self.context.fileobj = open(path, "rb")
-        elif self.dyn_file_func:
+        elif self.context.dyn_file_func:
             log.debug("No such file %s but using dyn_file_func" % path)
             self.context.fileobj = \
-                self.dyn_file_func(self.context.file_to_transfer)
+                self.context.dyn_file_func(self.context.file_to_transfer)
         else:
-            send.sendError(TftpErrors.FileNotFound)
+            self.sendError(TftpErrors.FileNotFound)
             raise TftpException, "File not found: %s" % path
 
         # Options negotiation.
