@@ -54,7 +54,7 @@ class TftpMetrics(object):
 class TftpContext(object):
     """The base class of the contexts."""
 
-    def __init__(self, host, port, timeout):
+    def __init__(self, host, port, timeout, dyn_file_func):
         """Constructor for the base context, setting shared instance
         variables."""
         self.file_to_transfer = None
@@ -80,6 +80,7 @@ class TftpContext(object):
         self.last_update = 0
         # The last DAT packet we sent, if applicable, to make resending easy.
         self.last_dat_pkt = None
+        self.dyn_file_func = dyn_file_func
 
     def checkTimeout(self, now):
         """Compare current time with last_update time, and raise an exception
@@ -168,7 +169,9 @@ class TftpContextServer(TftpContext):
         TftpContext.__init__(self,
                              host,
                              port,
-                             timeout)
+                             timeout,
+                             dyn_file_func
+                             )
         # At this point we have no idea if this is a download or an upload. We
         # need to let the start state determine that.
         self.state = TftpStateServerStart(self)
@@ -585,7 +588,7 @@ class TftpStateServerRecvWRQ(TftpState):
         log.info("Opening file %s for writing" % path)
         if os.path.exists(path):
             # FIXME: correct behavior?
-            log.warn("File %s exists already, overwriting...")
+            log.warn("File %s exists already, overwriting..." % self.context.file_to_transfer)
         # FIXME: I think we should upload to a temp file and not overwrite the
         # existing file until the file is successfully uploaded.
         self.context.fileobj = open(path, "wb")
