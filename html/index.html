@@ -25,22 +25,27 @@
     <div class="content">
         <a name="about" />
         <h2>About TFTPy</h2>
-        <p>TFTPy is a pure Python implementation of the
-        <a href="http://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol">Trivial FTP protocol</a>.</p>
-        <p>I wrote it because the VoIP company that I work for uses
-        TFTP to pull firmware loads for our sets, and at times when this
-        doesn't work we use a Windows-based diagnostic tool to troubleshoot
-        the connection.</p>
-        <p>As all of the computers in my home run some flavour of
-        <a href="http://en.wikipedia.org/wiki/Linux">Linux</a> or
-        <a href="http://en.wikipedia.org/wiki/Freebsd">FreeBSD</a>,
-        this tool wasn't much use to me, so I started one of my own.
-        I decided to use <a href="http://www.python.org">Python</a>
-        since it's comfortable and available for the platforms that I care
-        about, and was surprised to not find a pre-existing TFTP library for
-        it. So, I wrote one, and here it is.  It's not 1.0 yet, but
-        downloading is production-ready IMHO, as some of the people using it
-        tell me.</p>
+        <p>
+            TFTPy is a pure Python implementation of the
+            <a href="http://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol">Trivial FTP protocol</a>.
+        </p>
+        <p>
+            I wrote it because the VoIP company that I work for uses TFTP to
+            pull firmware loads for our sets, and at times when this doesn't
+            work we use a Windows-based diagnostic tool to troubleshoot the
+            connection.
+        </p>
+        <p>
+            As all of the computers in my home run some flavour of <a
+            href="http://en.wikipedia.org/wiki/Linux">Linux</a> or <a
+            href="http://en.wikipedia.org/wiki/Freebsd">FreeBSD</a>, this tool
+            wasn't much use to me, so I started one of my own.  I decided to
+            use <a href="http://www.python.org">Python</a> since it's
+            comfortable and available for the platforms that I care about, and
+            was surprised to not find a pre-existing TFTP library for it. So,
+            I wrote one, and here it is.  It's not 1.0 yet, but downloading is
+            production-ready IMHO, as some of the people using it tell me.
+        </p>
 
         <a name="features" />
         <h2>Features</h2>
@@ -68,37 +73,42 @@
 
         <a name="plans" />
         <h2>Future Plans</h2>
-        <p>I do have plans for this code before a 1.0 release, including the
-        following:
-        <ul>
-            <li>Full RFC 1350 compliance, including netascii mode (I could
-            care less about "mail" mode).</li>
-            <li>Symmetric UDP support. I don't know of an RFC for this but
-            it's a no-brainer for NAT traversal. In this mode the server
-            should always respond on the port that the RRQ was sent to, so
-            stateful firewalls will permit the response.</li>
-            <li>Documentation!</li>
-        </ul>
+        <p>
+            I do have plans for this code before a 1.0 release, including the
+            following:
+            <ul>
+                <li>Full RFC 1350 compliance, including netascii mode (I could
+                care less about "mail" mode).</li>
+                <li>Symmetric UDP support. I don't know of an RFC for this but
+                it's a no-brainer for NAT traversal. In this mode the server
+                should always respond on the port that the RRQ was sent to, so
+                stateful firewalls will permit the response.</li>
+                <li>Documentation!</li>
+            </ul>
         </p>
 
         <a name="code" />
         <h2>The Code</h2>
-        <p>You can find the latest release at the SourceForge
-        <a href="http://www.sf.net/projects/tftpy/">Project Page</a>, as a
-        source tarball. It should also be in <a
-        href="http://pypi.python.org/pypi">PyPi</a>, so you can use
-        easy_install if you prefer.</p>
+        <p>
+            You can find the latest release at the SourceForge <a
+            href="http://www.sf.net/projects/tftpy/">Project Page</a>, as a
+            source tarball. It should also be in <a
+            href="http://pypi.python.org/pypi">PyPi</a>, so you can use
+            easy_install if you prefer.
+        </p>
 
-        <p>The latest code though is always on the master branch
-        in <a href="http://github.com">Github</a>. I did use SVN in
-        SourceForge for a while, but after discovering Git I couldn't go back.
-        To clone the repository, run the following command using git
+        <p>
+            The latest code though is always on the master branch in <a
+            href="http://github.com">Github</a>. I did use SVN in SourceForge
+            for a while, but after discovering Git I couldn't go back.  To
+            clone the repository, run the following command using git
         <pre>
     git clone git://github.com/msoulier/tftpy.git
         </pre>
-        Patches welcome, even if I can't guarantee response time. You can
-        of course send me the url of a public git repository to pull from
-        as well.</p>
+            Patches welcome, even if I can't guarantee response time. You can
+            of course send me the url of a public git repository to pull from
+            as well.
+        </p>
 
         <p>The Github project page is <a
         href="http://github.com/msoulier/tftpy/tree/master">right
@@ -114,8 +124,7 @@
             is a direct link</a> if you'd like to join.</p>
         <p>
             Feel free to <a href="mailto:msoulier@digitaltorque.ca">email me</a>
-            with any questions, or contact me through github. I'm also
-            "msoulier" in <a href="http://identi.ca">identi.ca</a>.
+            with any questions, or contact me through github.
         </p>
 
         <p>
@@ -127,9 +136,11 @@
 
         <a name="doc" />
         <h2>Documentation</h2>
-        <p>For now, all I have is the
-        <a href="tftpy-doc/index.html">API docs</a>. I'll have to work up a
-        tutorial and a manual at some point.</p>
+        <p>
+            For now, all I have is the
+            <a href="tftpy-doc/index.html">API docs</a>. I'll have to work up
+            a tutorial and a manual at some point.
+        </p>
 
         <hr />
 
