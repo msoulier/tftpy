@@ -15,7 +15,7 @@ setup(name='tftpy',
         'Environment :: Console',
         'Environment :: No Input/Output (Daemon)',
         'Intended Audience :: Developers',
-        'License :: OSI-Approved Open Source :: MIT License',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Topic :: Internet',
         ]
