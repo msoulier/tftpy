@@ -56,7 +56,7 @@ class TftpServer(TftpSession):
         log.info("Server requested on ip %s, port %s"
                 % (listenip, listenport))
         try:
-            # FIXME - sockets should be non-blocking?
+            # FIXME - sockets should be non-blocking
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sock.bind((listenip, listenport))
         except socket.error, err:
@@ -106,6 +106,9 @@ class TftpServer(TftpSession):
                     else:
                         log.warn("received traffic on main socket for "
                                  "existing session??")
+                    log.info("Currently handling these sessions:")
+                    for session_key, session in self.sessions.items():
+                        log.info("    %s" % session)
 
                 else:
                     # Must find the owner of this traffic.
@@ -156,6 +159,7 @@ class TftpServer(TftpSession):
                     log.info("%d duplicate packets" % metrics.dupcount)
                     log.debug("Deleting session %s" % key)
                     del self.sessions[key]
+                    log.debug("Session list is now %s" % self.sessions)
                 else:
                     log.warn("Strange, session %s is not on the deletion list"
                         % key)

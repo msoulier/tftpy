@@ -16,7 +16,10 @@ def main():
                       default=69)
     parser.add_option('-f',
                       '--filename',
-                      help='filename to fetch')
+                      help='filename to fetch (deprecated, use download)')
+    parser.add_option('-D',
+                      '--download',
+                      help='filename to download')
     parser.add_option('-u',
                       '--upload',
                       help='filename to upload')
@@ -46,7 +49,10 @@ def main():
                       default=False,
                       help="ask client to send tsize option in download")
     options, args = parser.parse_args()
-    if not options.host or (not options.filename and not options.upload):
+    # Handle legacy --filename argument.
+    if options.filename:
+        options.download = options.filename
+    if not options.host or (not options.download and not options.upload):
         sys.stderr.write("Both the --host and --filename options "
                          "are required.\n")
         parser.print_help()
@@ -88,10 +94,10 @@ def main():
                                int(options.port),
                                tftp_options)
     try:
-        if options.filename:
+        if options.download:
             if not options.output:
-                options.output = os.path.basename(options.filename)
-            tclient.download(options.filename,
+                options.output = os.path.basename(options.download)
+            tclient.download(options.download,
                             options.output,
                             progresshook)
         elif options.upload:

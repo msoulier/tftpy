@@ -179,7 +179,10 @@ class TftpContextServer(TftpContext):
         self.dyn_file_func = dyn_file_func
         # In a server, the tidport is the same as the port. This is also true
         # with symmetric UDP, which we haven't implemented yet.
-        self.tidport = port
+        #self.tidport = port
+
+    def __str__(self):
+        return "%s:%s %s" % (self.host, self.port, self.state)
 
     def start(self, buffer):
         """Start the state cycle. Note that the server context receives an
@@ -227,11 +230,14 @@ class TftpContextClientUpload(TftpContext):
         self.file_to_transfer = filename
         self.options = options
         self.packethook = packethook
-        self.fileobj = open(input, "wb")
+        self.fileobj = open(input, "rb")
 
         log.debug("TftpContextClientUpload.__init__()")
         log.debug("file_to_transfer = %s, options = %s" %
             (self.file_to_transfer, self.options))
+
+    def __str__(self):
+        return "%s:%s %s" % (self.host, self.port, self.state)
 
     def start(self):
         log.info("Sending tftp upload request to %s" % self.host)
@@ -289,6 +295,9 @@ class TftpContextClientDownload(TftpContext):
         log.debug("TftpContextClientDownload.__init__()")
         log.debug("file_to_transfer = %s, options = %s" %
             (self.file_to_transfer, self.options))
+
+    def __str__(self):
+        return "%s:%s %s" % (self.host, self.port, self.state)
 
     def start(self):
         """Initiate the download."""
@@ -392,6 +401,9 @@ class TftpState(object):
         it is required to send an OACK to the client."""
         options = pkt.options
         sendoack = False
+        if not self.context.tidport:
+            self.context.tidport = rport
+            log.info("Setting tidport to %s" % rport)
         if not options:
             log.debug("Setting default options, blksize")
             # FIXME: put default options elsewhere
@@ -458,7 +470,7 @@ class TftpState(object):
         self.context.metrics.bytes += len(dat.data)
         log.debug("Sending DAT packet %d" % dat.blocknumber)
         self.context.sock.sendto(dat.encode().buffer,
-                                 (self.context.host, self.context.port))
+                                 (self.context.host, self.context.tidport))
         if self.context.packethook:
             self.context.packethook(dat)
         self.context.last_dat_pkt = dat
@@ -566,6 +578,7 @@ class TftpStateServerRecvRRQ(TftpState):
             # acknowledgement to an OACK.
             # FIXME: perhaps we do need a TftpStateExpectOACK class...
             self.sendOACK()
+            # Note, self.context.next_block is already 0.
         else:
             self.context.next_block = 1
             log.debug("No requested options, starting send...")
@@ -598,8 +611,11 @@ class TftpStateServerRecvWRQ(TftpState):
             log.debug("Sending OACK to client")
             self.sendOACK()
         else:
-            log.debug("No requested options, starting send...")
+            log.debug("No requested options, expecting transfer to begin...")
             self.sendACK()
+        # Whether we're sending an oack or not, we're expecting a DAT for
+        # block 1
+        self.context.next_block = 1
         # We may have sent an OACK, but we're expecting a DAT as the response
         # to either the OACK or an ACK, so lets unconditionally use the
         # TftpStateExpectDAT state.
@@ -609,7 +625,9 @@ class TftpStateServerRecvWRQ(TftpState):
         # up to the caller.
 
 class TftpStateServerStart(TftpState):
-    """The start state for the server."""
+    """The start state for the server. This is a transitory state since at
+    this point we don't know if we're handling an upload or a download. We
+    will commit to one of them once we interpret the initial packet."""
     def handle(self, pkt, raddress, rport):
         """Handle a packet we just received."""
         log.debug("In TftpStateServerStart.handle")
@@ -754,7 +772,7 @@ class TftpStateSentRRQ(TftpState):
         """Handle the packet in response to an RRQ to the server."""
         if not self.context.tidport:
             self.context.tidport = rport
-            log.debug("Set remote port for session to %s" % rport)
+            log.info("Set remote port for session to %s" % rport)
 
         # Now check the packet type and dispatch it properly.
         if isinstance(pkt, TftpPacketOACK):
