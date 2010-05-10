@@ -70,23 +70,20 @@ This library was developed against Python 2.3+.
 
 Trifles:
 --------
+Home page: http://tftpy.sf.net/
 Project page: http://sourceforge.net/projects/tftpy/
 
-License is the CNRI Python License.
-http://www.opensource.org/licenses/pythonpl.php
+License is the MIT License
 
 See COPYING in this distribution.
 
 Limitations:
 ------------
-- Server only supports downloads.
-- Client only supports downloads.
 - Only 'octet' mode is supported.
 - The only options supported are blksize and tsize.
 
 Future:
 -------
-- Upload support
 - netascii support
 - More complete test harness
 
