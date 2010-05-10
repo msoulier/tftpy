@@ -1,5 +1,10 @@
 Copyright, Michael P. Soulier, 2006.
 
+About Release 0.5.0:
+====================
+Complete rewrite of the state machine.
+Now fully implements downloading and uploading.
+
 About Release 0.4.6:
 ====================
 Feature release to add the tsize option. 
@@ -66,7 +71,7 @@ easy inclusion in a UI for populating progress indicators. It supports RFCs
 
 Dependencies:
 -------------
-This library was developed against Python 2.3+.
+Python 2.3+, hopefully. Let me know if it fails to work.
 
 Trifles:
 --------
