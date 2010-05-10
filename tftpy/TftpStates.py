@@ -82,6 +82,12 @@ class TftpContext(object):
         self.last_dat_pkt = None
         self.dyn_file_func = dyn_file_func
 
+    def __del__(self):
+        """Simple destructor to try to call housekeeping in the end method if
+        not called explicitely. Leaking file descriptors is not a good
+        thing."""
+        self.end()
+
     def checkTimeout(self, now):
         """Compare current time with last_update time, and raise an exception
         if we're over SOCK_TIMEOUT time."""
@@ -92,7 +98,13 @@ class TftpContext(object):
         raise NotImplementedError, "Abstract method"
 
     def end(self):
-        raise NotImplementedError, "Abstract method"
+        """Perform session cleanup, since the end method should always be
+        called explicitely by the calling code, this works better than the
+        destructor."""
+        log.debug("in TftpContext.end")
+        if not self.fileobj.closed:
+            log.debug("self.fileobj is open - closing")
+            self.fileobj.close()
 
     def gethost(self):
         "Simple getter method for use in a property."
@@ -177,9 +189,6 @@ class TftpContextServer(TftpContext):
         self.state = TftpStateServerStart(self)
         self.root = root
         self.dyn_file_func = dyn_file_func
-        # In a server, the tidport is the same as the port. This is also true
-        # with symmetric UDP, which we haven't implemented yet.
-        #self.tidport = port
 
     def __str__(self):
         return "%s:%s %s" % (self.host, self.port, self.state)
@@ -204,11 +213,9 @@ class TftpContextServer(TftpContext):
                                        self.host,
                                        self.port)
 
-        # FIXME
-        # How do we ensure that the server closes files, even on error?
-
     def end(self):
         """Finish up the context."""
+        TftpContext.end(self)
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
         self.metrics.compute()
@@ -257,15 +264,13 @@ class TftpContextClientUpload(TftpContext):
 
         self.state = TftpStateSentWRQ(self)
 
-        try:
-            while self.state:
-                log.debug("State is %s" % self.state)
-                self.cycle()
-        finally:
-            self.fileobj.close()
+        while self.state:
+            log.debug("State is %s" % self.state)
+            self.cycle()
 
     def end(self):
         """Finish up the context."""
+        TftpContext.end(self)
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
         self.metrics.compute()
@@ -318,19 +323,16 @@ class TftpContextClientDownload(TftpContext):
 
         self.state = TftpStateSentRRQ(self)
 
-        try:
-            while self.state:
-                log.debug("State is %s" % self.state)
-                self.cycle()
-        finally:
-            self.fileobj.close()
+        while self.state:
+            log.debug("State is %s" % self.state)
+            self.cycle()
 
     def end(self):
         """Finish up the context."""
+        TftpContext.end(self)
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
         self.metrics.compute()
-
 
 ###############################################################################
 # State classes
@@ -480,7 +482,7 @@ class TftpState(object):
         """This method sends an ack packet to the block number specified. If
         none is specified, it defaults to the next_block property in the
         parent context."""
-        log.debug("In sendACK, blocknumber is %s" % blocknumber)
+        log.debug("In sendACK, passed blocknumber is %s" % blocknumber)
         if blocknumber is None:
             blocknumber = self.context.next_block
         log.info("Sending ack to block %d" % blocknumber)

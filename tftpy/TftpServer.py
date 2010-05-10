@@ -126,6 +126,8 @@ class TftpServer(TftpSession):
                                 log.error("Fatal exception thrown from "
                                           "session %s: %s"
                                           % (key, str(err)))
+                            # Break out of for loop since we found the correct
+                            # session.
                             break
 
                     else:
@@ -152,7 +154,7 @@ class TftpServer(TftpSession):
                     if metrics.duration == 0:
                         log.info("Duration too short, rate undetermined")
                     else:
-                        log.info("Transferred %.2f bytes in %.2f seconds"
+                        log.info("Transferred %d bytes in %.2f seconds"
                             % (metrics.bytes, metrics.duration))
                         log.info("Average rate: %.2f kbps" % metrics.kbps)
                     log.info("%.2f bytes in resent data" % metrics.resent_bytes)

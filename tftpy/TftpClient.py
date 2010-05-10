@@ -85,7 +85,7 @@ class TftpClient(TftpSession):
         if metrics.duration == 0:
             log.info("Duration too short, rate undetermined")
         else:
-            log.info("Uploaded %.2f bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
+            log.info("Uploaded %d bytes in %.2f seconds" % (metrics.bytes, metrics.duration))
             log.info("Average rate: %.2f kbps" % metrics.kbps)
         log.info("%.2f bytes in resent data" % metrics.resent_bytes)
         log.info("Resent %d packets" % metrics.dupcount)
