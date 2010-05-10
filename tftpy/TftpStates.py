@@ -54,7 +54,7 @@ class TftpMetrics(object):
 class TftpContext(object):
     """The base class of the contexts."""
 
-    def __init__(self, host, port, timeout, dyn_file_func):
+    def __init__(self, host, port, timeout, dyn_file_func=None):
         """Constructor for the base context, setting shared instance
         variables."""
         self.file_to_transfer = None
@@ -165,7 +165,7 @@ class TftpContext(object):
 
 class TftpContextServer(TftpContext):
     """The context for the server."""
-    def __init__(self, host, port, timeout, root, dyn_file_func):
+    def __init__(self, host, port, timeout, root, dyn_file_func=None):
         TftpContext.__init__(self,
                              host,
                              port,
