@@ -743,7 +743,7 @@ class TftpStateSentWRQ(TftpState):
             if pkt.blocknumber == 0:
                 log.debug("Ack blocknumber is zero as expected")
                 log.debug("Sending first DAT packet")
-                self.pending_complete = self.context.sendDAT()
+                self.context.pending_complete = self.sendDAT()
                 log.debug("Changing state to TftpStateExpectACK")
                 return TftpStateExpectACK(self.context)
             else:
