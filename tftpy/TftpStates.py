@@ -30,6 +30,8 @@ class TftpMetrics(object):
     def compute(self):
         # Compute transfer time
         self.duration = self.end_time - self.start_time
+        if self.duration == 0:
+            self.duration = 1
         log.debug("TftpMetrics.compute: duration is %s" % self.duration)
         self.bps = (self.bytes * 8.0) / self.duration
         self.kbps = self.bps / 1024.0
