@@ -408,13 +408,14 @@ class TftpState(object):
         if not self.context.tidport:
             self.context.tidport = rport
             log.info("Setting tidport to %s" % rport)
-        if not options:
-            log.debug("Setting default options, blksize")
-            # FIXME: put default options elsewhere
-            self.context.options = { 'blksize': DEF_BLKSIZE }
-        else:
+
+        log.debug("Setting default options, blksize")
+        self.context.options = { 'blksize': DEF_BLKSIZE }
+
+        if options:
             log.debug("Options requested: %s" % options)
-            self.context.options = self.returnSupportedOptions(options)
+            supported_options = self.returnSupportedOptions(options)
+            self.context.options.update(supported_options)
             sendoack = True
 
         # FIXME - only octet mode is supported at this time.
