@@ -1,7 +1,7 @@
 from TftpShared import *
 from TftpPacketTypes import *
 from TftpPacketFactory import *
-import socket, time, os
+import socket, time, os, sys
 
 ###############################################################################
 # Utility classes
@@ -223,7 +223,8 @@ class TftpContextServer(TftpContext):
         self.metrics.compute()
 
 class TftpContextClientUpload(TftpContext):
-    """The upload context for the client during an upload."""
+    """The upload context for the client during an upload.
+    Note: If input is a hyphen, then we will use stdin."""
     def __init__(self,
                  host,
                  port,
@@ -239,7 +240,10 @@ class TftpContextClientUpload(TftpContext):
         self.file_to_transfer = filename
         self.options = options
         self.packethook = packethook
-        self.fileobj = open(input, "rb")
+        if input == '-':
+            self.fileobj = sys.stdin
+        else:
+            self.fileobj = open(input, "rb")
 
         log.debug("TftpContextClientUpload.__init__()")
         log.debug("file_to_transfer = %s, options = %s" %
@@ -278,7 +282,8 @@ class TftpContextClientUpload(TftpContext):
         self.metrics.compute()
 
 class TftpContextClientDownload(TftpContext):
-    """The download context for the client during a download."""
+    """The download context for the client during a download.
+    Note: If output is a hyphen, then the output will be sent to stdout."""
     def __init__(self,
                  host,
                  port,
@@ -297,7 +302,11 @@ class TftpContextClientDownload(TftpContext):
         self.packethook = packethook
         # FIXME - need to support alternate return formats than files?
         # File-like objects would be ideal, ala duck-typing.
-        self.fileobj = open(output, "wb")
+        # If the filename is -, then use stdout
+        if output == '-':
+            self.fileobj = sys.stdout
+        else:
+            self.fileobj = open(output, "wb")
 
         log.debug("TftpContextClientDownload.__init__()")
         log.debug("file_to_transfer = %s, options = %s" %

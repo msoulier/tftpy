@@ -33,7 +33,9 @@ class TftpClient(TftpSession):
         copy of each DAT packet received in the form of a TftpPacketDAT
         object. The timeout parameter may be used to override the default
         SOCK_TIMEOUT setting, which is the amount of time that the client will
-        wait for a receive packet to arrive."""
+        wait for a receive packet to arrive.
+
+        Note: If output is a hyphen then stdout is used."""
         # We're downloading.
         log.debug("Creating download context with the following params:")
         log.debug("host = %s, port = %s, filename = %s, output = %s"
@@ -64,6 +66,7 @@ class TftpClient(TftpSession):
         log.info("Received %d duplicate packets" % metrics.dupcount)
 
     def upload(self, filename, input, packethook=None, timeout=SOCK_TIMEOUT):
+        """Note: If input is a hyphen then stdin is used."""
         # Open the input file.
         # FIXME: As of the state machine, this is now broken. Need to
         # implement with new state machine.

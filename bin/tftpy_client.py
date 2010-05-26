@@ -29,10 +29,10 @@ def main():
                       default=512)
     parser.add_option('-o',
                       '--output',
-                      help='output file (default: same as requested filename)')
+                      help='output file, - for stdout (default: same as download)')
     parser.add_option('-i',
                       '--input',
-                      help='input file (default: same as upload filename)')
+                      help='input file, - for stdin (default: same as upload)')
     parser.add_option('-d',
                       '--debug',
                       action='store_true',
