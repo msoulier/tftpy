@@ -4,7 +4,7 @@ import unittest
 import logging
 import tftpy
 
-log = tftpy.logger
+log = tftpy.log
 
 class TestTftpy(unittest.TestCase):
 
