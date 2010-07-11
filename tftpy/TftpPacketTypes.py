@@ -1,3 +1,6 @@
+"""This module implements the packet types of TFTP itself, and the
+corresponding encode and decode methods for them."""
+
 import struct
 from TftpShared import *
 
@@ -198,10 +201,12 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
 
 class TftpPacketRRQ(TftpPacketInitial):
     """
-        2 bytes    string   1 byte     string   1 byte
-        -----------------------------------------------
-RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |
-WRQ     -----------------------------------------------
+::
+
+            2 bytes    string   1 byte     string   1 byte
+            -----------------------------------------------
+    RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |
+    WRQ     -----------------------------------------------
     """
     def __init__(self):
         TftpPacketInitial.__init__(self)
@@ -216,10 +221,12 @@ WRQ     -----------------------------------------------
 
 class TftpPacketWRQ(TftpPacketInitial):
     """
-        2 bytes    string   1 byte     string   1 byte
-        -----------------------------------------------
-RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |
-WRQ     -----------------------------------------------
+::
+
+            2 bytes    string   1 byte     string   1 byte
+            -----------------------------------------------
+    RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |
+    WRQ     -----------------------------------------------
     """
     def __init__(self):
         TftpPacketInitial.__init__(self)
@@ -234,10 +241,12 @@ WRQ     -----------------------------------------------
 
 class TftpPacketDAT(TftpPacket):
     """
-        2 bytes    2 bytes       n bytes
-        ---------------------------------
-DATA  | 03    |   Block #  |    Data    |
-        ---------------------------------
+::
+
+            2 bytes    2 bytes       n bytes
+            ---------------------------------
+    DATA  | 03    |   Block #  |    Data    |
+            ---------------------------------
     """
     def __init__(self):
         TftpPacket.__init__(self)
@@ -280,10 +289,12 @@ DATA  | 03    |   Block #  |    Data    |
 
 class TftpPacketACK(TftpPacket):
     """
-        2 bytes    2 bytes
-        -------------------
-ACK   | 04    |   Block #  |
-        --------------------
+::
+
+            2 bytes    2 bytes
+            -------------------
+    ACK   | 04    |   Block #  |
+            --------------------
     """
     def __init__(self):
         TftpPacket.__init__(self)
@@ -307,10 +318,13 @@ ACK   | 04    |   Block #  |
 
 class TftpPacketERR(TftpPacket):
     """
-        2 bytes  2 bytes        string    1 byte
-        ----------------------------------------
-ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
-        ----------------------------------------
+::
+
+            2 bytes  2 bytes        string    1 byte
+            ----------------------------------------
+    ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
+            ----------------------------------------
+
     Error Codes
 
     Value     Meaning
@@ -382,9 +396,11 @@ ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
 
 class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
     """
-    #  +-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+
-    #  |  opc  |  opt1  | 0 | value1 | 0 |  optN  | 0 | valueN | 0 |
-    #  +-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+
+::
+
+    +-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+
+    |  opc  |  opt1  | 0 | value1 | 0 |  optN  | 0 | valueN | 0 |
+    +-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+
     """
     def __init__(self):
         TftpPacket.__init__(self)

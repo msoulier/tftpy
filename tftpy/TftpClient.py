@@ -1,3 +1,5 @@
+"""This module implements the TFTP Client functionality."""
+
 import time, types
 from TftpShared import *
 from TftpPacketFactory import *
