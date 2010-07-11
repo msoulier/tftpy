@@ -35,6 +35,11 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
+install-html: html
+	rm -rf ../html/sphinx
+	mkdir -p ../html/sphinx
+	cp -R _build/html/* ../html/sphinx
+
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
 	@echo
