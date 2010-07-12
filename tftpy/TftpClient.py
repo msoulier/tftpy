@@ -1,4 +1,6 @@
-"""This module implements the TFTP Client functionality."""
+"""This module implements the TFTP Client functionality. Instantiate an
+instance of the client, and then use its upload or download method. Logging is
+performed via a standard logging object set in TftpShared."""
 
 import time, types
 from TftpShared import *
@@ -7,10 +9,10 @@ from TftpStates import TftpContextClientDownload, TftpContextClientUpload
 
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client. Once instantiated, a
-    download can be initiated via the download() method."""
+    download can be initiated via the download() method, or an upload via the
+    upload() method."""
+
     def __init__(self, host, port, options={}):
-        """This constructor returns an instance of TftpClient, taking the
-        remote host, the remote port, and the filename to fetch."""
         TftpSession.__init__(self)
         self.context = None
         self.host = host
@@ -68,7 +70,15 @@ class TftpClient(TftpSession):
         log.info("Received %d duplicate packets" % metrics.dupcount)
 
     def upload(self, filename, input, packethook=None, timeout=SOCK_TIMEOUT):
-        """Note: If input is a hyphen then stdin is used."""
+        """This method initiates a tftp upload to the configured remote host,
+        uploading the filename passed.  If a packethook is provided, it must
+        be a function that takes a single parameter, which will be a copy of
+        each DAT packet sent in the form of a TftpPacketDAT object. The
+        timeout parameter may be used to override the default SOCK_TIMEOUT
+        setting, which is the amount of time that the client will wait for a
+        DAT packet to be ACKd by the server.
+
+        Note: If output is a hyphen then stdout is used."""
         # Open the input file.
         # FIXME: As of the state machine, this is now broken. Need to
         # implement with new state machine.

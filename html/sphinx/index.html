@@ -56,21 +56,30 @@
 </div>
 <div class="section" id="api-documentation">
 <h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="front-end-modules">
+<h2>Front-end Modules<a class="headerlink" href="#front-end-modules" title="Permalink to this headline">¶</a></h2>
+<p>These modules are the ones that you will need to use directly to implement a
+TFTP client or server.</p>
 <div class="section" id="module-tftpy">
-<h2>TFTPy Module<a class="headerlink" href="#module-tftpy" title="Permalink to this headline">¶</a></h2>
+<h3>TFTPy Module<a class="headerlink" href="#module-tftpy" title="Permalink to this headline">¶</a></h3>
 <p>This library implements the tftp protocol, based on rfc 1350.
 <a class="reference external" href="http://www.faqs.org/rfcs/rfc1350.html">http://www.faqs.org/rfcs/rfc1350.html</a>
 At the moment it implements only a client class, but will include a server,
 with support for variable block sizes.</p>
+<p>As a client of tftpy, this is the only module that you should need to import
+directly. The TftpClient and TftpServer classes can be reached through it.</p>
 </div>
 <div class="section" id="module-tftpy.TftpClient">
-<h2>tftpy.TftpClient<a class="headerlink" href="#module-tftpy.TftpClient" title="Permalink to this headline">¶</a></h2>
-<p>This module implements the TFTP Client functionality.</p>
+<h3>tftpy.TftpClient<a class="headerlink" href="#module-tftpy.TftpClient" title="Permalink to this headline">¶</a></h3>
+<p>This module implements the TFTP Client functionality. Instantiate an
+instance of the client, and then use its upload or download method. Logging is
+performed via a standard logging object set in TftpShared.</p>
 <dl class="class">
 <dt id="tftpy.TftpClient.TftpClient">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpClient.</tt><tt class="descname">TftpClient</tt><big>(</big><em>host</em>, <em>port</em>, <em>options={}</em><big>)</big><a class="headerlink" href="#tftpy.TftpClient.TftpClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class is an implementation of a tftp client. Once instantiated, a
-download can be initiated via the download() method.</p>
+download can be initiated via the download() method, or an upload via the
+upload() method.</p>
 <dl class="method">
 <dt id="tftpy.TftpClient.TftpClient.download">
 <tt class="descname">download</tt><big>(</big><em>filename</em>, <em>output</em>, <em>packethook=None</em>, <em>timeout=5</em><big>)</big><a class="headerlink" href="#tftpy.TftpClient.TftpClient.download" title="Permalink to this definition">¶</a></dt>
@@ -88,13 +97,52 @@ wait for a receive packet to arrive.</p>
 <dl class="method">
 <dt id="tftpy.TftpClient.TftpClient.upload">
 <tt class="descname">upload</tt><big>(</big><em>filename</em>, <em>input</em>, <em>packethook=None</em>, <em>timeout=5</em><big>)</big><a class="headerlink" href="#tftpy.TftpClient.TftpClient.upload" title="Permalink to this definition">¶</a></dt>
-<dd>Note: If input is a hyphen then stdin is used.</dd></dl>
+<dd><p>This method initiates a tftp upload to the configured remote host,
+uploading the filename passed.  If a packethook is provided, it must
+be a function that takes a single parameter, which will be a copy of
+each DAT packet sent in the form of a TftpPacketDAT object. The
+timeout parameter may be used to override the default SOCK_TIMEOUT
+setting, which is the amount of time that the client will wait for a
+DAT packet to be ACKd by the server.</p>
+<p>Note: If output is a hyphen then stdout is used.</p>
+</dd></dl>
 
 </dd></dl>
 
 </div>
+<div class="section" id="module-tftpy.TftpServer">
+<h3>tftpy.TftpServer<a class="headerlink" href="#module-tftpy.TftpServer" title="Permalink to this headline">¶</a></h3>
+<p>This module implements the TFTP Server functionality. Instantiate an
+instance of the server, and then run the listen() method to listen for client
+requests. Logging is performed via a standard logging object set in
+TftpShared.</p>
+<dl class="class">
+<dt id="tftpy.TftpServer.TftpServer">
+<em class="property">class </em><tt class="descclassname">tftpy.TftpServer.</tt><tt class="descname">TftpServer</tt><big>(</big><em>tftproot='/tftpboot'</em>, <em>dyn_file_func=None</em><big>)</big><a class="headerlink" href="#tftpy.TftpServer.TftpServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class implements a tftp server object. Run the listen() method to
+listen for client requests.  It takes two optional arguments. tftproot is
+the path to the tftproot directory to serve files from and/or write them
+to. dyn_file_func is a callable that must return a file-like object to
+read from during downloads. This permits the serving of dynamic
+content.</p>
+<dl class="method">
+<dt id="tftpy.TftpServer.TftpServer.listen">
+<tt class="descname">listen</tt><big>(</big><em>listenip=''</em>, <em>listenport=69</em>, <em>timeout=5</em><big>)</big><a class="headerlink" href="#tftpy.TftpServer.TftpServer.listen" title="Permalink to this definition">¶</a></dt>
+<dd>Start a server listening on the supplied interface and port. This
+defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
+supply a different socket timeout value, if desired.</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="back-end-modules">
+<h2>Back-end Modules<a class="headerlink" href="#back-end-modules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="module-tftpy.TftpPacketFactory">
-<h2>tftpy.TftpPacketFactory<a class="headerlink" href="#module-tftpy.TftpPacketFactory" title="Permalink to this headline">¶</a></h2>
+<h3>tftpy.TftpPacketFactory<a class="headerlink" href="#module-tftpy.TftpPacketFactory" title="Permalink to this headline">¶</a></h3>
+<p>This module implements the TftpPacketFactory class, which can take a binary
+buffer, and return the appropriate TftpPacket object to represent it, via the
+parse() method.</p>
 <dl class="class">
 <dt id="tftpy.TftpPacketFactory.TftpPacketFactory">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpPacketFactory.</tt><tt class="descname">TftpPacketFactory</tt><a class="headerlink" href="#tftpy.TftpPacketFactory.TftpPacketFactory" title="Permalink to this definition">¶</a></dt>
@@ -112,7 +160,7 @@ the network.</dd></dl>
 
 </div>
 <div class="section" id="module-tftpy.TftpPacketTypes">
-<h2>tftpy.TftpPacketTypes<a class="headerlink" href="#module-tftpy.TftpPacketTypes" title="Permalink to this headline">¶</a></h2>
+<h3>tftpy.TftpPacketTypes<a class="headerlink" href="#module-tftpy.TftpPacketTypes" title="Permalink to this headline">¶</a></h3>
 <p>This module implements the packet types of TFTP itself, and the
 corresponding encode and decode methods for them.</p>
 <dl class="class">
@@ -282,24 +330,9 @@ values.</dd></dl>
 code should be in this class.</dd></dl>
 
 </div>
-<div class="section" id="module-tftpy.TftpServer">
-<h2>tftpy.TftpServer<a class="headerlink" href="#module-tftpy.TftpServer" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="tftpy.TftpServer.TftpServer">
-<em class="property">class </em><tt class="descclassname">tftpy.TftpServer.</tt><tt class="descname">TftpServer</tt><big>(</big><em>tftproot='/tftpboot'</em>, <em>dyn_file_func=None</em><big>)</big><a class="headerlink" href="#tftpy.TftpServer.TftpServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class implements a tftp server object.</p>
-<dl class="method">
-<dt id="tftpy.TftpServer.TftpServer.listen">
-<tt class="descname">listen</tt><big>(</big><em>listenip=''</em>, <em>listenport=69</em>, <em>timeout=5</em><big>)</big><a class="headerlink" href="#tftpy.TftpServer.TftpServer.listen" title="Permalink to this definition">¶</a></dt>
-<dd>Start a server listening on the supplied interface and port. This
-defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
-supply a different socket timeout value, if desired.</dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="module-tftpy.TftpShared">
-<h2>tftpy.TftpShared<a class="headerlink" href="#module-tftpy.TftpShared" title="Permalink to this headline">¶</a></h2>
+<h3>tftpy.TftpShared<a class="headerlink" href="#module-tftpy.TftpShared" title="Permalink to this headline">¶</a></h3>
+<p>This module holds all objects shared by all other modules in tftpy.</p>
 <dl class="class">
 <dt id="tftpy.TftpShared.TftpErrors">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpShared.</tt><tt class="descname">TftpErrors</tt><a class="headerlink" href="#tftpy.TftpShared.TftpErrors" title="Permalink to this definition">¶</a></dt>
@@ -329,7 +362,16 @@ by refactoring.</dd></dl>
 
 </div>
 <div class="section" id="module-tftpy.TftpStates">
-<h2>tftpy.TftpStates<a class="headerlink" href="#module-tftpy.TftpStates" title="Permalink to this headline">¶</a></h2>
+<h3>tftpy.TftpStates<a class="headerlink" href="#module-tftpy.TftpStates" title="Permalink to this headline">¶</a></h3>
+<p>This module implements all state handling during uploads and downloads, the
+main interface to which being the TftpContext base class and the TftpState
+base class.</p>
+<p>The concept is simple. Each context object represents a single upload or
+download, and the state object in the context object represents the current
+state of that transfer. The state object has a handle() method that expects
+the next packet in the transfer, and returns a state object until the transfer
+is complete, at which point it returns None. That is, unless there is a fatal
+error, in which case a TftpException is returned instead.</p>
 <dl class="class">
 <dt id="tftpy.TftpStates.TftpContext">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpStates.</tt><tt class="descname">TftpContext</tt><big>(</big><em>host</em>, <em>port</em>, <em>timeout</em>, <em>dyn_file_func=None</em><big>)</big><a class="headerlink" href="#tftpy.TftpStates.TftpContext" title="Permalink to this definition">¶</a></dt>
@@ -581,6 +623,7 @@ will commit to one of them once we interpret the initial packet.</p>
 
 </div>
 </div>
+</div>
 
 
           </div>
@@ -595,13 +638,19 @@ will commit to one of them once we interpret the initial packet.</p>
 </li>
 <li><a class="reference external" href="#indices-and-tables">Indices and tables</a></li>
 <li><a class="reference external" href="#api-documentation">API Documentation</a><ul>
+<li><a class="reference external" href="#front-end-modules">Front-end Modules</a><ul>
 <li><a class="reference external" href="#module-tftpy">TFTPy Module</a></li>
 <li><a class="reference external" href="#module-tftpy.TftpClient">tftpy.TftpClient</a></li>
+<li><a class="reference external" href="#module-tftpy.TftpServer">tftpy.TftpServer</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#back-end-modules">Back-end Modules</a><ul>
 <li><a class="reference external" href="#module-tftpy.TftpPacketFactory">tftpy.TftpPacketFactory</a></li>
 <li><a class="reference external" href="#module-tftpy.TftpPacketTypes">tftpy.TftpPacketTypes</a></li>
-<li><a class="reference external" href="#module-tftpy.TftpServer">tftpy.TftpServer</a></li>
 <li><a class="reference external" href="#module-tftpy.TftpShared">tftpy.TftpShared</a></li>
 <li><a class="reference external" href="#module-tftpy.TftpStates">tftpy.TftpStates</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -642,7 +691,7 @@ will commit to one of them once we interpret the initial packet.</p>
     </div>
     <div class="footer">
       &copy; Copyright 2010, Michael P. Soulier.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.5.
     </div>
   </body>
 </html>

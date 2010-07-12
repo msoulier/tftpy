@@ -1,3 +1,8 @@
+"""This module implements the TFTP Server functionality. Instantiate an
+instance of the server, and then run the listen() method to listen for client
+requests. Logging is performed via a standard logging object set in
+TftpShared."""
+
 import socket, os, re, time, random
 import select
 from TftpShared import *
@@ -6,14 +11,14 @@ from TftpPacketFactory import *
 from TftpStates import *
 
 class TftpServer(TftpSession):
-    """This class implements a tftp server object."""
+    """This class implements a tftp server object. Run the listen() method to
+    listen for client requests.  It takes two optional arguments. tftproot is
+    the path to the tftproot directory to serve files from and/or write them
+    to. dyn_file_func is a callable that must return a file-like object to
+    read from during downloads. This permits the serving of dynamic
+    content."""
 
     def __init__(self, tftproot='/tftpboot', dyn_file_func=None):
-        """Class constructor. It takes two optional arguments. tftproot is
-        the path to the tftproot directory to serve files from and/or write
-        them to. dyn_file_func is a callable that must return a file-like
-        object to read from during downloads. This permits the serving of
-        dynamic content."""
         self.listenip = None
         self.listenport = None
         self.sock = None

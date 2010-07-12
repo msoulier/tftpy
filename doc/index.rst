@@ -21,37 +21,45 @@ Indices and tables
 API Documentation
 =================
 
+Front-end Modules
+-----------------
+These modules are the ones that you will need to use directly to implement a
+TFTP client or server.
+
 TFTPy Module
-------------
+~~~~~~~~~~~~
 .. automodule:: tftpy
    :members:
 
 tftpy.TftpClient
-----------------
+~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpClient
    :members:
 
+tftpy.TftpServer
+~~~~~~~~~~~~~~~~
+.. automodule:: tftpy.TftpServer
+   :members:
+
+Back-end Modules
+----------------
+
 tftpy.TftpPacketFactory
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpPacketFactory
    :members:
 
 tftpy.TftpPacketTypes
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpPacketTypes
    :members:
 
-tftpy.TftpServer
-----------------
-.. automodule:: tftpy.TftpServer
-   :members:
-
 tftpy.TftpShared
-----------------
+~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpShared
    :members:
 
 tftpy.TftpStates
-----------------
+~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpStates
    :members:
