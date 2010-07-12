@@ -3,20 +3,28 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to TFTPy's documentation!
-=================================
+TFTPy
+=====
 
-Contents:
+TFTPy is a pure python TFTP implementation.
 
 .. toctree::
    :maxdepth: 2
 
-Indices and tables
-==================
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Requirements
+============
+Python 2.3+, I think. I haven't tested in Python 2.3 in a while but it should
+still work. Let me know if it doesn't.
+
+Installation
+============
+
+Examples
+========
 
 API Documentation
 =================
@@ -26,40 +34,47 @@ Front-end Modules
 These modules are the ones that you will need to use directly to implement a
 TFTP client or server.
 
-TFTPy Module
-~~~~~~~~~~~~
+The :mod:`tftpy` Module
+~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy
    :members:
+   :show-inheritance:
 
-tftpy.TftpClient
-~~~~~~~~~~~~~~~~
+The `TftpClient` Module
+~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpClient
    :members:
+   :show-inheritance:
 
-tftpy.TftpServer
-~~~~~~~~~~~~~~~~
+The `TftpServer` Module
+~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpServer
    :members:
+   :show-inheritance:
 
 Back-end Modules
 ----------------
 
-tftpy.TftpPacketFactory
-~~~~~~~~~~~~~~~~~~~~~~~
+The `TftpPacketFactory` Module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpPacketFactory
    :members:
+   :show-inheritance:
 
-tftpy.TftpPacketTypes
-~~~~~~~~~~~~~~~~~~~~~
+The `TftpPacketTypes` Module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpPacketTypes
    :members:
+   :show-inheritance:
 
-tftpy.TftpShared
-~~~~~~~~~~~~~~~~
+The `TftpShared` Module
+~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpShared
    :members:
+   :show-inheritance:
 
-tftpy.TftpStates
-~~~~~~~~~~~~~~~~
+The `TftpStates` Module
+~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpStates
    :members:
+   :show-inheritance:
