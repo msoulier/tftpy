@@ -1,4 +1,13 @@
-Copyright, Michael P. Soulier, 2006.
+Copyright, Michael P. Soulier, 2010.
+
+About Release 0.5.1:
+====================
+Maintenance update to fix a bug in the server, overhaul the documentation for
+the website, fix a typo in the unit tests, fix a failure to set default
+blocksize, and a divide by zero error in speed calculations for very short
+transfers.
+
+Also, this release adds support for input/output in client as stdin/stdout
 
 About Release 0.5.0:
 ====================
@@ -86,11 +95,6 @@ Limitations:
 ------------
 - Only 'octet' mode is supported.
 - The only options supported are blksize and tsize.
-
-Future:
--------
-- netascii support
-- More complete test harness
 
 Author:
 =======
