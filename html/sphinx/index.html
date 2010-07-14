@@ -58,9 +58,35 @@ still work. Let me know if it doesn&#8217;t.</p>
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>If you download the source distribution, you can simply use distutils to
+install, via:</p>
+<div class="highlight-python"><pre>python setup.py build
+python setup.py install</pre>
+</div>
+<p>Or, as this has been uploaded to pypi, you can use easy_install or pip:</p>
+<div class="highlight-python"><pre>easy_install tftpy
+pip install tftpy</pre>
+</div>
+<p>Once installed you should have the sample client and server scripts in bin,
+and you should be able to import the <cite>tftpy</cite> module.</p>
 </div>
 <div class="section" id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>The simplest tftp client:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">tftpy</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">tftpy</span><span class="o">.</span><span class="n">TftpClient</span><span class="p">(</span><span class="s">&#39;tftp.digitaltorque.ca&#39;</span><span class="p">,</span> <span class="mi">69</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s">&#39;remote_filename&#39;</span><span class="p">,</span> <span class="s">&#39;local_filename&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The simplest tftp server:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">tftpy</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">tftpy</span><span class="o">.</span><span class="n">TftpServer</span><span class="p">(</span><span class="s">&#39;/tftpboot&#39;</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="s">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">69</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the sample client and server for slightly more complex examples.</p>
 </div>
 <div class="section" id="api-documentation">
 <h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
@@ -732,7 +758,7 @@ will commit to one of them once we interpret the initial packet.</p>
     </div>
     <div class="footer">
       &copy; Copyright 2010, Michael P. Soulier.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.5.
     </div>
   </body>
 </html>

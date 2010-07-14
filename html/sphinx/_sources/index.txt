@@ -22,9 +22,37 @@ still work. Let me know if it doesn't.
 
 Installation
 ============
+If you download the source distribution, you can simply use distutils to
+install, via::
+
+    python setup.py build
+    python setup.py install
+
+Or, as this has been uploaded to pypi, you can use easy_install or pip::
+
+    easy_install tftpy
+    pip install tftpy
+
+Once installed you should have the sample client and server scripts in bin,
+and you should be able to import the `tftpy` module.
 
 Examples
 ========
+The simplest tftp client::
+
+    import tftpy
+
+    client = tftpy.TftpClient('tftp.digitaltorque.ca', 69)
+    client.download('remote_filename', 'local_filename')
+
+The simplest tftp server::
+
+    import tftpy
+
+    server = tftpy.TftpServer('/tftpboot')
+    server.listen('0.0.0.0', 69)
+
+See the sample client and server for slightly more complex examples.
 
 API Documentation
 =================

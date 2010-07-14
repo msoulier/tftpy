@@ -98,14 +98,14 @@ def main():
             if not options.output:
                 options.output = os.path.basename(options.download)
             tclient.download(options.download,
-                            options.output,
-                            progresshook)
+                             options.output,
+                             progresshook)
         elif options.upload:
             if not options.input:
                 options.input = os.path.basename(options.upload)
             tclient.upload(options.upload,
-                        options.input,
-                        progresshook)
+                           options.input,
+                           progresshook)
     except tftpy.TftpException, err:
         sys.stderr.write("%s\n" % str(err))
         sys.exit(1)
