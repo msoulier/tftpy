@@ -132,7 +132,7 @@ class TftpContext(object):
     host = property(gethost, sethost)
 
     def setNextBlock(self, block):
-        if block > 2 ** 16:
+        if block >= 2 ** 16:
             log.debug("Block number rollover to 0 again")
             block = 0
         self.__eblock = block
