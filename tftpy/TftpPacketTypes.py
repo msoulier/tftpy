@@ -191,10 +191,10 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         mystruct = struct.unpack(format, shortbuf)
 
         tftpassert(len(mystruct) == 2, "malformed packet")
-        log.debug("setting filename to %s" % mystruct[0])
-        log.debug("setting mode to %s" % mystruct[1])
         self.filename = mystruct[0]
-        self.mode = mystruct[1]
+        self.mode = mystruct[1].lower() # force lc - bug 17
+        log.debug("set filename to %s" % self.filename)
+        log.debug("set mode to %s" % self.mode)
 
         self.options = self.decode_options(subbuf[tlength+1:])
         return self
