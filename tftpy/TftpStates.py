@@ -593,6 +593,12 @@ class TftpStateServerRecvRRQ(TftpState):
             log.debug("No such file %s but using dyn_file_func" % path)
             self.context.fileobj = \
                 self.context.dyn_file_func(self.context.file_to_transfer)
+
+            if self.context.fileobj is None:
+                log.debug("dyn_file_func returned 'None', treating as "
+                          "FileNotFound")
+                self.sendError(TftpErrors.FileNotFound)
+                raise TftpException, "File not found: %s" % path
         else:
             self.sendError(TftpErrors.FileNotFound)
             raise TftpException, "File not found: %s" % path
