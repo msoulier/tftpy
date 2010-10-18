@@ -107,7 +107,12 @@ class TftpServer(TftpSession):
                                                                timeout,
                                                                self.root,
                                                                self.dyn_file_func)
-                        self.sessions[key].start(buffer)
+                        try:
+                            self.sessions[key].start(buffer)
+                        except TftpException, err:
+                            deletion_list.append(key)
+                            log.error("Fatal exception thrown from "
+                                      "session %s: %s" % (key, str(err)))
                     else:
                         log.warn("received traffic on main socket for "
                                  "existing session??")
