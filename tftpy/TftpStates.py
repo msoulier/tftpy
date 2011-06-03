@@ -156,6 +156,7 @@ class TftpContext(object):
                 continue
             break
         else:
+            self.sock.close()
             raise TftpException, "Hit max timeouts, giving up."
 
         # Ok, we've received a packet. Log it.
