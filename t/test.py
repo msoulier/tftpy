@@ -3,10 +3,11 @@
 import unittest
 import logging
 import tftpy
+import os
 
 log = tftpy.log
 
-class TestTftpy(unittest.TestCase):
+class TestTftpyClasses(unittest.TestCase):
 
     def setUp(self):
         tftpy.setLogLevel(logging.DEBUG)
@@ -134,6 +135,48 @@ class TestTftpy(unittest.TestCase):
                                     classes[opcode]),
                                     "opcode %d returns the correct class" % opcode)
 
+class TestTftpyState(unittest.TestCase):
+
+    def setUp(self):
+        tftpy.setLogLevel(logging.DEBUG)
+
+    def testServerNoOptions(self):
+        """Test the server states."""
+        raddress = '127.0.0.2'
+        rport = 10000
+        timeout = 5
+        root = os.path.dirname(os.path.abspath(__file__))
+        # Testing without the dyn_func_file set.
+        serverstate = tftpy.TftpContextServer(raddress,
+                                              rport,
+                                              timeout,
+                                              root)
+
+        self.assertTrue( isinstance(serverstate,
+                                    tftpy.TftpContextServer) )
+
+        rrq = tftpy.TftpPacketRRQ()
+        rrq.filename = '100KBFILE'
+        rrq.mode = 'octet'
+        rrq.options = {}
+
+        # Start the download.
+        serverstate.start(rrq.encode().buffer)
+        # At a 512 byte blocksize, this should be 200 packets exactly.
+        for block in range(1, 201):
+            # Should be in expectack state.
+            self.assertTrue( isinstance(serverstate.state,
+                                        tftpy.TftpStateExpectACK) )
+            ack = tftpy.TftpPacketACK()
+            ack.blocknumber = block
+            serverstate.state = serverstate.state.handle(ack, raddress, rport)
+
+        # The last DAT packet should be empty, indicating a completed
+        # transfer.
+        ack = tftpy.TftpPacketACK()
+        ack.blocknumber = 201
+        finalstate = serverstate.state.handle(ack, raddress, rport)
+        self.assertTrue( finalstate is None )
 
 if __name__ == '__main__':
     unittest.main()
