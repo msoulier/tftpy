@@ -49,3 +49,8 @@ class TftpException(Exception):
     """This class is the parent class of all exceptions regarding the handling
     of the TFTP protocol."""
     pass
+
+class TftpTimeout(TftpException):
+    """This class represents a timeout error waiting for a response from the
+    other end."""
+    pass

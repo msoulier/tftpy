@@ -149,9 +149,17 @@ class TftpServer(TftpSession):
             for key in self.sessions:
                 try:
                     self.sessions[key].checkTimeout(now)
-                except TftpException, err:
+                except TftpTimeout, err:
                     log.error(str(err))
-                    deletion_list.append(key)
+                    self.sessions[key].retry_count += 1
+                    if self.sessions[key].retry_count >= TIMEOUT_RETRIES:
+                        log.debug("hit max retries on %s, giving up"
+                            % self.sessions[key])
+                        deletion_list.append(key)
+                    else:
+                        log.debug("resending on session %s"
+                            % self.sessions[key])
+                        self.sessions[key].state.resendLast()
 
             log.debug("Iterating deletion list.")
             for key in deletion_list:
