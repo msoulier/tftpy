@@ -1,5 +1,10 @@
 Copyright, Michael P. Soulier, 2010.
 
+About Release 0.6.0:
+====================
+Maintenance update to fix several reported issues, including proper
+retransmits on timeouts, and further expansion of unit tests.
+
 About Release 0.5.1:
 ====================
 Maintenance update to fix a bug in the server, overhaul the documentation for

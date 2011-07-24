@@ -1,5 +1,31 @@
 
+2011-07-24	Michael P. Soulier
+	04aaa2e: Fixing issue #3, expanding unit tests.
+
+2011-07-23	Michael P. Soulier
+	40977c6: Fixing some pyflakes complaints
+	add4440: Fixes issue #23, breaking up TftpStates into TftpStates and TftpContexts.
+	949c998: Fixing issue #9, removing blksize option from client if not supplied.
+	a43773e: Fixing issue #16 on github, server failing to use timeout time in checkTimeout() method.
+	1e74abf: Adding retries on timeouts, still have to exhaustively test. Should close issue #21 on github.
+
+2011-06-02	Michael P. Soulier
+	6fd9391: Fixing a file descriptor leak. Closes issue 22.
+	f6442eb: Adding a server download state test to the unit tests.
+
+2010-10-18	Kenny Millington
+	a6cff4f: Fix exceptions propagating out of TftpServer.listen()
+	71d827d: Allow dyn_file_func to trigger a FileNotFound error.
+
+2010-10-13	Michael P. Soulier
+	4396124: Forcing decode mode to lower case, fixes bug 17.
+
+2010-07-20	Michael P. Soulier
+	45185ed: Fixing setNextBlock to roll over at 2**16 - 1 instead of 2**16, which was causing problems when uploading large files.
+
 2010-07-14	Michael P. Soulier
+	e1b1be2: Updating README for 0.5.1
+	4f61f7f: Updated changelog for 0.5.1.
 	e35cd2d: Added simple doc examples and install info.
 
 2010-07-12	Michael P. Soulier
