@@ -98,6 +98,10 @@ class TftpContext(object):
         # Count the number of retry attempts.
         self.retry_count = 0
 
+    def getBlocksize(self):
+        """Fetch the current blocksize for this session."""
+        return int(self.options.get('blksize', 512))
+
     def __del__(self):
         """Simple destructor to try to call housekeeping in the end method if
         not called explicitely. Leaking file descriptors is not a good
@@ -506,7 +510,7 @@ class TftpState(object):
             self.context.metrics.resent_bytes += len(dat.data)
             self.context.metrics.add_dup(dat)
         else:
-            blksize = int(self.context.options['blksize'])
+            blksize = self.context.getBlocksize()
             buffer = self.context.fileobj.read(blksize)
             log.debug("Read %d bytes into buffer" % len(buffer))
             if len(buffer) < blksize:
@@ -590,7 +594,7 @@ class TftpState(object):
             self.context.fileobj.write(pkt.data)
             self.context.metrics.bytes += len(pkt.data)
             # Check for end-of-file, any less than full data packet.
-            if len(pkt.data) < int(self.context.options['blksize']):
+            if len(pkt.data) < self.context.getBlocksize():
                 log.info("End of file detected")
                 return None
 

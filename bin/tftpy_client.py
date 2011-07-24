@@ -25,8 +25,7 @@ def main():
                       help='filename to upload')
     parser.add_option('-b',
                       '--blksize',
-                      help='udp packet size to use (default: 512)',
-                      default=512)
+                      help='udp packet size to use (default: 512)')
     parser.add_option('-o',
                       '--output',
                       help='output file, - for stdout (default: same as download)')
