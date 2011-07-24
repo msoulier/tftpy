@@ -7,8 +7,8 @@ import socket, os, re, time, random
 import select
 from TftpShared import *
 from TftpPacketTypes import *
-from TftpPacketFactory import *
-from TftpStates import *
+from TftpPacketFactory import TftpPacketFactory
+from TftpContexts import TftpContextServer
 
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to

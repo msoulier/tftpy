@@ -4,8 +4,9 @@ performed via a standard logging object set in TftpShared."""
 
 import time, types
 from TftpShared import *
-from TftpPacketFactory import *
-from TftpStates import TftpContextClientDownload, TftpContextClientUpload
+from TftpPacketTypes import *
+from TftpPacketFactory import TftpPacketFactory
+from TftpContexts import TftpContextClientDownload, TftpContextClientUpload
 
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client. Once instantiated, a
