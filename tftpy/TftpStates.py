@@ -124,30 +124,29 @@ class TftpState(object):
 
         return sendoack
 
-    def sendDAT(self, resend=False):
+    def sendDAT(self):
         """This method sends the next DAT packet based on the data in the
         context. It returns a boolean indicating whether the transfer is
         finished."""
         finished = False
         blocknumber = self.context.next_block
+        # Test hook
+        if DELAY_BLOCK and DELAY_BLOCK == blocknumber:
+            import time
+            log.debug("Deliberately delaying 10 seconds...")
+            time.sleep(10)
         tftpassert( blocknumber > 0, "There is no block zero!" )
         dat = None
-        if resend:
-            log.warn("Resending block number %d" % blocknumber)
-            dat = self.context.last_pkt
-            self.context.metrics.resent_bytes += len(dat.data)
-            self.context.metrics.add_dup(dat)
-        else:
-            blksize = self.context.getBlocksize()
-            buffer = self.context.fileobj.read(blksize)
-            log.debug("Read %d bytes into buffer" % len(buffer))
-            if len(buffer) < blksize:
-                log.info("Reached EOF on file %s"
-                    % self.context.file_to_transfer)
-                finished = True
-            dat = TftpPacketDAT()
-            dat.data = buffer
-            dat.blocknumber = blocknumber
+        blksize = self.context.getBlocksize()
+        buffer = self.context.fileobj.read(blksize)
+        log.debug("Read %d bytes into buffer" % len(buffer))
+        if len(buffer) < blksize:
+            log.info("Reached EOF on file %s"
+                % self.context.file_to_transfer)
+            finished = True
+        dat = TftpPacketDAT()
+        dat.data = buffer
+        dat.blocknumber = blocknumber
         self.context.metrics.bytes += len(dat.data)
         log.debug("Sending DAT packet %d" % dat.blocknumber)
         self.context.sock.sendto(dat.encode().buffer,
@@ -170,7 +169,7 @@ class TftpState(object):
         self.context.sock.sendto(ackpkt.encode().buffer,
                                  (self.context.host,
                                   self.context.tidport))
-        self.last_pkt = ackpkt
+        self.context.last_pkt = ackpkt
 
     def sendError(self, errorcode):
         """This method uses the socket passed, and uses the errorcode to
@@ -181,7 +180,7 @@ class TftpState(object):
         self.context.sock.sendto(errpkt.encode().buffer,
                                  (self.context.host,
                                   self.context.tidport))
-        self.last_pkt = errpkt
+        self.context.last_pkt = errpkt
 
     def sendOACK(self):
         """This method sends an OACK packet with the options from the current
@@ -192,18 +191,18 @@ class TftpState(object):
         self.context.sock.sendto(pkt.encode().buffer,
                                  (self.context.host,
                                   self.context.tidport))
-        self.last_pkt = pkt
+        self.context.last_pkt = pkt
 
     def resendLast(self):
         "Resend the last sent packet due to a timeout."
         log.warn("Resending packet %s on sessions %s"
-            % (self.last_pkt, self))
-        self.context.metrics.resent_bytes += len(self.last_pkt.data)
-        self.context.metrics.add_dup(self.last_pkt)
-        self.context.sock.sendto(self.last_pkt.encode().buffer,
+            % (self.context.last_pkt, self))
+        self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
+        self.context.metrics.add_dup(self.context.last_pkt)
+        self.context.sock.sendto(self.context.last_pkt.encode().buffer,
                                  (self.context.host, self.context.tidport))
         if self.context.packethook:
-            self.context.packethook(self.last_pkt)
+            self.context.packethook(self.context.last_pkt)
 
     def handleDat(self, pkt):
         """This method handles a DAT packet during a client download, or a
@@ -232,7 +231,7 @@ class TftpState(object):
                 self.sendError(TftpErrors.IllegalTftpOp)
                 raise TftpException, "There is no block zero!"
             log.warn("Dropping duplicate block %d" % pkt.blocknumber)
-            self.context.metrics.add_dup(pkt.blocknumber)
+            self.context.metrics.add_dup(pkt)
             log.debug("ACKing block %d again, just in case" % pkt.blocknumber)
             self.sendACK(pkt.blocknumber)
 
@@ -369,7 +368,9 @@ class TftpStateExpectACK(TftpState):
                     self.context.pending_complete = self.sendDAT()
 
             elif pkt.blocknumber < self.context.next_block:
-                self.context.metrics.add_dup(pkt.blocknumber)
+                log.debug("Received duplicate ACK for block %d"
+                    % pkt.blocknumber)
+                self.context.metrics.add_dup(pkt)
 
             else:
                 log.warn("Oooh, time warp. Received ACK to packet we "

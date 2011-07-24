@@ -4,6 +4,7 @@ import unittest
 import logging
 import tftpy
 import os
+import time
 
 log = tftpy.log
 
@@ -139,6 +140,72 @@ class TestTftpyState(unittest.TestCase):
 
     def setUp(self):
         tftpy.setLogLevel(logging.DEBUG)
+
+    def clientServerUploadOptions(self, options):
+        """Fire up a client and a server and do an upload."""
+        root = '/tmp'
+        home = os.path.dirname(os.path.abspath(__file__))
+        filename = '100KBFILE'
+        input_path = os.path.join(home, filename)
+        server = tftpy.TftpServer(root)
+        client = tftpy.TftpClient('localhost',
+                                  20001,
+                                  options)
+        # Fork a server and run the client in this process.
+        child_pid = os.fork()
+        if child_pid:
+            # parent - let the server start
+            try:
+                time.sleep(1)
+                client.upload(filename,
+                              input_path)
+            finally:
+                os.kill(child_pid, 15)
+                os.waitpid(child_pid, 0)
+
+        else:
+            server.listen('localhost', 20001)
+
+    def clientServerDownloadOptions(self, options):
+        """Fire up a client and a server and do a download."""
+        root = os.path.dirname(os.path.abspath(__file__))
+        server = tftpy.TftpServer(root)
+        client = tftpy.TftpClient('localhost',
+                                  20001,
+                                  options)
+        # Fork a server and run the client in this process.
+        child_pid = os.fork()
+        if child_pid:
+            # parent - let the server start
+            try:
+                time.sleep(1)
+                client.download('100KBFILE',
+                                '/tmp/out')
+            finally:
+                os.kill(child_pid, 15)
+                os.waitpid(child_pid, 0)
+
+        else:
+            server.listen('localhost', 20001)
+
+    def testClientServerNoOptions(self):
+        self.clientServerDownloadOptions({})
+
+    def testClientServerBlksize(self):
+        for blksize in [512, 1024, 2048, 4096]:
+            self.clientServerDownloadOptions({'blksize': blksize})
+
+    def testClientServerUploadNoOptions(self):
+        self.clientServerUploadOptions({})
+
+    def testClientServerUploadOptions(self):
+        for blksize in [512, 1024, 2048, 4096]:
+            self.clientServerUploadOptions({'blksize': blksize})
+
+    def testClientServerNoOptionsDelay(self):
+        tftpy.TftpStates.DELAY_BLOCK = 10
+        self.clientServerDownloadOptions({})
+        tftpy.TftpStates.DELAY_BLOCK = 0
 
     def testServerNoOptions(self):
         """Test the server states."""

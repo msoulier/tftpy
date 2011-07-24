@@ -74,10 +74,10 @@ class TftpClient(TftpSession):
         setting, which is the amount of time that the client will wait for a
         DAT packet to be ACKd by the server.
 
+        The input option is the full path to the file to upload, which can
+        optionally be '-' to read from stdin.
+
         Note: If output is a hyphen then stdout is used."""
-        # Open the input file.
-        # FIXME: As of the state machine, this is now broken. Need to
-        # implement with new state machine.
         self.context = TftpContextClientUpload(self.host,
                                                  self.iport,
                                                  filename,
