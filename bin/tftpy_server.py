@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, logging, os
+import sys, logging
 from optparse import OptionParser
 import tftpy
 

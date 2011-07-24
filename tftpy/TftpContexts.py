@@ -155,7 +155,7 @@ class TftpContext(object):
         something, and dispatch appropriate action to that response."""
         try:
             (buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
-        except socket.timeout, err:
+        except socket.timeout:
             log.warn("Timeout waiting for traffic, retrying...")
             raise TftpTimeout, "Timed-out waiting for traffic"
 

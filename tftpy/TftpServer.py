@@ -3,7 +3,7 @@ instance of the server, and then run the listen() method to listen for client
 requests. Logging is performed via a standard logging object set in
 TftpShared."""
 
-import socket, os, re, time, random
+import socket, os, time
 import select
 from TftpShared import *
 from TftpPacketTypes import *
@@ -94,7 +94,6 @@ class TftpServer(TftpSession):
 
                     log.debug("Read %d bytes" % len(buffer))
 
-                    recvpkt = tftp_factory.parse(buffer)
                     # Forge a session key based on the client's IP and port,
                     # which should safely work through NAT.
                     key = "%s:%s" % (raddress, rport)

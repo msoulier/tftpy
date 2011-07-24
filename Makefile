@@ -19,3 +19,6 @@ tftpy-doc:
 
 clean:
 	rm -rf dist src tftpy-doc* MANIFEST
+
+flakes:
+	pyflakes bin/*.py tftpy/*.py

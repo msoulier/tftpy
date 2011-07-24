@@ -423,7 +423,7 @@ class TftpStateSentWRQ(TftpState):
             log.info("Received OACK from server")
             try:
                 self.handleOACK(pkt)
-            except TftpException, err:
+            except TftpException:
                 log.error("Failed to negotiate options")
                 self.sendError(TftpErrors.FailedNegotiation)
                 raise

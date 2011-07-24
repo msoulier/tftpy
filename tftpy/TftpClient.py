@@ -2,10 +2,9 @@
 instance of the client, and then use its upload or download method. Logging is
 performed via a standard logging object set in TftpShared."""
 
-import time, types
+import types
 from TftpShared import *
 from TftpPacketTypes import *
-from TftpPacketFactory import TftpPacketFactory
 from TftpContexts import TftpContextClientDownload, TftpContextClientUpload
 
 class TftpClient(TftpSession):
