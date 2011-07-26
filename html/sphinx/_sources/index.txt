@@ -101,6 +101,12 @@ The `TftpShared` Module
    :members:
    :show-inheritance:
 
+The `TftpContexts` Module
+~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automodule:: tftpy.TftpContexts
+   :members:
+   :show-inheritance:
+
 The `TftpStates` Module
 ~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy.TftpStates
