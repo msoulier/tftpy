@@ -24,6 +24,9 @@ class TftpState(object):
         file object is required, since in tftp there's always a file
         involved."""
         self.context = context
+        # This variable is used to store the absolute path to the file being
+        # managed. Currently only used by the server.
+        self.full_path = None
 
     def handle(self, pkt, raddress, rport):
         """An abstract method for handling a packet. It is expected to return
@@ -114,11 +117,18 @@ class TftpState(object):
             return self
 
         log.debug("Requested filename is %s" % pkt.filename)
-        # There are no os.sep's allowed in the filename.
-        # FIXME: Should we allow subdirectories?
-        if pkt.filename.find(os.sep) >= 0:
+
+        # Make sure that the path to the file is contained in the server's
+        # root directory.
+        full_path = os.path.join(self.context.root, pkt.filename)
+        self.full_path = os.path.abspath(full_path)
+        log.debug("full_path is %s" % full_path)
+        if self.context.root == full_path[:len(self.context.root)]:
+            log.info("requested file is in the server root - good")
+        else:
+            log.warn("requested file is not within the server root - bad")
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException, "%s found in filename, not permitted" % os.sep
+            raise TftpException, "bad file path"
 
         self.context.file_to_transfer = pkt.filename
 
@@ -252,7 +262,7 @@ class TftpStateServerRecvRRQ(TftpState):
         "Handle an initial RRQ packet as a server."
         log.debug("In TftpStateServerRecvRRQ.handle")
         sendoack = self.serverInitial(pkt, raddress, rport)
-        path = self.context.root + os.sep + self.context.file_to_transfer
+        path = self.full_path
         log.info("Opening file %s for reading" % path)
         if os.path.exists(path):
             # Note: Open in binary mode for win32 portability, since win32
@@ -293,17 +303,33 @@ class TftpStateServerRecvRRQ(TftpState):
 class TftpStateServerRecvWRQ(TftpState):
     """This class represents the state of the TFTP server when it has just
     received a WRQ packet."""
+    def make_subdirs(self):
+        """The purpose of this method is to, if necessary, create all of the
+        subdirectories leading up to the file to the written."""
+        # Pull off everything below the root.
+        subpath = self.full_path[:len(self.context.root)]
+        log.debug("make_subdirs: subpath is %s" % subpath)
+        dirs = subpath.split(os.sep)
+        current = self.context.root
+        for dir in dirs:
+            current = os.path.join(current, dir)
+            if os.path.isdir(current):
+                log.debug("%s is already an existing directory" % current)
+            else:
+                os.mkdir(current, 0700)
+
     def handle(self, pkt, raddress, rport):
         "Handle an initial WRQ packet as a server."
         log.debug("In TftpStateServerRecvWRQ.handle")
         sendoack = self.serverInitial(pkt, raddress, rport)
-        path = self.context.root + os.sep + self.context.file_to_transfer
+        path = self.full_path
         log.info("Opening file %s for writing" % path)
         if os.path.exists(path):
             # FIXME: correct behavior?
             log.warn("File %s exists already, overwriting..." % self.context.file_to_transfer)
         # FIXME: I think we should upload to a temp file and not overwrite the
         # existing file until the file is successfully uploaded.
+        self.make_subdirs()
         self.context.fileobj = open(path, "wb")
 
         # Options negotiation.
