@@ -79,12 +79,12 @@ class TftpClient(TftpSession):
 
         Note: If output is a hyphen then stdout is used."""
         self.context = TftpContextClientUpload(self.host,
-                                                 self.iport,
-                                                 filename,
-                                                 input,
-                                                 self.options,
-                                                 packethook,
-                                                 timeout)
+                                               self.iport,
+                                               filename,
+                                               input,
+                                               self.options,
+                                               packethook,
+                                               timeout)
         self.context.start()
         # Upload happens here
         self.context.end()

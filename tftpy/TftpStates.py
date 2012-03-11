@@ -209,8 +209,14 @@ class TftpState(object):
             % (self.context.last_pkt, self))
         self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
         self.context.metrics.add_dup(self.context.last_pkt)
+        sendto_port = self.context.tidport
+        if not sendto_port:
+            # If the tidport wasn't set, then the remote end hasn't even
+            # started talking to us yet. That's not good. Maybe it's not
+            # there.
+            sendto_port = self.context.port
         self.context.sock.sendto(self.context.last_pkt.encode().buffer,
-                                 (self.context.host, self.context.tidport))
+                                 (self.context.host, sendto_port))
         if self.context.packethook:
             self.context.packethook(self.context.last_pkt)
 
@@ -307,16 +313,20 @@ class TftpStateServerRecvWRQ(TftpState):
         """The purpose of this method is to, if necessary, create all of the
         subdirectories leading up to the file to the written."""
         # Pull off everything below the root.
-        subpath = self.full_path[:len(self.context.root)]
+        subpath = self.full_path[len(self.context.root):]
         log.debug("make_subdirs: subpath is %s" % subpath)
-        dirs = subpath.split(os.sep)
+        # Split on directory separators, but drop the last one, as it should
+        # be the filename.
+        dirs = subpath.split(os.sep)[:-1]
+        log.debug("dirs is %s" % dirs)
         current = self.context.root
         for dir in dirs:
-            current = os.path.join(current, dir)
-            if os.path.isdir(current):
-                log.debug("%s is already an existing directory" % current)
-            else:
-                os.mkdir(current, 0700)
+            if dir:
+                current = os.path.join(current, dir)
+                if os.path.isdir(current):
+                    log.debug("%s is already an existing directory" % current)
+                else:
+                    os.mkdir(current, 0700)
 
     def handle(self, pkt, raddress, rport):
         "Handle an initial WRQ packet as a server."

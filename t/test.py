@@ -141,12 +141,14 @@ class TestTftpyState(unittest.TestCase):
     def setUp(self):
         tftpy.setLogLevel(logging.DEBUG)
 
-    def clientServerUploadOptions(self, options):
+    def clientServerUploadOptions(self, options, transmitname=None):
         """Fire up a client and a server and do an upload."""
         root = '/tmp'
         home = os.path.dirname(os.path.abspath(__file__))
         filename = '100KBFILE'
         input_path = os.path.join(home, filename)
+        if transmitname:
+            filename = transmitname
         server = tftpy.TftpServer(root)
         client = tftpy.TftpClient('localhost',
                                   20001,
@@ -198,6 +200,9 @@ class TestTftpyState(unittest.TestCase):
     def testClientServerUploadNoOptions(self):
         self.clientServerUploadOptions({})
 
+    def testClientServerUploadWithSubdirs(self):
+        self.clientServerUploadOptions({}, transmitname='foo/bar/100KBFILE')
+
     def testClientServerUploadOptions(self):
         for blksize in [512, 1024, 2048, 4096]:
             self.clientServerUploadOptions({'blksize': blksize})
@@ -208,7 +213,6 @@ class TestTftpyState(unittest.TestCase):
         tftpy.TftpStates.DELAY_BLOCK = 0
 
     def testServerNoOptions(self):
-        """Test the server states."""
         raddress = '127.0.0.2'
         rport = 10000
         timeout = 5
@@ -246,7 +250,6 @@ class TestTftpyState(unittest.TestCase):
         self.assertTrue( finalstate is None )
 
     def testServerNoOptionsSubdir(self):
-        """Test the server states."""
         raddress = '127.0.0.2'
         rport = 10000
         timeout = 5
