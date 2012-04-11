@@ -12,7 +12,7 @@ import sys
 
 # Make sure that this is at least Python 2.3
 verlist = sys.version_info
-if not verlist[0] >= 2 or not verlist[1] >= 3:
+if not (verlist[0] > 2 or (verlist[0] == 2 and verlist[1] >= 3)):
     raise AssertionError, "Requires at least Python 2.3"
 
 from TftpShared import *
