@@ -28,8 +28,11 @@ class TftpServer(TftpSession):
         # A dict of sessions, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.sessions = {}
-
-        if os.path.exists(self.root):
+        
+        if callable(self.dyn_file_func):
+            # don't check the tftproot
+            pass
+        elif os.path.exists(self.root):
             log.debug("tftproot %s does exist" % self.root)
             if not os.path.isdir(self.root):
                 raise TftpException, "The tftproot must be a directory."
