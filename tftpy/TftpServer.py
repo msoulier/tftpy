@@ -29,9 +29,9 @@ class TftpServer(TftpSession):
         # ip:tid for the remote end.
         self.sessions = {}
         
-        if callable(self.dyn_file_func):
-            # don't check the tftproot
-            pass
+        if self.dyn_file_func:
+            if not callable(self.dyn_file_func):
+                raise TftpException, "A dyn_file_func supplied, but it is not callable."
         elif os.path.exists(self.root):
             log.debug("tftproot %s does exist" % self.root)
             if not os.path.isdir(self.root):
