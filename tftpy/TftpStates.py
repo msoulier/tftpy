@@ -257,7 +257,7 @@ class TftpServerState(TftpState):
         full_path = os.path.join(self.context.root, pkt.filename)
         self.full_path = os.path.abspath(full_path)
         log.debug("full_path is %s" % full_path)
-        if self.context.root == full_path[:len(self.context.root)]:
+        if self.full_path.startswith(self.context.root):
             log.info("requested file is in the server root - good")
         else:
             log.warn("requested file is not within the server root - bad")
