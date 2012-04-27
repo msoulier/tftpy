@@ -21,7 +21,8 @@ def main():
                       '--root',
                       type='string',
                       help='path to serve from',
-                      default=None)
+                      default=None,
+                      action="append")
     parser.add_option('-d',
                       '--debug',
                       action='store_true',
@@ -38,7 +39,11 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    server = tftpy.TftpServer(options.root)
+    vfs = tftpy.TftpVfsStack()
+    for root in options.root:
+        vfs.mount(tftpy.TftpVfsNative(root), '/')
+
+    server = tftpy.TftpServerVfs(vfs)
     try:
         server.listen(options.ip, options.port)
     except tftpy.TftpException, err:
