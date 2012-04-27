@@ -24,9 +24,6 @@ class TftpState(object):
         file object is required, since in tftp there's always a file
         involved."""
         self.context = context
-        # This variable is used to store the absolute path to the file being
-        # managed. Currently only used by the server.
-        self.full_path = None
 
     def handle(self, pkt, raddress, rport):
         """An abstract method for handling a packet. It is expected to return
@@ -75,64 +72,6 @@ class TftpState(object):
                 log.info("Dropping unsupported option '%s'" % option)
         log.debug("Returning these accepted options: %s" % accepted_options)
         return accepted_options
-
-    def serverInitial(self, pkt, raddress, rport):
-        """This method performs initial setup for a server context transfer,
-        put here to refactor code out of the TftpStateServerRecvRRQ and
-        TftpStateServerRecvWRQ classes, since their initial setup is
-        identical. The method returns a boolean, sendoack, to indicate whether
-        it is required to send an OACK to the client."""
-        options = pkt.options
-        sendoack = False
-        if not self.context.tidport:
-            self.context.tidport = rport
-            log.info("Setting tidport to %s" % rport)
-
-        log.debug("Setting default options, blksize")
-        self.context.options = { 'blksize': DEF_BLKSIZE }
-
-        if options:
-            log.debug("Options requested: %s" % options)
-            supported_options = self.returnSupportedOptions(options)
-            self.context.options.update(supported_options)
-            sendoack = True
-
-        # FIXME - only octet mode is supported at this time.
-        if pkt.mode != 'octet':
-            self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException, \
-                "Only octet transfers are supported at this time."
-
-        # test host/port of client end
-        if self.context.host != raddress or self.context.port != rport:
-            self.sendError(TftpErrors.UnknownTID)
-            log.error("Expected traffic from %s:%s but received it "
-                            "from %s:%s instead."
-                            % (self.context.host,
-                               self.context.port,
-                               raddress,
-                               rport))
-            # FIXME: increment an error count?
-            # Return same state, we're still waiting for valid traffic.
-            return self
-
-        log.debug("Requested filename is %s" % pkt.filename)
-
-        # Make sure that the path to the file is contained in the server's
-        # root directory.
-        full_path = os.path.join(self.context.root, pkt.filename)
-        self.full_path = os.path.abspath(full_path)
-        log.debug("full_path is %s" % full_path)
-        if self.context.root == full_path[:len(self.context.root)]:
-            log.info("requested file is in the server root - good")
-        else:
-            log.warn("requested file is not within the server root - bad")
-            self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException, "bad file path"
-
-        self.context.file_to_transfer = pkt.filename
-
-        return sendoack
 
     def sendDAT(self):
         """This method sends the next DAT packet based on the data in the
@@ -261,32 +200,73 @@ class TftpState(object):
         # Default is to ack
         return TftpStateExpectDAT(self.context)
 
-class TftpStateServerRecvRRQ(TftpState):
+class TftpServerState(TftpState):
+    """The base class for server states."""
+
+    def serverInitial(self, pkt, raddress, rport):
+        """This method performs initial setup for a server context transfer,
+        put here to refactor code out of the TftpStateServerRecvRRQ and
+        TftpStateServerRecvWRQ classes, since their initial setup is
+        identical. The method returns a boolean, sendoack, to indicate whether
+        it is required to send an OACK to the client."""
+        options = pkt.options
+        sendoack = False
+        if not self.context.tidport:
+            self.context.tidport = rport
+            log.info("Setting tidport to %s" % rport)
+
+        log.debug("Setting default options, blksize")
+        self.context.options = { 'blksize': DEF_BLKSIZE }
+
+        if options:
+            log.debug("Options requested: %s" % options)
+            supported_options = self.returnSupportedOptions(options)
+            self.context.options.update(supported_options)
+            sendoack = True
+
+        # FIXME - only octet mode is supported at this time.
+        if pkt.mode != 'octet':
+            self.sendError(TftpErrors.IllegalTftpOp)
+            raise TftpException, \
+                "Only octet transfers are supported at this time."
+
+        # test host/port of client end
+        if self.context.host != raddress or self.context.port != rport:
+            self.sendError(TftpErrors.UnknownTID)
+            log.error("Expected traffic from %s:%s but received it "
+                            "from %s:%s instead."
+                            % (self.context.host,
+                               self.context.port,
+                               raddress,
+                               rport))
+            # FIXME: increment an error count?
+            # Return same state, we're still waiting for valid traffic.
+            return self
+
+        log.debug("Requested filename is %s" % pkt.filename)
+
+        self.context.file_to_transfer = pkt.filename
+
+        return sendoack
+
+
+class TftpStateServerRecvRRQ(TftpServerState):
     """This class represents the state of the TFTP server when it has just
     received an RRQ packet."""
     def handle(self, pkt, raddress, rport):
         "Handle an initial RRQ packet as a server."
         log.debug("In TftpStateServerRecvRRQ.handle")
         sendoack = self.serverInitial(pkt, raddress, rport)
-        path = self.full_path
-        log.info("Opening file %s for reading" % path)
-        if os.path.exists(path):
-            # Note: Open in binary mode for win32 portability, since win32
-            # blows.
-            self.context.fileobj = open(path, "rb")
-        elif self.context.dyn_file_func:
-            log.debug("No such file %s but using dyn_file_func" % path)
-            self.context.fileobj = \
-                self.context.dyn_file_func(self.context.file_to_transfer)
-
-            if self.context.fileobj is None:
-                log.debug("dyn_file_func returned 'None', treating as "
-                          "FileNotFound")
-                self.sendError(TftpErrors.FileNotFound)
-                raise TftpException, "File not found: %s" % path
-        else:
+        try:
+            self.context.fileobj = self.context.open_read(
+                    self.context.file_to_transfer)
+        except TftpException:
+            self.sendError(TftpErrors.IllegalTftpOp)
+            raise
+        if self.context.fileobj is None:
             self.sendError(TftpErrors.FileNotFound)
-            raise TftpException, "File not found: %s" % path
+            raise TftpException, "File not found: %s" % (
+                    self.context.file_to_transfer)
 
         # Options negotiation.
         if sendoack:
@@ -306,41 +286,23 @@ class TftpStateServerRecvRRQ(TftpState):
         # Note, we don't have to check any other states in this method, that's
         # up to the caller.
 
-class TftpStateServerRecvWRQ(TftpState):
+class TftpStateServerRecvWRQ(TftpServerState):
     """This class represents the state of the TFTP server when it has just
     received a WRQ packet."""
-    def make_subdirs(self):
-        """The purpose of this method is to, if necessary, create all of the
-        subdirectories leading up to the file to the written."""
-        # Pull off everything below the root.
-        subpath = self.full_path[len(self.context.root):]
-        log.debug("make_subdirs: subpath is %s" % subpath)
-        # Split on directory separators, but drop the last one, as it should
-        # be the filename.
-        dirs = subpath.split(os.sep)[:-1]
-        log.debug("dirs is %s" % dirs)
-        current = self.context.root
-        for dir in dirs:
-            if dir:
-                current = os.path.join(current, dir)
-                if os.path.isdir(current):
-                    log.debug("%s is already an existing directory" % current)
-                else:
-                    os.mkdir(current, 0700)
-
     def handle(self, pkt, raddress, rport):
         "Handle an initial WRQ packet as a server."
         log.debug("In TftpStateServerRecvWRQ.handle")
         sendoack = self.serverInitial(pkt, raddress, rport)
-        path = self.full_path
-        log.info("Opening file %s for writing" % path)
-        if os.path.exists(path):
-            # FIXME: correct behavior?
-            log.warn("File %s exists already, overwriting..." % self.context.file_to_transfer)
-        # FIXME: I think we should upload to a temp file and not overwrite the
-        # existing file until the file is successfully uploaded.
-        self.make_subdirs()
-        self.context.fileobj = open(path, "wb")
+        try:
+            self.context.fileobj = self.context.open_write(
+                    self.context.file_to_transfer)
+        except TftpException:
+            self.sendError(TftpErrors.IllegalTftpOp)
+            raise
+        if self.context.fileobj is None:
+            self.sendError(TftpErrors.FileNotFound)
+            raise TftpException, "File not found: %s" % (
+                    self.context.file_to_transfer)
 
         # Options negotiation.
         if sendoack:

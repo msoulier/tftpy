@@ -67,7 +67,7 @@ class TftpMetrics(object):
 class TftpContext(object):
     """The base class of the contexts."""
 
-    def __init__(self, host, port, timeout, dyn_file_func=None):
+    def __init__(self, host, port, timeout):
         """Constructor for the base context, setting shared instance
         variables."""
         self.file_to_transfer = None
@@ -94,7 +94,6 @@ class TftpContext(object):
         self.last_update = 0
         # The last packet we sent, if applicable, to make resending easy.
         self.last_pkt = None
-        self.dyn_file_func = dyn_file_func
         # Count the number of retry attempts.
         self.retry_count = 0
 
@@ -194,18 +193,17 @@ class TftpContext(object):
 
 class TftpContextServer(TftpContext):
     """The context for the server."""
-    def __init__(self, host, port, timeout, root, dyn_file_func=None):
+    def __init__(self, host, port, timeout, vfs):
         TftpContext.__init__(self,
                              host,
                              port,
                              timeout,
-                             dyn_file_func
                              )
+        self._vfs = vfs
+
         # At this point we have no idea if this is a download or an upload. We
         # need to let the start state determine that.
         self.state = TftpStateServerStart(self)
-        self.root = root
-        self.dyn_file_func = dyn_file_func
 
     def __str__(self):
         return "%s:%s %s" % (self.host, self.port, self.state)
@@ -236,6 +234,18 @@ class TftpContextServer(TftpContext):
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
         self.metrics.compute()
+
+    def open_read(self, path):
+        """Return a file-like object for the virtual path `path` or ``None`` if
+        the path does not exist.  Throws :class:`TftpException` in case the path
+        is invalid."""
+        return self._vfs.open_read(path)
+
+    def open_write(self, path):
+        """Return a file-like object for the virtual path `path` or ``None`` if
+        the path is not writable.  Throws :class:`TftpException` in case the
+        path is invalid."""
+        return self._vfs.open_write(path)
 
 class TftpContextClientUpload(TftpContext):
     """The upload context for the client during an upload.
