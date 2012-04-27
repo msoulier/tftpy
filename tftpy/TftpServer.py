@@ -9,42 +9,21 @@ from TftpShared import *
 from TftpPacketTypes import *
 from TftpPacketFactory import TftpPacketFactory
 from TftpContexts import TftpContextServer
+from TftpVfs import TftpVfsCompat
 
-class TftpServer(TftpSession):
+class TftpServerVfs(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
-    listen for client requests.  It takes two optional arguments. tftproot is
-    the path to the tftproot directory to serve files from and/or write them
-    to. dyn_file_func is a callable that must return a file-like object to
-    read from during downloads. This permits the serving of dynamic
-    content."""
+    listen for client requests.  It expects the `vfs` object to provide access
+    to the filesystem."""
 
-    def __init__(self, tftproot='/tftpboot', dyn_file_func=None):
+    def __init__(self, vfs):
         self.listenip = None
         self.listenport = None
         self.sock = None
-        # FIXME: What about multiple roots?
-        self.root = os.path.abspath(tftproot)
-        self.dyn_file_func = dyn_file_func
+        self.vfs = vfs
         # A dict of sessions, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.sessions = {}
-
-        if os.path.exists(self.root):
-            log.debug("tftproot %s does exist" % self.root)
-            if not os.path.isdir(self.root):
-                raise TftpException, "The tftproot must be a directory."
-            else:
-                log.debug("tftproot %s is a directory" % self.root)
-                if os.access(self.root, os.R_OK):
-                    log.debug("tftproot %s is readable" % self.root)
-                else:
-                    raise TftpException, "The tftproot must be readable"
-                if os.access(self.root, os.W_OK):
-                    log.debug("tftproot %s is writable" % self.root)
-                else:
-                    log.warning("The tftproot %s is not writable" % self.root)
-        else:
-            raise TftpException, "The tftproot does not exist."
 
     def listen(self,
                listenip="",
@@ -104,8 +83,7 @@ class TftpServer(TftpSession):
                         self.sessions[key] = TftpContextServer(raddress,
                                                                rport,
                                                                timeout,
-                                                               self.root,
-                                                               self.dyn_file_func)
+                                                               self.vfs)
                         try:
                             self.sessions[key].start(buffer)
                         except TftpException, err:
@@ -182,3 +160,14 @@ class TftpServer(TftpSession):
                 else:
                     log.warn("Strange, session %s is not on the deletion list"
                         % key)
+
+class TftpServer(TftpServerVfs):
+    """This class implements a tftp server object. Run the listen() method to
+    listen for client requests.  It takes two optional arguments. tftproot is
+    the path to the tftproot directory to serve files from and/or write them
+    to. dyn_file_func is a callable that must return a file-like object to
+    read from during downloads. This permits the serving of dynamic
+    content."""
+
+    def __init__(self, tftproot='/tftpboot', dyn_file_func=None):
+        TftpServerVfs.__init__(self, TftpVfsCompat(tftproot, dyn_file_func))
