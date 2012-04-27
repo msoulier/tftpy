@@ -286,5 +286,43 @@ class TestTftpyState(unittest.TestCase):
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue( finalstate is None )
 
+    def testServerInsecurePath(self):
+        raddress = '127.0.0.2'
+        rport = 10000
+        timeout = 5
+        root = os.path.dirname(os.path.abspath(__file__))
+        serverstate = tftpy.TftpContextServer(raddress,
+                                              rport,
+                                              timeout,
+                                              root)
+        rrq = tftpy.TftpPacketRRQ()
+        rrq.filename = '../setup.py'
+        rrq.mode = 'octet'
+        rrq.options = {}
+
+        # Start the download.
+        self.assertRaisesRegexp(tftpy.TftpException, "bad file path",
+                serverstate.start, rrq.encode().buffer)
+
+    def testServerSecurePath(self):
+        raddress = '127.0.0.2'
+        rport = 10000
+        timeout = 5
+        root = os.path.dirname(os.path.abspath(__file__))
+        serverstate = tftpy.TftpContextServer(raddress,
+                                              rport,
+                                              timeout,
+                                              root)
+        rrq = tftpy.TftpPacketRRQ()
+        rrq.filename = '100KBFILE'
+        rrq.mode = 'octet'
+        rrq.options = {}
+
+        # Start the download.
+        serverstate.start(rrq.encode().buffer)
+        # Should be in expectack state.
+        self.assertTrue(isinstance(serverstate.state,
+                                    tftpy.TftpStateExpectACK))
+
 if __name__ == '__main__':
     unittest.main()
