@@ -255,7 +255,11 @@ class TftpContextClientUpload(TftpContext):
         self.file_to_transfer = filename
         self.options = options
         self.packethook = packethook
-        if input == '-':
+        # If the input object has a read() function,
+        # assume it is file-like.
+        if hasattr(input, 'read'):
+            self.fileobj = input
+        elif input == '-':
             self.fileobj = sys.stdin
         else:
             self.fileobj = open(input, "rb")
@@ -328,10 +332,12 @@ class TftpContextClientDownload(TftpContext):
         self.file_to_transfer = filename
         self.options = options
         self.packethook = packethook
-        # FIXME - need to support alternate return formats than files?
-        # File-like objects would be ideal, ala duck-typing.
-        # If the filename is -, then use stdout
-        if output == '-':
+        # If the output object has a write() function,
+        # assume it is file-like.
+        if hasattr(output, 'write'):
+            self.fileobj = output
+        # If the output filename is -, then use stdout
+        elif output == '-':
             self.fileobj = sys.stdout
         else:
             self.fileobj = open(output, "wb")
