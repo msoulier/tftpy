@@ -13,7 +13,7 @@ import sys
 # Make sure that this is at least Python 2.3
 required_version = (2, 3)
 if sys.version_info < required_version:
-    raise AssertionError, "Requires at least Python 2.3"
+    raise ImportError, "Requires at least Python 2.3"
 
 from tftpy.TftpShared import *
 from tftpy.TftpPacketTypes import *
