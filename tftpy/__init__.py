@@ -11,14 +11,15 @@ directly. The TftpClient and TftpServer classes can be reached through it.
 import sys
 
 # Make sure that this is at least Python 2.3
-verlist = sys.version_info
-if not (verlist[0] > 2 or (verlist[0] == 2 and verlist[1] >= 3)):
+required_version = (2, 3)
+if sys.version_info < required_version:
     raise AssertionError, "Requires at least Python 2.3"
 
-from TftpShared import *
-from TftpPacketTypes import *
-from TftpPacketFactory import *
-from TftpClient import *
-from TftpServer import *
-from TftpContexts import *
-from TftpStates import *
+from tftpy.TftpShared import *
+from tftpy.TftpPacketTypes import *
+from tftpy.TftpPacketFactory import *
+from tftpy.TftpClient import *
+from tftpy.TftpServer import *
+from tftpy.TftpContexts import *
+from tftpy.TftpStates import *
+
