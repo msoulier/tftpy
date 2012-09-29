@@ -301,7 +301,7 @@ class TestTftpyState(unittest.TestCase):
         rrq.options = {}
 
         # Start the download.
-        self.assertRaisesRegexp(tftpy.TftpException, "bad file path",
+        self.assertRaises(tftpy.TftpException,
                 serverstate.start, rrq.encode().buffer)
 
     def testServerSecurePath(self):
