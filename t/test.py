@@ -141,12 +141,14 @@ class TestTftpyState(unittest.TestCase):
     def setUp(self):
         tftpy.setLogLevel(logging.DEBUG)
 
-    def clientServerUploadOptions(self, options, transmitname=None):
+    def clientServerUploadOptions(self, options, input=None, transmitname=None):
         """Fire up a client and a server and do an upload."""
         root = '/tmp'
         home = os.path.dirname(os.path.abspath(__file__))
         filename = '100KBFILE'
         input_path = os.path.join(home, filename)
+        if not input:
+            input = input_path
         if transmitname:
             filename = transmitname
         server = tftpy.TftpServer(root)
@@ -160,7 +162,7 @@ class TestTftpyState(unittest.TestCase):
             try:
                 time.sleep(1)
                 client.upload(filename,
-                              input_path)
+                              input)
             finally:
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
@@ -168,7 +170,7 @@ class TestTftpyState(unittest.TestCase):
         else:
             server.listen('localhost', 20001)
 
-    def clientServerDownloadOptions(self, options):
+    def clientServerDownloadOptions(self, options, output='/tmp/out'):
         """Fire up a client and a server and do a download."""
         root = os.path.dirname(os.path.abspath(__file__))
         server = tftpy.TftpServer(root)
@@ -182,7 +184,7 @@ class TestTftpyState(unittest.TestCase):
             try:
                 time.sleep(1)
                 client.download('100KBFILE',
-                                '/tmp/out')
+                                output)
             finally:
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
@@ -193,12 +195,20 @@ class TestTftpyState(unittest.TestCase):
     def testClientServerNoOptions(self):
         self.clientServerDownloadOptions({})
 
+    def testClientFileObject(self):
+        output = open('/tmp/out', 'w')
+        self.clientServerDownloadOptions({}, output)
+
     def testClientServerBlksize(self):
         for blksize in [512, 1024, 2048, 4096]:
             self.clientServerDownloadOptions({'blksize': blksize})
 
     def testClientServerUploadNoOptions(self):
         self.clientServerUploadOptions({})
+
+    def testClientServerUploadFileObj(self):
+        fileobj = open('/tmp/100KBFILE', 'r')
+        self.clientServerUploadOptions({}, input=fileobj)
 
     def testClientServerUploadWithSubdirs(self):
         self.clientServerUploadOptions({}, transmitname='foo/bar/100KBFILE')
