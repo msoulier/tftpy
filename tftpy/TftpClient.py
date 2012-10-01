@@ -27,15 +27,15 @@ class TftpClient(TftpSession):
 
     def download(self, filename, output, packethook=None, timeout=SOCK_TIMEOUT):
         """This method initiates a tftp download from the configured remote
-        host, requesting the filename passed. It saves the file to a local
-        file specified in the output parameter. If a packethook is provided,
-        it must be a function that takes a single parameter, which will be a
-        copy of each DAT packet received in the form of a TftpPacketDAT
-        object. The timeout parameter may be used to override the default
-        SOCK_TIMEOUT setting, which is the amount of time that the client will
-        wait for a receive packet to arrive.
+        host, requesting the filename passed. It writes the file to output,
+        which can be a file-like object or a path to a local file. If a
+        packethook is provided, it must be a function that takes a single
+        parameter, which will be a copy of each DAT packet received in the
+        form of a TftpPacketDAT object. The timeout parameter may be used to
+        override the default SOCK_TIMEOUT setting, which is the amount of time
+        that the client will wait for a receive packet to arrive.
 
-        Note: If output is a hyphen then stdout is used."""
+        Note: If output is a hyphen, stdout is used."""
         # We're downloading.
         log.debug("Creating download context with the following params:")
         log.debug("host = %s, port = %s, filename = %s, output = %s"
@@ -67,17 +67,15 @@ class TftpClient(TftpSession):
 
     def upload(self, filename, input, packethook=None, timeout=SOCK_TIMEOUT):
         """This method initiates a tftp upload to the configured remote host,
-        uploading the filename passed.  If a packethook is provided, it must
-        be a function that takes a single parameter, which will be a copy of
-        each DAT packet sent in the form of a TftpPacketDAT object. The
-        timeout parameter may be used to override the default SOCK_TIMEOUT
-        setting, which is the amount of time that the client will wait for a
-        DAT packet to be ACKd by the server.
+        uploading the filename passed. It reads the file from input, which
+        can be a file-like object or a path to a local file. If a packethook
+        is provided, it must be a function that takes a single parameter,
+        which will be a copy of each DAT packet sent in the form of a
+        TftpPacketDAT object. The timeout parameter may be used to override
+        the default SOCK_TIMEOUT setting, which is the amount of time that
+        the client will wait for a DAT packet to be ACKd by the server.
 
-        The input option is the full path to the file to upload, which can
-        optionally be '-' to read from stdin.
-
-        Note: If output is a hyphen then stdout is used."""
+        Note: If input is a hyphen, stdin is used."""
         self.context = TftpContextClientUpload(self.host,
                                                self.iport,
                                                filename,
