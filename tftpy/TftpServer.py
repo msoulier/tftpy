@@ -28,7 +28,7 @@ class TftpServer(TftpSession):
         # A dict of sessions, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.sessions = {}
-        
+
         if self.dyn_file_func:
             if not callable(self.dyn_file_func):
                 raise TftpException, "A dyn_file_func supplied, but it is not callable."
