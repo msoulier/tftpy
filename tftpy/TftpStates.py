@@ -84,7 +84,6 @@ class TftpState(object):
             import time
             log.debug("Deliberately delaying 10 seconds...")
             time.sleep(10)
-        tftpassert( blocknumber > 0, "There is no block zero!" )
         dat = None
         blksize = self.context.getBlocksize()
         buffer = self.context.fileobj.read(blksize)
