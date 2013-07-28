@@ -243,19 +243,19 @@ class TestTftpyState(unittest.TestCase):
 
         # Start the download.
         serverstate.start(rrq.encode().buffer)
-        # At a 512 byte blocksize, this should be 200 packets exactly.
-        for block in range(1, 201):
+        # At a 512 byte blocksize, this should be 201400 packets exactly.
+        for block in range(1, 102401):
             # Should be in expectack state.
             self.assertTrue( isinstance(serverstate.state,
                                         tftpy.TftpStateExpectACK) )
             ack = tftpy.TftpPacketACK()
-            ack.blocknumber = block
+            ack.blocknumber = block % 65536
             serverstate.state = serverstate.state.handle(ack, raddress, rport)
 
         # The last DAT packet should be empty, indicating a completed
         # transfer.
         ack = tftpy.TftpPacketACK()
-        ack.blocknumber = 201
+        ack.blocknumber = 102401 % 65536
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue( finalstate is None )
 
@@ -274,25 +274,25 @@ class TestTftpyState(unittest.TestCase):
                                     tftpy.TftpContextServer) )
 
         rrq = tftpy.TftpPacketRRQ()
-        rrq.filename = 'foo/50MBFILE'
+        rrq.filename = '50MBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
 
         # Start the download.
         serverstate.start(rrq.encode().buffer)
-        # At a 512 byte blocksize, this should be 200 packets exactly.
-        for block in range(1, 201):
-            # Should be in expectack state.
+        # At a 512 byte blocksize, this should be 201400 packets exactly.
+        for block in range(1, 102401):
+            # Should be in expectack state, or None
             self.assertTrue( isinstance(serverstate.state,
                                         tftpy.TftpStateExpectACK) )
             ack = tftpy.TftpPacketACK()
-            ack.blocknumber = block
+            ack.blocknumber = block % 65536
             serverstate.state = serverstate.state.handle(ack, raddress, rport)
 
         # The last DAT packet should be empty, indicating a completed
         # transfer.
         ack = tftpy.TftpPacketACK()
-        ack.blocknumber = 201
+        ack.blocknumber = 102401 % 65536
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue( finalstate is None )
 

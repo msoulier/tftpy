@@ -411,7 +411,7 @@ class TftpStateExpectACK(TftpState):
                     self.context.pending_complete = self.sendDAT()
 
             elif pkt.blocknumber < self.context.next_block:
-                log.debug("Received duplicate ACK for block %d"
+                log.warn("Received duplicate ACK for block %d"
                     % pkt.blocknumber)
                 self.context.metrics.add_dup(pkt)
 
