@@ -84,6 +84,12 @@ class TftpServer(TftpSession):
                 self.sessions = []
                 break
 
+            elif self.shutdown_gracefully:
+                if not self.sessions:
+                    log.warn("In graceful shutdown mode and all sessions complete.")
+                    self.sock.close()
+                    break
+
             # Build the inputlist array of sockets to select() on.
             inputlist = []
             inputlist.append(self.sock)
