@@ -29,6 +29,9 @@ class TftpServer(TftpSession):
         # ip:tid for the remote end.
         self.sessions = {}
 
+        self.shutdown_gracefully = False
+        self.shutdown_immediately = False
+
         if self.dyn_file_func:
             if not callable(self.dyn_file_func):
                 raise TftpException, "A dyn_file_func supplied, but it is not callable."
@@ -73,6 +76,14 @@ class TftpServer(TftpSession):
 
         log.info("Starting receive loop...")
         while True:
+            if self.shutdown_immediately:
+                log.warn("Shutting down now. Session count: %d" % len(self.sessions))
+                self.sock.close()
+                for key in self.sessions:
+                    self.sessions[key].end()
+                self.sessions = []
+                break
+
             # Build the inputlist array of sockets to select() on.
             inputlist = []
             inputlist.append(self.sock)
@@ -96,6 +107,10 @@ class TftpServer(TftpSession):
                     buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
 
                     log.debug("Read %d bytes" % len(buffer))
+
+                    if self.shutdown_gracefully:
+                        log.warn("Discarding data on main port, in graceful shutdown mode")
+                        continue
 
                     # Forge a session key based on the client's IP and port,
                     # which should safely work through NAT.
@@ -185,3 +200,19 @@ class TftpServer(TftpSession):
                 else:
                     log.warn("Strange, session %s is not on the deletion list"
                         % key)
+
+        log.debug("server returning from while loop")
+        self.shutdown_gracefully = self.shutdown_immediately = False
+
+    def stop(force=False):
+        """Stop the server gracefully. Do not take any new transfers,
+        but complete the existing ones. If force is True, drop everything
+        and stop. Note, immediately will not interrupt the select loop, it
+        will happen when the server returns on ready data, or a timeout.
+        ie. SOCK_TIMEOUT"""
+        if force:
+            log.info("Server instructed to shut down immediately.")
+            self.shutdown_immediately = True
+        else:
+            log.info("Server instructed to shut down gracefully.")
+            self.shutdown_gracefully = True

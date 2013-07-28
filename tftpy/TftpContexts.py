@@ -122,6 +122,7 @@ class TftpContext(object):
         called explicitely by the calling code, this works better than the
         destructor."""
         log.debug("in TftpContext.end")
+        self.sock.close()
         if self.fileobj is not None and not self.fileobj.closed:
             log.debug("self.fileobj is open - closing")
             self.fileobj.close()
