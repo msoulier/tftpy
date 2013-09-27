@@ -36,17 +36,17 @@ class TftpServer(TftpSession):
             if not callable(self.dyn_file_func):
                 raise TftpException, "A dyn_file_func supplied, but it is not callable."
         elif os.path.exists(self.root):
-            log.debug("tftproot %s does exist" % self.root)
+            log.debug("tftproot %s does exist", self.root)
             if not os.path.isdir(self.root):
                 raise TftpException, "The tftproot must be a directory."
             else:
-                log.debug("tftproot %s is a directory" % self.root)
+                log.debug("tftproot %s is a directory", self.root)
                 if os.access(self.root, os.R_OK):
-                    log.debug("tftproot %s is readable" % self.root)
+                    log.debug("tftproot %s is readable", self.root)
                 else:
                     raise TftpException, "The tftproot must be readable"
                 if os.access(self.root, os.W_OK):
-                    log.debug("tftproot %s is writable" % self.root)
+                    log.debug("tftproot %s is writable", self.root)
                 else:
                     log.warning("The tftproot %s is not writable" % self.root)
         else:
@@ -97,7 +97,7 @@ class TftpServer(TftpSession):
                 inputlist.append(self.sessions[key].sock)
 
             # Block until some socket has input on it.
-            log.debug("Performing select on this inputlist: %s" % inputlist)
+            log.debug("Performing select on this inputlist: %s", inputlist)
             readyinput, readyoutput, readyspecial = select.select(inputlist,
                                                                   [],
                                                                   [],
@@ -112,7 +112,7 @@ class TftpServer(TftpSession):
                     log.debug("Data ready on our main socket")
                     buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
 
-                    log.debug("Read %d bytes" % len(buffer))
+                    log.debug("Read %d bytes", len(buffer))
 
                     if self.shutdown_gracefully:
                         log.warn("Discarding data on main port, in graceful shutdown mode")
@@ -124,7 +124,7 @@ class TftpServer(TftpSession):
 
                     if not self.sessions.has_key(key):
                         log.debug("Creating new server context for "
-                                     "session key = %s" % key)
+                                     "session key = %s", key)
                         self.sessions[key] = TftpContextServer(raddress,
                                                                rport,
                                                                timeout,
@@ -176,12 +176,11 @@ class TftpServer(TftpSession):
                     log.error(str(err))
                     self.sessions[key].retry_count += 1
                     if self.sessions[key].retry_count >= TIMEOUT_RETRIES:
-                        log.debug("hit max retries on %s, giving up"
-                            % self.sessions[key])
+                        log.debug("hit max retries on %s, giving up",
+                            self.sessions[key])
                         deletion_list.append(key)
                     else:
-                        log.debug("resending on session %s"
-                            % self.sessions[key])
+                        log.debug("resending on session %s", self.sessions[key])
                         self.sessions[key].state.resendLast()
 
             log.debug("Iterating deletion list.")
@@ -200,9 +199,9 @@ class TftpServer(TftpSession):
                         log.info("Average rate: %.2f kbps" % metrics.kbps)
                     log.info("%.2f bytes in resent data" % metrics.resent_bytes)
                     log.info("%d duplicate packets" % metrics.dupcount)
-                    log.debug("Deleting session %s" % key)
+                    log.debug("Deleting session %s", key)
                     del self.sessions[key]
-                    log.debug("Session list is now %s" % self.sessions)
+                    log.debug("Session list is now %s", self.sessions)
                 else:
                     log.warn("Strange, session %s is not on the deletion list"
                         % key)

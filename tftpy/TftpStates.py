@@ -70,7 +70,7 @@ class TftpState(object):
                 accepted_options['tsize'] = 1
             else:
                 log.info("Dropping unsupported option '%s'" % option)
-        log.debug("Returning these accepted options: %s" % accepted_options)
+        log.debug("Returning these accepted options: %s", accepted_options)
         return accepted_options
 
     def sendDAT(self):
@@ -87,7 +87,7 @@ class TftpState(object):
         dat = None
         blksize = self.context.getBlocksize()
         buffer = self.context.fileobj.read(blksize)
-        log.debug("Read %d bytes into buffer" % len(buffer))
+        log.debug("Read %d bytes into buffer", len(buffer))
         if len(buffer) < blksize:
             log.info("Reached EOF on file %s"
                 % self.context.file_to_transfer)
@@ -96,7 +96,7 @@ class TftpState(object):
         dat.data = buffer
         dat.blocknumber = blocknumber
         self.context.metrics.bytes += len(dat.data)
-        log.debug("Sending DAT packet %d" % dat.blocknumber)
+        log.debug("Sending DAT packet %d", dat.blocknumber)
         self.context.sock.sendto(dat.encode().buffer,
                                  (self.context.host, self.context.tidport))
         if self.context.packethook:
@@ -108,7 +108,7 @@ class TftpState(object):
         """This method sends an ack packet to the block number specified. If
         none is specified, it defaults to the next_block property in the
         parent context."""
-        log.debug("In sendACK, passed blocknumber is %s" % blocknumber)
+        log.debug("In sendACK, passed blocknumber is %s", blocknumber)
         if blocknumber is None:
             blocknumber = self.context.next_block
         log.info("Sending ack to block %d" % blocknumber)
@@ -122,7 +122,7 @@ class TftpState(object):
     def sendError(self, errorcode):
         """This method uses the socket passed, and uses the errorcode to
         compose and send an error packet."""
-        log.debug("In sendError, being asked to send error %d" % errorcode)
+        log.debug("In sendError, being asked to send error %d", errorcode)
         errpkt = TftpPacketERR()
         errpkt.errorcode = errorcode
         self.context.sock.sendto(errpkt.encode().buffer,
@@ -133,7 +133,7 @@ class TftpState(object):
     def sendOACK(self):
         """This method sends an OACK packet with the options from the current
         context."""
-        log.debug("In sendOACK with options %s" % self.context.options)
+        log.debug("In sendOACK with options %s", self.context.options)
         pkt = TftpPacketOACK()
         pkt.options = self.context.options
         self.context.sock.sendto(pkt.encode().buffer,
@@ -162,16 +162,14 @@ class TftpState(object):
         """This method handles a DAT packet during a client download, or a
         server upload."""
         log.info("Handling DAT packet - block %d" % pkt.blocknumber)
-        log.debug("Expecting block %s" % self.context.next_block)
+        log.debug("Expecting block %s", self.context.next_block)
         if pkt.blocknumber == self.context.next_block:
-            log.debug("Good, received block %d in sequence"
-                        % pkt.blocknumber)
+            log.debug("Good, received block %d in sequence", pkt.blocknumber)
 
             self.sendACK()
             self.context.next_block += 1
 
-            log.debug("Writing %d bytes to output file"
-                        % len(pkt.data))
+            log.debug("Writing %d bytes to output file", len(pkt.data))
             self.context.fileobj.write(pkt.data)
             self.context.metrics.bytes += len(pkt.data)
             # Check for end-of-file, any less than full data packet.
@@ -186,7 +184,7 @@ class TftpState(object):
                 raise TftpException, "There is no block zero!"
             log.warn("Dropping duplicate block %d" % pkt.blocknumber)
             self.context.metrics.add_dup(pkt)
-            log.debug("ACKing block %d again, just in case" % pkt.blocknumber)
+            log.debug("ACKing block %d again, just in case", pkt.blocknumber)
             self.sendACK(pkt.blocknumber)
 
         else:
@@ -225,7 +223,7 @@ class TftpServerState(TftpState):
         self.context.options = { 'blksize': DEF_BLKSIZE }
 
         if options:
-            log.debug("Options requested: %s" % options)
+            log.debug("Options requested: %s", options)
             supported_options = self.returnSupportedOptions(options)
             self.context.options.update(supported_options)
             sendoack = True
@@ -249,13 +247,13 @@ class TftpServerState(TftpState):
             # Return same state, we're still waiting for valid traffic.
             return self
 
-        log.debug("Requested filename is %s" % pkt.filename)
+        log.debug("Requested filename is %s", pkt.filename)
 
         # Make sure that the path to the file is contained in the server's
         # root directory.
         full_path = os.path.join(self.context.root, pkt.filename)
         self.full_path = os.path.abspath(full_path)
-        log.debug("full_path is %s" % full_path)
+        log.debug("full_path is %s", full_path)
         if self.full_path.startswith(self.context.root):
             log.info("requested file is in the server root - good")
         else:
@@ -282,7 +280,7 @@ class TftpStateServerRecvRRQ(TftpServerState):
             # blows.
             self.context.fileobj = open(path, "rb")
         elif self.context.dyn_file_func:
-            log.debug("No such file %s but using dyn_file_func" % path)
+            log.debug("No such file %s but using dyn_file_func", path)
             self.context.fileobj = \
                 self.context.dyn_file_func(self.context.file_to_transfer)
 
@@ -321,17 +319,17 @@ class TftpStateServerRecvWRQ(TftpServerState):
         subdirectories leading up to the file to the written."""
         # Pull off everything below the root.
         subpath = self.full_path[len(self.context.root):]
-        log.debug("make_subdirs: subpath is %s" % subpath)
+        log.debug("make_subdirs: subpath is %s", subpath)
         # Split on directory separators, but drop the last one, as it should
         # be the filename.
         dirs = subpath.split(os.sep)[:-1]
-        log.debug("dirs is %s" % dirs)
+        log.debug("dirs is %s", dirs)
         current = self.context.root
         for dir in dirs:
             if dir:
                 current = os.path.join(current, dir)
                 if os.path.isdir(current):
-                    log.debug("%s is already an existing directory" % current)
+                    log.debug("%s is already an existing directory", current)
                 else:
                     os.mkdir(current, 0700)
 
@@ -406,8 +404,8 @@ class TftpStateExpectACK(TftpState):
                 else:
                     log.debug("Good ACK, sending next DAT")
                     self.context.next_block += 1
-                    log.debug("Incremented next_block to %d"
-                        % (self.context.next_block))
+                    log.debug("Incremented next_block to %d",
+                        self.context.next_block)
                     self.context.pending_complete = self.sendDAT()
 
             elif pkt.blocknumber < self.context.next_block:
@@ -459,7 +457,7 @@ class TftpStateSentWRQ(TftpState):
         """Handle a packet we just received."""
         if not self.context.tidport:
             self.context.tidport = rport
-            log.debug("Set remote port for session to %s" % rport)
+            log.debug("Set remote port for session to %s", rport)
 
         # If we're going to successfully transfer the file, then we should see
         # either an OACK for accepted options, or an ACK to ignore options.

@@ -43,16 +43,16 @@ class TftpMetrics(object):
         self.duration = self.end_time - self.start_time
         if self.duration == 0:
             self.duration = 1
-        log.debug("TftpMetrics.compute: duration is %s" % self.duration)
+        log.debug("TftpMetrics.compute: duration is %s", self.duration)
         self.bps = (self.bytes * 8.0) / self.duration
         self.kbps = self.bps / 1024.0
-        log.debug("TftpMetrics.compute: kbps is %s" % self.kbps)
+        log.debug("TftpMetrics.compute: kbps is %s", self.kbps)
         for key in self.dups:
             self.dupcount += self.dups[key]
 
     def add_dup(self, pkt):
         """This method adds a dup for a packet to the metrics."""
-        log.debug("Recording a dup of %s" % pkt)
+        log.debug("Recording a dup of %s", pkt)
         s = str(pkt)
         if self.dups.has_key(s):
             self.dups[s] += 1
@@ -110,7 +110,7 @@ class TftpContext(object):
     def checkTimeout(self, now):
         """Compare current time with last_update time, and raise an exception
         if we're over the timeout time."""
-        log.debug("checking for timeout on session %s" % self)
+        log.debug("checking for timeout on session %s", self)
         if now - self.last_update > self.timeout:
             raise TftpTimeout, "Timeout waiting for traffic"
 
@@ -160,8 +160,8 @@ class TftpContext(object):
             raise TftpTimeout, "Timed-out waiting for traffic"
 
         # Ok, we've received a packet. Log it.
-        log.debug("Received %d bytes from %s:%s"
-                        % (len(buffer), raddress, rport))
+        log.debug("Received %d bytes from %s:%s",
+                        len(buffer), raddress, rport)
         # And update our last updated time.
         self.last_update = time.time()
 
@@ -217,12 +217,12 @@ class TftpContextServer(TftpContext):
         that."""
         log.debug("In TftpContextServer.start")
         self.metrics.start_time = time.time()
-        log.debug("Set metrics.start_time to %s" % self.metrics.start_time)
+        log.debug("Set metrics.start_time to %s", self.metrics.start_time)
         # And update our last updated time.
         self.last_update = time.time()
 
         pkt = self.factory.parse(buffer)
-        log.debug("TftpContextServer.start() - factory returned a %s" % pkt)
+        log.debug("TftpContextServer.start() - factory returned a %s", pkt)
 
         # Call handle once with the initial packet. This should put us into
         # the download or the upload state.
@@ -234,7 +234,7 @@ class TftpContextServer(TftpContext):
         """Finish up the context."""
         TftpContext.end(self)
         self.metrics.end_time = time.time()
-        log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
+        log.debug("Set metrics.end_time to %s", self.metrics.end_time)
         self.metrics.compute()
 
 class TftpContextClientUpload(TftpContext):
@@ -265,8 +265,8 @@ class TftpContextClientUpload(TftpContext):
             self.fileobj = open(input, "rb")
 
         log.debug("TftpContextClientUpload.__init__()")
-        log.debug("file_to_transfer = %s, options = %s" %
-            (self.file_to_transfer, self.options))
+        log.debug("file_to_transfer = %s, options = %s",
+            self.file_to_transfer, self.options)
 
     def __str__(self):
         return "%s:%s %s" % (self.host, self.port, self.state)
@@ -277,7 +277,7 @@ class TftpContextClientUpload(TftpContext):
         log.info("    options -> %s" % self.options)
 
         self.metrics.start_time = time.time()
-        log.debug("Set metrics.start_time to %s" % self.metrics.start_time)
+        log.debug("Set metrics.start_time to %s", self.metrics.start_time)
 
         # FIXME: put this in a sendWRQ method?
         pkt = TftpPacketWRQ()
@@ -294,7 +294,7 @@ class TftpContextClientUpload(TftpContext):
 
         while self.state:
             try:
-                log.debug("State is %s" % self.state)
+                log.debug("State is %s", self.state)
                 self.cycle()
             except TftpTimeout, err:
                 log.error(str(err))
@@ -310,7 +310,7 @@ class TftpContextClientUpload(TftpContext):
         """Finish up the context."""
         TftpContext.end(self)
         self.metrics.end_time = time.time()
-        log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
+        log.debug("Set metrics.end_time to %s", self.metrics.end_time)
         self.metrics.compute()
 
 class TftpContextClientDownload(TftpContext):
@@ -343,8 +343,8 @@ class TftpContextClientDownload(TftpContext):
             self.fileobj = open(output, "wb")
 
         log.debug("TftpContextClientDownload.__init__()")
-        log.debug("file_to_transfer = %s, options = %s" %
-            (self.file_to_transfer, self.options))
+        log.debug("file_to_transfer = %s, options = %s",
+            self.file_to_transfer, self.options)
 
     def __str__(self):
         return "%s:%s %s" % (self.host, self.port, self.state)
@@ -356,7 +356,7 @@ class TftpContextClientDownload(TftpContext):
         log.info("    options -> %s" % self.options)
 
         self.metrics.start_time = time.time()
-        log.debug("Set metrics.start_time to %s" % self.metrics.start_time)
+        log.debug("Set metrics.start_time to %s", self.metrics.start_time)
 
         # FIXME: put this in a sendRRQ method?
         pkt = TftpPacketRRQ()
@@ -371,7 +371,7 @@ class TftpContextClientDownload(TftpContext):
 
         while self.state:
             try:
-                log.debug("State is %s" % self.state)
+                log.debug("State is %s", self.state)
                 self.cycle()
             except TftpTimeout, err:
                 log.error(str(err))
@@ -387,5 +387,5 @@ class TftpContextClientDownload(TftpContext):
         """Finish up the context."""
         TftpContext.end(self)
         self.metrics.end_time = time.time()
-        log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
+        log.debug("Set metrics.end_time to %s", self.metrics.end_time)
         self.metrics.compute()
