@@ -1,5 +1,10 @@
 Copyright, Michael P. Soulier, 2010.
 
+About Release 0.6.1:
+====================
+Maintenance release to fix several reported problems, including a rollover
+at 2^16 blocks, and some contributed work on dynamic file objects.
+
 About Release 0.6.0:
 ====================
 Maintenance update to fix several reported issues, including proper

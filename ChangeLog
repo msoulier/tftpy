@@ -1,5 +1,63 @@
 
+2013-09-26	Michael P. Soulier
+	d7c0010: Fixed testcases.
+	6d07acb: Fixing debug calls to be lazy when debug is off.
+	0cab8c3: Fixing a testcase.
+
+2013-07-28	Michael P. Soulier
+	86b42d1: Fixing unit tests
+
+2013-07-27	Michael P. Soulier
+	d86ecb7: Adding graceful exit condition.
+	a105799: Adding a TftpServer.stop() method.
+
+2013-05-15	Michael P. Soulier
+	f3d2fc4: Increasing test file size to 50MB and removed the assertion of a block zero, as that will happen at block number rollover. Closes issue #36.
+
+2012-10-04	Michael P. Soulier
+	3e0a967: Removing trailing whitespace
+	47c0eda: Merge remote branch 'micolous/master' into merge
+
+2012-09-30	Michael P. Soulier
+	b57e583: Adding testcases for new file-like input and output
+	792e849: Merge remote branch 'jawschwa/master' into merge
+
+2012-09-29	Michael P. Soulier
+	6359c21: Fixing doc on website
+	51150aa: Fixing testcase for pre python 2.7
+
+2012-08-07	Michael Farrell
+	a78f0a6: raise ImportError when Python version is wrong instead of AssertionError
+	fed8461: Improved version check so it is much cleaner, fix relative import issue with Python 2.5 not working
+
+2012-05-03	Jay Weisskopf
+	39b8772: Allow file objects to be used for download output or upload input.
+
+2012-04-26	Fabian Knittel
+	83507c6: tftpy/TftpStates.py: fix security problem regarding path check
+	c52ea92: t/test.py: add unit test for insecure path access
+	a973612: refactor TftpState: move server-specific stuff to TftpServerState
+	017688d: minor clean-up: remove duplicate dyn_file_func setting
+
+2012-04-12	Michael Farrell
+	e8039dd: improve the check on dyn_file_func of TftpServer
+
+2012-04-11	Michael Farrell
+	9cba3b9: allow TftpServer.root not to exist if a dyn_file_func is provided
+	2b879b3: allow running the script on python 3.0 - 3.2 (though unsure of compatibility)
+
+2012-03-10	Michael P. Soulier
+	05e56b6: Fixing issue #26, with the server not creating the full path to the filename being uploaded.
+
+2011-09-01	Michael P. Soulier
+	9b655fc: Adding subdirectory support. Hopefully closes issue 25.
+
+2011-07-26	Michael P. Soulier
+	6ab5ea4: Documentation update for 0.6.0
+	64478a3: Makefile update, and adding rpm specfile.
+
 2011-07-24	Michael P. Soulier
+	a5a42a3: Updating metadata for 0.6.0 release.
 	04aaa2e: Fixing issue #3, expanding unit tests.
 
 2011-07-23	Michael P. Soulier
