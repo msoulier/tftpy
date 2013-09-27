@@ -145,7 +145,7 @@ class TestTftpyState(unittest.TestCase):
         """Fire up a client and a server and do an upload."""
         root = '/tmp'
         home = os.path.dirname(os.path.abspath(__file__))
-        filename = '64KBFILE'
+        filename = '640KBFILE'
         input_path = os.path.join(home, filename)
         if not input:
             input = input_path
@@ -183,7 +183,7 @@ class TestTftpyState(unittest.TestCase):
             # parent - let the server start
             try:
                 time.sleep(1)
-                client.download('64KBFILE',
+                client.download('640KBFILE',
                                 output)
             finally:
                 os.kill(child_pid, 15)
@@ -207,11 +207,11 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerUploadOptions({})
 
     def testClientServerUploadFileObj(self):
-        fileobj = open('t/64KBFILE', 'r')
+        fileobj = open('t/640KBFILE', 'r')
         self.clientServerUploadOptions({}, input=fileobj)
 
     def testClientServerUploadWithSubdirs(self):
-        self.clientServerUploadOptions({}, transmitname='foo/bar/64KBFILE')
+        self.clientServerUploadOptions({}, transmitname='foo/bar/640KBFILE')
 
     def testClientServerUploadOptions(self):
         for blksize in [512, 1024, 2048, 4096]:
@@ -237,14 +237,14 @@ class TestTftpyState(unittest.TestCase):
                                     tftpy.TftpContextServer) )
 
         rrq = tftpy.TftpPacketRRQ()
-        rrq.filename = '64KBFILE'
+        rrq.filename = '640KBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
 
         # Start the download.
         serverstate.start(rrq.encode().buffer)
-        # At a 512 byte blocksize, this should be 201400 packets exactly.
-        for block in range(1, 102401):
+        # At a 512 byte blocksize, this should be 1280 packets exactly.
+        for block in range(1, 1281):
             # Should be in expectack state.
             self.assertTrue( isinstance(serverstate.state,
                                         tftpy.TftpStateExpectACK) )
@@ -255,7 +255,7 @@ class TestTftpyState(unittest.TestCase):
         # The last DAT packet should be empty, indicating a completed
         # transfer.
         ack = tftpy.TftpPacketACK()
-        ack.blocknumber = 102401 % 65536
+        ack.blocknumber = 1281 % 65536
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue( finalstate is None )
 
@@ -274,14 +274,14 @@ class TestTftpyState(unittest.TestCase):
                                     tftpy.TftpContextServer) )
 
         rrq = tftpy.TftpPacketRRQ()
-        rrq.filename = '64KBFILE'
+        rrq.filename = '640KBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
 
         # Start the download.
         serverstate.start(rrq.encode().buffer)
-        # At a 512 byte blocksize, this should be 201400 packets exactly.
-        for block in range(1, 102401):
+        # At a 512 byte blocksize, this should be 1280 packets exactly.
+        for block in range(1, 1281):
             # Should be in expectack state, or None
             self.assertTrue( isinstance(serverstate.state,
                                         tftpy.TftpStateExpectACK) )
@@ -292,7 +292,7 @@ class TestTftpyState(unittest.TestCase):
         # The last DAT packet should be empty, indicating a completed
         # transfer.
         ack = tftpy.TftpPacketACK()
-        ack.blocknumber = 102401 % 65536
+        ack.blocknumber = 1281 % 65536
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue( finalstate is None )
 
@@ -324,7 +324,7 @@ class TestTftpyState(unittest.TestCase):
                                               timeout,
                                               root)
         rrq = tftpy.TftpPacketRRQ()
-        rrq.filename = '64KBFILE'
+        rrq.filename = '640KBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
 
