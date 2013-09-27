@@ -145,7 +145,7 @@ class TestTftpyState(unittest.TestCase):
         """Fire up a client and a server and do an upload."""
         root = '/tmp'
         home = os.path.dirname(os.path.abspath(__file__))
-        filename = '50MBFILE'
+        filename = '64KBFILE'
         input_path = os.path.join(home, filename)
         if not input:
             input = input_path
@@ -183,7 +183,7 @@ class TestTftpyState(unittest.TestCase):
             # parent - let the server start
             try:
                 time.sleep(1)
-                client.download('50MBFILE',
+                client.download('64KBFILE',
                                 output)
             finally:
                 os.kill(child_pid, 15)
@@ -207,11 +207,11 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerUploadOptions({})
 
     def testClientServerUploadFileObj(self):
-        fileobj = open('/tmp/50MBFILE', 'r')
+        fileobj = open('t/64KBFILE', 'r')
         self.clientServerUploadOptions({}, input=fileobj)
 
     def testClientServerUploadWithSubdirs(self):
-        self.clientServerUploadOptions({}, transmitname='foo/bar/50MBFILE')
+        self.clientServerUploadOptions({}, transmitname='foo/bar/64KBFILE')
 
     def testClientServerUploadOptions(self):
         for blksize in [512, 1024, 2048, 4096]:
@@ -237,7 +237,7 @@ class TestTftpyState(unittest.TestCase):
                                     tftpy.TftpContextServer) )
 
         rrq = tftpy.TftpPacketRRQ()
-        rrq.filename = '50MBFILE'
+        rrq.filename = '64KBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
 
@@ -274,7 +274,7 @@ class TestTftpyState(unittest.TestCase):
                                     tftpy.TftpContextServer) )
 
         rrq = tftpy.TftpPacketRRQ()
-        rrq.filename = '50MBFILE'
+        rrq.filename = '64KBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
 
@@ -324,7 +324,7 @@ class TestTftpyState(unittest.TestCase):
                                               timeout,
                                               root)
         rrq = tftpy.TftpPacketRRQ()
-        rrq.filename = '50MBFILE'
+        rrq.filename = '64KBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
 
