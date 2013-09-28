@@ -334,5 +334,79 @@ class TestTftpyState(unittest.TestCase):
         self.assertTrue(isinstance(serverstate.state,
                                     tftpy.TftpStateExpectACK))
 
+    def testServerDownloadWithStopNow(self, output='/tmp/out'):
+        log.debug("===> Running testcase testServerDownloadWithStopNow")
+        root = os.path.dirname(os.path.abspath(__file__))
+        server = tftpy.TftpServer(root)
+        client = tftpy.TftpClient('localhost',
+                                  20001,
+                                  {})
+        # Fork a server and run the client in this process.
+        child_pid = os.fork()
+        if child_pid:
+            # parent - let the server start
+            stopped_early = False
+            try:
+                time.sleep(1)
+                client.download('640KBFILE',
+                                output)
+            except:
+                log.warn("client threw exception as expected")
+                stopped_early = True
+
+            finally:
+                os.kill(child_pid, 15)
+                os.waitpid(child_pid, 0)
+
+            self.assertTrue( stopped_early == True )
+
+        else:
+            import signal
+            def handlealarm(signum, frame):
+                server.stop(now=True)
+            signal.signal(signal.SIGALRM, handlealarm)
+            signal.alarm(2)
+            try:
+                server.listen('localhost', 20001)
+            except Exception, err:
+                self.assertTrue( err[0] == 4 )
+
+    def testServerDownloadWithStopNotNow(self, output='/tmp/out'):
+        log.debug("===> Running testcase testServerDownloadWithStopNotNow")
+        root = os.path.dirname(os.path.abspath(__file__))
+        server = tftpy.TftpServer(root)
+        client = tftpy.TftpClient('localhost',
+                                  20001,
+                                  {})
+        # Fork a server and run the client in this process.
+        child_pid = os.fork()
+        if child_pid:
+            # parent - let the server start
+            stopped_early = False
+            try:
+                time.sleep(1)
+                client.download('640KBFILE',
+                                output)
+            except:
+                log.warn("client threw exception as expected")
+                stopped_early = True
+
+            finally:
+                os.kill(child_pid, 15)
+                os.waitpid(child_pid, 0)
+
+            self.assertTrue( stopped_early == False )
+
+        else:
+            import signal
+            def handlealarm(signum, frame):
+                server.stop(now=False)
+            signal.signal(signal.SIGALRM, handlealarm)
+            signal.alarm(2)
+            try:
+                server.listen('localhost', 20001)
+            except Exception, err:
+                self.assertTrue( False, "Server should not exit early" )
+
 if __name__ == '__main__':
     unittest.main()

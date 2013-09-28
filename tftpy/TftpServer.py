@@ -76,6 +76,8 @@ class TftpServer(TftpSession):
 
         log.info("Starting receive loop...")
         while True:
+            log.debug("shutdown_immediately is %s", self.shutdown_immediately)
+            log.debug("shutdown_gracefully is %s", self.shutdown_gracefully)
             if self.shutdown_immediately:
                 log.warn("Shutting down now. Session count: %d" % len(self.sessions))
                 self.sock.close()
@@ -209,15 +211,13 @@ class TftpServer(TftpSession):
         log.debug("server returning from while loop")
         self.shutdown_gracefully = self.shutdown_immediately = False
 
-    def stop(force=False):
+    def stop(self, now=False):
         """Stop the server gracefully. Do not take any new transfers,
         but complete the existing ones. If force is True, drop everything
         and stop. Note, immediately will not interrupt the select loop, it
         will happen when the server returns on ready data, or a timeout.
         ie. SOCK_TIMEOUT"""
-        if force:
-            log.info("Server instructed to shut down immediately.")
+        if now:
             self.shutdown_immediately = True
         else:
-            log.info("Server instructed to shut down gracefully.")
             self.shutdown_gracefully = True
