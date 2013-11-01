@@ -249,9 +249,26 @@ class TftpServerState(TftpState):
 
         log.debug("Requested filename is %s", pkt.filename)
 
-        # Make sure that the path to the file is contained in the server's
-        # root directory.
-        full_path = os.path.join(self.context.root, pkt.filename)
+        # Build the filename on this server and ensure it is contained
+        # in the specified root directory.
+        #
+        # Filenames that begin with server root are accepted. It's
+        # assumed the client and server are tightly connected and this
+        # provides backwards compatibility.
+        #
+        # Filenames otherwise are relative to the server root. If they
+        # begin with a '/' strip it off as otherwise os.path.join will
+        # treat it as absolute (regardless of whether it is ntpath or
+        # posixpath module
+        if pkt.filename.startswith(self.context.root):
+            full_path = pkt.filename
+        else:
+            full_path = os.path.join(
+                self.context.root, pkt.filename.lstrip('/'))
+
+        # Use abspath to eliminate any remaining relative elements
+        # (e.g. '..') and ensure that is still within the server's
+        # root directory
         self.full_path = os.path.abspath(full_path)
         log.debug("full_path is %s", full_path)
         if self.full_path.startswith(self.context.root):
