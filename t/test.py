@@ -213,6 +213,9 @@ class TestTftpyState(unittest.TestCase):
     def testClientServerUploadWithSubdirs(self):
         self.clientServerUploadOptions({}, transmitname='foo/bar/640KBFILE')
 
+    def testClientServerUploadStartingSlash(self):
+        self.clientServerUploadOptions({}, transmitname='/foo/bar/640KBFILE')
+
     def testClientServerUploadOptions(self):
         for blksize in [512, 1024, 2048, 4096]:
             self.clientServerUploadOptions({'blksize': blksize})
