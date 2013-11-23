@@ -187,8 +187,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         mystruct = struct.unpack(format, shortbuf)
 
         tftpassert(len(mystruct) == 2, "malformed packet")
-        self.filename = mystruct[0]
-        self.mode = mystruct[1].lower() # force lc - bug 17
+        self.filename = s(mystruct[0])
+        self.mode = s(mystruct[1].lower()) # force lc - bug 17
         log.debug("set filename to %s", self.filename)
         log.debug("set mode to %s", self.mode)
 
@@ -413,8 +413,8 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
             log.debug("value is %s", self.options[key])
             format += "%dsx" % len(key)
             format += "%dsx" % len(self.options[key])
-            options_list.append(key)
-            options_list.append(self.options[key])
+            options_list.append(b(key))
+            options_list.append(b(self.options[key]))
         self.buffer = struct.pack(format, self.opcode, *options_list)
         return self
 

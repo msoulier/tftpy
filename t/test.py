@@ -5,6 +5,7 @@ import logging
 import tftpy
 import os
 import time
+import sys
 
 log = tftpy.log
 
@@ -68,7 +69,10 @@ class TestTftpyClasses(unittest.TestCase):
         log.debug("===> Running testcase testTftpPacketDAT")
         dat = tftpy.TftpPacketDAT()
         dat.blocknumber = 5
-        data = "this is some data"
+        if sys.version < '3':
+            data = "this is some data"
+        else:
+            data = b"this is some data"
         dat.data = data
         dat.encode()
         self.assert_(dat.buffer != None, "Buffer populated")
@@ -196,7 +200,10 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerDownloadOptions({})
 
     def testClientFileObject(self):
-        output = open('/tmp/out', 'w')
+        if sys.version < '3':
+            output = open('/tmp/out', 'w')
+        else:
+            output = open('/tmp/out', 'wb')
         self.clientServerDownloadOptions({}, output)
 
     def testClientServerBlksize(self):
@@ -207,7 +214,10 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerUploadOptions({})
 
     def testClientServerUploadFileObj(self):
-        fileobj = open('t/640KBFILE', 'r')
+        if sys.version < '3':
+            fileobj = open('t/640KBFILE', 'r')
+        else:
+            fileobj = open('t/640KBFILE', 'rb')
         self.clientServerUploadOptions({}, input=fileobj)
 
     def testClientServerUploadWithSubdirs(self):
@@ -371,7 +381,7 @@ class TestTftpyState(unittest.TestCase):
             signal.alarm(2)
             try:
                 server.listen('localhost', 20001)
-            except Exception, err:
+            except Exception as err:
                 self.assertTrue( err[0] == 4 )
 
     def testServerDownloadWithStopNotNow(self, output='/tmp/out'):
@@ -408,7 +418,7 @@ class TestTftpyState(unittest.TestCase):
             signal.alarm(2)
             try:
                 server.listen('localhost', 20001)
-            except Exception, err:
+            except Exception:
                 self.assertTrue( False, "Server should not exit early" )
 
 if __name__ == '__main__':
