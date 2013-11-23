@@ -23,8 +23,8 @@ class TftpPacketWithOptions(object):
         log.debug("options: %s", str(options))
         myoptions = {}
         for key in options:
-            newkey = str(key)
-            myoptions[newkey] = str(options[key])
+            newkey = s(key)
+            myoptions[newkey] = s(options[key])
             log.debug("populated myoptions with %s = %s",
                          newkey, myoptions[newkey])
 
@@ -56,8 +56,8 @@ class TftpPacketWithOptions(object):
         # Count the nulls in the buffer. Each one terminates a string.
         log.debug("about to iterate options buffer counting nulls")
         length = 0
-        for c in buffer:
-            if ord(c) == 0:
+        for i in xrange(len(buffer)):
+            if ord(buffer[i:i+1]) == 0:
                 log.debug("found a null at length %d", length)
                 if length > 0:
                     format += "%dsx" % length
@@ -134,15 +134,15 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
             raise AssertionError, "Unsupported mode: %s" % mode
         # Add options.
         options_list = []
-        if self.options.keys() > 0:
+        if len(self.options) > 0:
             log.debug("there are options to encode")
             for key in self.options:
                 # Populate the option name
                 format += "%dsx" % len(key)
-                options_list.append(key)
+                options_list.append(b(key))
                 # Populate the option value
-                format += "%dsx" % len(str(self.options[key]))
-                options_list.append(str(self.options[key]))
+                format += "%dsx" % len(self.options[key])
+                options_list.append(b(self.options[key]))
 
         log.debug("format is %s", format)
         log.debug("options_list is %s", options_list)
@@ -150,8 +150,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
 
         self.buffer = struct.pack(format,
                                   self.opcode,
-                                  self.filename,
-                                  self.mode,
+                                  b(self.filename),
+                                  b(self.mode),
                                   *options_list)
 
         log.debug("buffer is %s", repr(self.buffer))
@@ -166,8 +166,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         nulls = length = tlength = 0
         log.debug("in decode: about to iterate buffer counting nulls")
         subbuf = self.buffer[2:]
-        for c in subbuf:
-            if ord(c) == 0:
+        for i in xrange(len(subbuf)):
+            if ord(subbuf[i:i+1]) == 0:
                 nulls += 1
                 log.debug("found a null at length %d, now have %d", length, nulls)
                 format += "%dsx" % length
@@ -364,7 +364,7 @@ class TftpPacketERR(TftpPacket):
         self.buffer = struct.pack(format,
                                   self.opcode,
                                   self.errorcode,
-                                  self.errmsgs[self.errorcode])
+                                  b(self.errmsgs[self.errorcode]))
         return self
 
     def decode(self):
@@ -433,9 +433,9 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
                 if name == 'blksize':
                     # We can accept anything between the min and max values.
                     size = self.options[name]
-                    if size >= MIN_BLKSIZE and size <= MAX_BLKSIZE:
-                        log.debug("negotiated blksize of %d bytes", size)
-                        options[blksize] = size
+                    if int(size) >= MIN_BLKSIZE and int(size) <= MAX_BLKSIZE:
+                        log.debug("negotiated blksize of %d bytes" % int(size))
+                        options['blksize'] = size
                 else:
                     raise TftpException, "Unsupported option: %s" % name
         return True

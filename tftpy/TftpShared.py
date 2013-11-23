@@ -1,6 +1,7 @@
 """This module holds all objects shared by all other modules in tftpy."""
 
 import logging
+import sys
 
 LOG_LEVEL = logging.NOTSET
 MIN_BLKSIZE = 8
@@ -19,6 +20,36 @@ logging.basicConfig()
 # The logger used by this library. Feel free to clobber it with your own, if you like, as
 # long as it conforms to Python's logging.
 log = logging.getLogger('tftpy')
+
+if sys.version < '3':
+    def b(x):
+        if not isinstance(x, str):
+            x = str(x)
+        return x
+else:
+    import codecs
+    def b(x):
+        if not isinstance(x, bytes):
+            if not isinstance(x, str):
+                x = str(x)
+            return codecs.latin_1_encode(x)[0]
+        else:
+            return x
+
+if sys.version < '3':
+    def s(x):
+        if not isinstance(x, str):
+            x = str(x)
+        return x
+else:
+    import codecs
+    def s(x):
+        if not isinstance(x, str):
+            if isinstance(x, bytes):
+                return codecs.latin_1_decode(x)[0]
+            return str(x)
+        else:
+            return x
 
 def tftpassert(condition, msg):
     """This function is a simple utility that will check the condition
