@@ -23,9 +23,9 @@ class TftpPacketWithOptions(object):
         log.debug("options: %s", str(options))
         myoptions = {}
         for key in options:
-            newkey = s(key)
-            myoptions[newkey] = s(options[key])
-            log.debug("populated myoptions with %s = %s",
+            newkey = key
+            myoptions[newkey] = options[key]
+            log.debug("populated myoptions with %s = %d",
                          newkey, myoptions[newkey])
 
         log.debug("setting options hash to: %s", str(myoptions))
@@ -73,8 +73,8 @@ class TftpPacketWithOptions(object):
                    "packet with odd number of option/value pairs")
 
         for i in range(0, len(mystruct), 2):
-            log.debug("setting option %s to %s", mystruct[i], mystruct[i+1])
-            options[mystruct[i]] = mystruct[i+1]
+            log.debug("setting option %s to %d", mystruct[i], int(mystruct[i+1]))
+            options[to_str(mystruct[i])] = int(mystruct[i+1])
 
         return options
 
@@ -137,12 +137,14 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         if len(self.options) > 0:
             log.debug("there are options to encode")
             for key in self.options:
+                value = to_bytes(self.options[key])
+                key = to_bytes(key)
                 # Populate the option name
                 format += "%dsx" % len(key)
-                options_list.append(b(key))
+                options_list.append(key)
                 # Populate the option value
-                format += "%dsx" % len(self.options[key])
-                options_list.append(b(self.options[key]))
+                format += "%dsx" % len(value)
+                options_list.append(value)
 
         log.debug("format is %s", format)
         log.debug("options_list is %s", options_list)
@@ -150,8 +152,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
 
         self.buffer = struct.pack(format,
                                   self.opcode,
-                                  b(self.filename),
-                                  b(self.mode),
+                                  to_bytes(self.filename),
+                                  to_bytes(self.mode),
                                   *options_list)
 
         log.debug("buffer is %s", repr(self.buffer))
@@ -187,8 +189,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         mystruct = struct.unpack(format, shortbuf)
 
         tftpassert(len(mystruct) == 2, "malformed packet")
-        self.filename = s(mystruct[0])
-        self.mode = s(mystruct[1].lower()) # force lc - bug 17
+        self.filename = to_str(mystruct[0])
+        self.mode = to_str(mystruct[1].lower()) # force lc - bug 17
         log.debug("set filename to %s", self.filename)
         log.debug("set mode to %s", self.mode)
 
@@ -364,7 +366,7 @@ class TftpPacketERR(TftpPacket):
         self.buffer = struct.pack(format,
                                   self.opcode,
                                   self.errorcode,
-                                  b(self.errmsgs[self.errorcode]))
+                                  to_bytes(self.errmsgs[self.errorcode]))
         return self
 
     def decode(self):
@@ -409,12 +411,14 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
         options_list = []
         log.debug("in TftpPacketOACK.encode")
         for key in self.options:
+            value = to_bytes(self.options[key])
+            key = to_bytes(key)
             log.debug("looping on option key %s", key)
-            log.debug("value is %s", self.options[key])
+            log.debug("value is %s", value)
             format += "%dsx" % len(key)
-            format += "%dsx" % len(self.options[key])
-            options_list.append(b(key))
-            options_list.append(b(self.options[key]))
+            format += "%dsx" % len(value)
+            options_list.append(key)
+            options_list.append(value)
         self.buffer = struct.pack(format, self.opcode, *options_list)
         return self
 
@@ -433,9 +437,11 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
                 if name == 'blksize':
                     # We can accept anything between the min and max values.
                     size = self.options[name]
-                    if int(size) >= MIN_BLKSIZE and int(size) <= MAX_BLKSIZE:
-                        log.debug("negotiated blksize of %d bytes" % int(size))
+                    if size >= MIN_BLKSIZE and size <= MAX_BLKSIZE:
+                        log.debug("negotiated blksize of %d bytes" % size)
                         options['blksize'] = size
+                elif name == 'tsize':
+                    pass
                 else:
                     raise TftpException, "Unsupported option: %s" % name
         return True

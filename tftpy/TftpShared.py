@@ -22,34 +22,39 @@ logging.basicConfig()
 log = logging.getLogger('tftpy')
 
 if sys.version < '3':
-    def b(x):
-        if not isinstance(x, str):
-            x = str(x)
-        return x
-else:
-    import codecs
-    def b(x):
-        if not isinstance(x, bytes):
-            if not isinstance(x, str):
-                x = str(x)
-            return codecs.latin_1_encode(x)[0]
-        else:
+    def to_bytes(x):
+        if isinstance(x, str):
             return x
-
-if sys.version < '3':
-    def s(x):
-        if not isinstance(x, str):
-            x = str(x)
-        return x
-else:
-    import codecs
-    def s(x):
-        if not isinstance(x, str):
-            if isinstance(x, bytes):
-                return codecs.latin_1_decode(x)[0]
+        elif isinstance(x, unicode):
+            return x.encode()
+        elif isinstance(x, int):
             return str(x)
         else:
+            return None
+else:
+    def to_bytes(x):
+        if isinstance(x, bytes):
             return x
+        elif isinstance(x, str):
+            return x.encode()
+        elif isinstance(x, int):
+            return str(x).encode()
+        else:
+            return None
+
+if sys.version < '3':
+    def to_str(x):
+        return to_bytes(x)
+else:
+    def to_str(x):
+        if isinstance(x, str):
+            return x
+        elif isinstance(x, bytes):
+            return x.decode()
+        elif isinstance(x, int):
+            return str(x)
+        else:
+            return None
 
 def tftpassert(condition, msg):
     """This function is a simple utility that will check the condition
