@@ -25,8 +25,6 @@ if sys.version < '3':
     def to_bytes(x):
         if isinstance(x, str):
             return x
-        elif isinstance(x, unicode):
-            return x.encode()
         elif isinstance(x, int):
             return str(x)
         else:
