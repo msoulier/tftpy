@@ -33,13 +33,13 @@ class TftpState(object):
     def handleOACK(self, pkt):
         """This method handles an OACK from the server, syncing any accepted
         options."""
-        if pkt.options.keys() > 0:
+        if len(pkt.options) > 0:
             if pkt.match_options(self.context.options):
                 log.info("Successful negotiation of options")
                 # Set options to OACK options
                 self.context.options = pkt.options
                 for key in self.context.options:
-                    log.info("    %s = %s" % (key, self.context.options[key]))
+                    log.info("    %s = %d" % (key, self.context.options[key]))
             else:
                 log.error("Failed to negotiate options")
                 raise TftpException, "Failed to negotiate options"
@@ -55,11 +55,11 @@ class TftpState(object):
         for option in options:
             if option == 'blksize':
                 # Make sure it's valid.
-                if int(options[option]) > MAX_BLKSIZE:
+                if options[option] > MAX_BLKSIZE:
                     log.info("Client requested blksize greater than %d "
                              "setting to maximum" % MAX_BLKSIZE)
                     accepted_options[option] = MAX_BLKSIZE
-                elif int(options[option]) < MIN_BLKSIZE:
+                elif options[option] < MIN_BLKSIZE:
                     log.info("Client requested blksize less than %d "
                              "setting to minimum" % MIN_BLKSIZE)
                     accepted_options[option] = MIN_BLKSIZE

@@ -5,6 +5,7 @@ import logging
 import tftpy
 import os
 import time
+import sys
 
 log = tftpy.log
 
@@ -27,7 +28,7 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(rrq.mode, "octet", "Mode correct")
         self.assertEqual(rrq.options, options, "Options correct")
         # repeat test with options
-        rrq.options = { 'blksize': '1024' }
+        rrq.options = { 'blksize': 1024 }
         rrq.filename = 'myfilename'
         rrq.mode = 'octet'
         rrq.encode()
@@ -35,7 +36,7 @@ class TestTftpyClasses(unittest.TestCase):
         rrq.decode()
         self.assertEqual(rrq.filename, "myfilename", "Filename correct")
         self.assertEqual(rrq.mode, "octet", "Mode correct")
-        self.assertEqual(rrq.options['blksize'], '1024', "Blksize correct")
+        self.assertEqual(rrq.options['blksize'], 1024, "Blksize correct")
 
     def testTftpPacketWRQ(self):
         log.debug("===> Running test case testTftpPacketWRQ")
@@ -52,7 +53,7 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(wrq.mode, "octet", "Mode correct")
         self.assertEqual(wrq.options, options, "Options correct")
         # repeat test with options
-        wrq.options = { 'blksize': '1024' }
+        wrq.options = { 'blksize': 1024 }
         wrq.filename = 'myfilename'
         wrq.mode = 'octet'
         wrq.encode()
@@ -61,14 +62,17 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(wrq.opcode, 2, "Opcode correct")
         self.assertEqual(wrq.filename, "myfilename", "Filename correct")
         self.assertEqual(wrq.mode, "octet", "Mode correct")
-        self.assertEqual(wrq.options['blksize'], '1024', "Blksize correct")
+        self.assertEqual(wrq.options['blksize'], 1024, "Blksize correct")
 
 
     def testTftpPacketDAT(self):
         log.debug("===> Running testcase testTftpPacketDAT")
         dat = tftpy.TftpPacketDAT()
         dat.blocknumber = 5
-        data = "this is some data"
+        if sys.version < '3':
+            data = "this is some data"
+        else:
+            data = b"this is some data"
         dat.data = data
         dat.encode()
         self.assert_(dat.buffer != None, "Buffer populated")
@@ -107,16 +111,16 @@ class TestTftpyClasses(unittest.TestCase):
         oack.decode()
         self.assertEqual(oack.opcode, 6, "OACK opcode is correct")
         self.assertEqual(oack.options['blksize'],
-                         '2048',
+                         2048,
                          "OACK blksize option is correct")
         # Test string to string
-        oack.options = { 'blksize': '4096' }
+        oack.options = { 'blksize': 4096 }
         oack.encode()
         self.assert_(oack.buffer != None, "Buffer populated")
         oack.decode()
         self.assertEqual(oack.opcode, 6, "OACK opcode is correct")
         self.assertEqual(oack.options['blksize'],
-                         '4096',
+                         4096,
                          "OACK blksize option is correct")
         
     def testTftpPacketFactory(self):
@@ -196,7 +200,10 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerDownloadOptions({})
 
     def testClientFileObject(self):
-        output = open('/tmp/out', 'w')
+        if sys.version < '3':
+            output = open('/tmp/out', 'w')
+        else:
+            output = open('/tmp/out', 'wb')
         self.clientServerDownloadOptions({}, output)
 
     def testClientServerBlksize(self):
@@ -207,7 +214,10 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerUploadOptions({})
 
     def testClientServerUploadFileObj(self):
-        fileobj = open('t/640KBFILE', 'r')
+        if sys.version < '3':
+            fileobj = open('t/640KBFILE', 'r')
+        else:
+            fileobj = open('t/640KBFILE', 'rb')
         self.clientServerUploadOptions({}, input=fileobj)
 
     def testClientServerUploadWithSubdirs(self):
@@ -371,7 +381,7 @@ class TestTftpyState(unittest.TestCase):
             signal.alarm(2)
             try:
                 server.listen('localhost', 20001)
-            except Exception, err:
+            except Exception as err:
                 self.assertTrue( err[0] == 4 )
 
     def testServerDownloadWithStopNotNow(self, output='/tmp/out'):
@@ -408,7 +418,7 @@ class TestTftpyState(unittest.TestCase):
             signal.alarm(2)
             try:
                 server.listen('localhost', 20001)
-            except Exception, err:
+            except Exception:
                 self.assertTrue( False, "Server should not exit early" )
 
 if __name__ == '__main__':

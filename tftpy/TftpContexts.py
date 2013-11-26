@@ -67,7 +67,7 @@ class TftpMetrics(object):
 class TftpContext(object):
     """The base class of the contexts."""
 
-    def __init__(self, host, port, timeout):
+    def __init__(self, host, port, timeout, localip = ""):
         """Constructor for the base context, setting shared instance
         variables."""
         self.file_to_transfer = None
@@ -75,6 +75,8 @@ class TftpContext(object):
         self.options = None
         self.packethook = None
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        if localip != "":
+            self.sock.bind((localip, 0))
         self.sock.settimeout(timeout)
         self.timeout = timeout
         self.state = None
@@ -247,11 +249,13 @@ class TftpContextClientUpload(TftpContext):
                  input,
                  options,
                  packethook,
-                 timeout):
+                 timeout,
+                 localip = ""):
         TftpContext.__init__(self,
                              host,
                              port,
-                             timeout)
+                             timeout,
+                             localip)
         self.file_to_transfer = filename
         self.options = options
         self.packethook = packethook
@@ -323,11 +327,13 @@ class TftpContextClientDownload(TftpContext):
                  output,
                  options,
                  packethook,
-                 timeout):
+                 timeout,
+                 localip = ""):
         TftpContext.__init__(self,
                              host,
                              port,
-                             timeout)
+                             timeout,
+                             localip)
         # FIXME: should we refactor setting of these params?
         self.file_to_transfer = filename
         self.options = options
