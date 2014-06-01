@@ -5,6 +5,7 @@ TftpShared."""
 
 import socket, os, time
 import select
+import threading
 from TftpShared import *
 from TftpPacketTypes import *
 from TftpPacketFactory import TftpPacketFactory
@@ -28,6 +29,7 @@ class TftpServer(TftpSession):
         # A dict of sessions, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.sessions = {}
+        self.is_running = threading.Event()
 
         self.shutdown_gracefully = False
         self.shutdown_immediately = False
@@ -73,6 +75,8 @@ class TftpServer(TftpSession):
         except socket.error, err:
             # Reraise it for now.
             raise
+
+        self.is_running.set()
 
         log.info("Starting receive loop...")
         while True:
@@ -207,6 +211,8 @@ class TftpServer(TftpSession):
                 else:
                     log.warn("Strange, session %s is not on the deletion list"
                         % key)
+
+        self.is_running.clear()
 
         log.debug("server returning from while loop")
         self.shutdown_gracefully = self.shutdown_immediately = False
