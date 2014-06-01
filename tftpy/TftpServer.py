@@ -72,6 +72,7 @@ class TftpServer(TftpSession):
             # FIXME - sockets should be non-blocking
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sock.bind((listenip, listenport))
+            _, self.listenport = self.sock.getsockname()
         except socket.error, err:
             # Reraise it for now.
             raise
