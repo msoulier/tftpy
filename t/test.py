@@ -5,6 +5,7 @@ import logging
 import tftpy
 import os
 import time
+import threading
 
 log = tftpy.log
 
@@ -118,7 +119,7 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(oack.options['blksize'],
                          '4096',
                          "OACK blksize option is correct")
-        
+
     def testTftpPacketFactory(self):
         log.debug("===> Running testcase testTftpPacketFactory")
         # Make sure that the correct class is created for the correct opcode.
@@ -410,6 +411,26 @@ class TestTftpyState(unittest.TestCase):
                 server.listen('localhost', 20001)
             except Exception, err:
                 self.assertTrue( False, "Server should not exit early" )
+
+    def testServerDownloadWithDynamicPort(self, output='/tmp/out'):
+        log.debug("===> Running testcase testServerDownloadWithDynamicPort")
+        root = os.path.dirname(os.path.abspath(__file__))
+
+        server = tftpy.TftpServer(root)
+        server_thread = threading.Thread(target=server.listen,
+                                         kwargs={'listenip': 'localhost',
+                                                 'listenport': 0})
+        server_thread.start()
+
+        try:
+            server.is_running.wait()
+            client = tftpy.TftpClient('localhost', server.listenport, {})
+            time.sleep(1)
+            client.download('640KBFILE',
+                            output)
+        finally:
+            server.stop(now=False)
+            server_thread.join()
 
 if __name__ == '__main__':
     unittest.main()
