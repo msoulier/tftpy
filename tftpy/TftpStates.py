@@ -1,5 +1,5 @@
 """This module implements all state handling during uploads and downloads, the
-main interface to which being the TftpState base class. 
+main interface to which being the TftpState base class.
 
 The concept is simple. Each context object represents a single upload or
 download, and the state object in the context object represents the current
@@ -67,7 +67,7 @@ class TftpState(object):
                     accepted_options[option] = options[option]
             elif option == 'tsize':
                 log.debug("tsize option is set")
-                accepted_options['tsize'] = 1
+                accepted_options['tsize'] = 0
             else:
                 log.info("Dropping unsupported option '%s'" % option)
         log.debug("Returning these accepted options: %s", accepted_options)
@@ -312,6 +312,14 @@ class TftpStateServerRecvRRQ(TftpServerState):
 
         # Options negotiation.
         if sendoack:
+            # getting the file size for the tsize option. As we handle
+            # file-like objects and not only real files, we use this seeking
+            # method instead of asking the OS
+            self.context.fileobj.seek(0, os.SEEK_END)
+            tsize = str(self.context.fileobj.tell())
+            self.context.fileobj.seek(0, 0)
+            self.context.options['tsize'] = tsize
+
             # Note, next_block is 0 here since that's the proper
             # acknowledgement to an OACK.
             # FIXME: perhaps we do need a TftpStateExpectOACK class...
