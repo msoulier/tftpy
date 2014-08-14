@@ -10,6 +10,7 @@ error, in which case a TftpException is returned instead."""
 
 from TftpShared import *
 from TftpPacketTypes import *
+import inspect
 import os
 
 ###############################################################################
@@ -302,11 +303,9 @@ class TftpStateServerRecvRRQ(TftpServerState):
             if len(args.args) == 1:
                 self.context.fileobj = \
                     self.context.dyn_file_func(self.context.file_to_transfer)
-            elif len(args.args) == 2:
+            elif len(args.args) >= 2:
                 self.context.fileobj = \
                     self.context.dyn_file_func(self.context.file_to_transfer, self.context)
-            else:
-                log.error("dyn_file_func takes %d parameters, but tftpy can only handle 1 or 2" % len(args.args))
 
             if self.context.fileobj is None:
                 log.debug("dyn_file_func returned 'None', treating as "
