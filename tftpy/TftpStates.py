@@ -300,12 +300,12 @@ class TftpStateServerRecvRRQ(TftpServerState):
         elif self.context.dyn_file_func:
             log.debug("No such file %s but using dyn_file_func", path)
             args = inspect.getargs(self.context.dyn_file_func.__code__)
-            if len(args.args) == 1:
+            if 'context' in args.args:
+                self.context.fileobj = \
+                    self.context.dyn_file_func(self.context.file_to_transfer, context = self.context)
+            else:
                 self.context.fileobj = \
                     self.context.dyn_file_func(self.context.file_to_transfer)
-            elif len(args.args) >= 2:
-                self.context.fileobj = \
-                    self.context.dyn_file_func(self.context.file_to_transfer, self.context)
 
             if self.context.fileobj is None:
                 log.debug("dyn_file_func returned 'None', treating as "
