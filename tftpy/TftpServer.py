@@ -29,6 +29,8 @@ class TftpServer(TftpSession):
         # A dict of sessions, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.sessions = {}
+        # A threading event to help threads synchronize with the server
+        # is_running state.
         self.is_running = threading.Event()
 
         self.shutdown_gracefully = False
