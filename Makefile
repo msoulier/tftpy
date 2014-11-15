@@ -3,6 +3,9 @@ PYTHONPATH=.
 
 all: test sdist
 
+pypi:
+	PYTHONPATH=$(PYTHONPATH) $(PY) setup.py sdist upload --sign --identity 5BC8BE08
+
 sdist:
 	PYTHONPATH=$(PYTHONPATH) $(PY) setup.py sdist
 
