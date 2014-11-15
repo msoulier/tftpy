@@ -1,5 +1,25 @@
 
+2014-09-06	Michael P. Soulier
+	21c0b09: Added a comment.
+
+2014-06-13	Philip Derrin
+	0ec8265: Test case for dynamic server listenport
+
+2014-06-02	Philip Derrin
+	29f9a40: Set listenport to the port chosen by bind()
+	c76cb7a: Set an event while TftpServer.listen() runs
+
+2013-11-11	Michael P. Soulier
+	75d346a: Added a test for last change.
+
+2013-11-01	Nathan Bird
+	3481af8: Fixing #11: server accept leading '/' in uploads
+
+2013-09-27	Michael P. Soulier
+	d55b7b3: Added tests for server api stop.
+
 2013-09-26	Michael P. Soulier
+	b5e4b20: Setting up for the 0.6.1 release.
 	d7c0010: Fixed testcases.
 	6d07acb: Fixing debug calls to be lazy when debug is off.
 	0cab8c3: Fixing a testcase.
