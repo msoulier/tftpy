@@ -1,18 +1,19 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TFTPy &mdash; TFTPy v0.6.0 documentation</title>
+    <title>TFTPy &mdash; TFTPy 0.6.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '0.6.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -22,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TFTPy v0.6.0 documentation" href="#" /> 
+    <link rel="top" title="TFTPy 0.6.0 documentation" href="#" /> 
   </head>
   <body>
     <div class="related">
@@ -34,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="#">TFTPy v0.6.0 documentation</a> &raquo;</li> 
+        <li><a href="#">TFTPy 0.6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -65,12 +66,14 @@ still work. Let me know if it doesn&#8217;t.</p>
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>If you download the source distribution, you can simply use distutils to
 install, via:</p>
-<div class="highlight-python"><pre>python setup.py build
-python setup.py install</pre>
+<div class="highlight-python"><div class="highlight"><pre>python setup.py build
+python setup.py install
+</pre></div>
 </div>
 <p>Or, as this has been uploaded to pypi, you can use easy_install or pip:</p>
-<div class="highlight-python"><pre>easy_install tftpy
-pip install tftpy</pre>
+<div class="highlight-python"><div class="highlight"><pre>easy_install tftpy
+pip install tftpy
+</pre></div>
 </div>
 <p>Once installed you should have the sample client and server scripts in bin,
 and you should be able to import the <cite>tftpy</cite> module.</p>
@@ -124,29 +127,28 @@ upload() method.</p>
 <dt id="tftpy.TftpClient.TftpClient.download">
 <tt class="descname">download</tt><big>(</big><em>filename</em>, <em>output</em>, <em>packethook=None</em>, <em>timeout=5</em><big>)</big><a class="headerlink" href="#tftpy.TftpClient.TftpClient.download" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method initiates a tftp download from the configured remote
-host, requesting the filename passed. It saves the file to a local
-file specified in the output parameter. If a packethook is provided,
-it must be a function that takes a single parameter, which will be a
-copy of each DAT packet received in the form of a TftpPacketDAT
-object. The timeout parameter may be used to override the default
-SOCK_TIMEOUT setting, which is the amount of time that the client will
-wait for a receive packet to arrive.</p>
-<p>Note: If output is a hyphen then stdout is used.</p>
+host, requesting the filename passed. It writes the file to output,
+which can be a file-like object or a path to a local file. If a
+packethook is provided, it must be a function that takes a single
+parameter, which will be a copy of each DAT packet received in the
+form of a TftpPacketDAT object. The timeout parameter may be used to
+override the default SOCK_TIMEOUT setting, which is the amount of time
+that the client will wait for a receive packet to arrive.</p>
+<p>Note: If output is a hyphen, stdout is used.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="tftpy.TftpClient.TftpClient.upload">
 <tt class="descname">upload</tt><big>(</big><em>filename</em>, <em>input</em>, <em>packethook=None</em>, <em>timeout=5</em><big>)</big><a class="headerlink" href="#tftpy.TftpClient.TftpClient.upload" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method initiates a tftp upload to the configured remote host,
-uploading the filename passed.  If a packethook is provided, it must
-be a function that takes a single parameter, which will be a copy of
-each DAT packet sent in the form of a TftpPacketDAT object. The
-timeout parameter may be used to override the default SOCK_TIMEOUT
-setting, which is the amount of time that the client will wait for a
-DAT packet to be ACKd by the server.</p>
-<p>The input option is the full path to the file to upload, which can
-optionally be &#8216;-&#8216; to read from stdin.</p>
-<p>Note: If output is a hyphen then stdout is used.</p>
+uploading the filename passed. It reads the file from input, which
+can be a file-like object or a path to a local file. If a packethook
+is provided, it must be a function that takes a single parameter,
+which will be a copy of each DAT packet sent in the form of a
+TftpPacketDAT object. The timeout parameter may be used to override
+the default SOCK_TIMEOUT setting, which is the amount of time that
+the client will wait for a DAT packet to be ACKd by the server.</p>
+<p>Note: If input is a hyphen, stdin is used.</p>
 </dd></dl>
 
 </dd></dl>
@@ -174,6 +176,16 @@ content.</p>
 <dd><p>Start a server listening on the supplied interface and port. This
 defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
 supply a different socket timeout value, if desired.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tftpy.TftpServer.TftpServer.stop">
+<tt class="descname">stop</tt><big>(</big><em>now=False</em><big>)</big><a class="headerlink" href="#tftpy.TftpServer.TftpServer.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the server gracefully. Do not take any new transfers,
+but complete the existing ones. If force is True, drop everything
+and stop. Note, immediately will not interrupt the select loop, it
+will happen when the server returns on ready data, or a timeout.
+ie. SOCK_TIMEOUT</p>
 </dd></dl>
 
 </dd></dl>
@@ -242,10 +254,11 @@ order suitable for sending over the wire.</p>
 <dt id="tftpy.TftpPacketTypes.TftpPacketACK">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpPacketTypes.</tt><tt class="descname">TftpPacketACK</tt><a class="headerlink" href="#tftpy.TftpPacketTypes.TftpPacketACK" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacket" title="tftpy.TftpPacketTypes.TftpPacket"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpPacketTypes.TftpPacket</span></tt></a></p>
-<div class="highlight-python"><pre>        2 bytes    2 bytes
+<div class="highlight-python"><div class="highlight"><pre>        2 bytes    2 bytes
         -------------------
 ACK   | 04    |   Block #  |
-        --------------------</pre>
+        --------------------
+</pre></div>
 </div>
 </dd></dl>
 
@@ -253,10 +266,11 @@ ACK   | 04    |   Block #  |
 <dt id="tftpy.TftpPacketTypes.TftpPacketDAT">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpPacketTypes.</tt><tt class="descname">TftpPacketDAT</tt><a class="headerlink" href="#tftpy.TftpPacketTypes.TftpPacketDAT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacket" title="tftpy.TftpPacketTypes.TftpPacket"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpPacketTypes.TftpPacket</span></tt></a></p>
-<div class="highlight-python"><pre>        2 bytes    2 bytes       n bytes
+<div class="highlight-python"><div class="highlight"><pre>        2 bytes    2 bytes       n bytes
         ---------------------------------
 DATA  | 03    |   Block #  |    Data    |
-        ---------------------------------</pre>
+        ---------------------------------
+</pre></div>
 </div>
 <dl class="method">
 <dt id="tftpy.TftpPacketTypes.TftpPacketDAT.decode">
@@ -278,7 +292,7 @@ returns self for easy method chaining.</p>
 <dt id="tftpy.TftpPacketTypes.TftpPacketERR">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpPacketTypes.</tt><tt class="descname">TftpPacketERR</tt><a class="headerlink" href="#tftpy.TftpPacketTypes.TftpPacketERR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacket" title="tftpy.TftpPacketTypes.TftpPacket"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpPacketTypes.TftpPacket</span></tt></a></p>
-<div class="highlight-python"><pre>        2 bytes  2 bytes        string    1 byte
+<div class="highlight-python"><div class="highlight"><pre>        2 bytes  2 bytes        string    1 byte
         ----------------------------------------
 ERROR | 05    |  ErrorCode |   ErrMsg   |   0  |
         ----------------------------------------
@@ -295,7 +309,8 @@ Value     Meaning
 5         Unknown transfer ID.
 6         File already exists.
 7         No such user.
-8         Failed to negotiate options</pre>
+8         Failed to negotiate options
+</pre></div>
 </div>
 <dl class="method">
 <dt id="tftpy.TftpPacketTypes.TftpPacketERR.decode">
@@ -330,9 +345,10 @@ they share quite a bit of code.</p>
 <dt id="tftpy.TftpPacketTypes.TftpPacketOACK">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpPacketTypes.</tt><tt class="descname">TftpPacketOACK</tt><a class="headerlink" href="#tftpy.TftpPacketTypes.TftpPacketOACK" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacket" title="tftpy.TftpPacketTypes.TftpPacket"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpPacketTypes.TftpPacket</span></tt></a>, <a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketWithOptions" title="tftpy.TftpPacketTypes.TftpPacketWithOptions"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpPacketTypes.TftpPacketWithOptions</span></tt></a></p>
-<div class="highlight-python"><pre>+-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+
+<div class="highlight-python"><div class="highlight"><pre>+-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+
 |  opc  |  opt1  | 0 | value1 | 0 |  optN  | 0 | valueN | 0 |
-+-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+</pre>
++-------+---~~---+---+---~~---+---+---~~---+---+---~~---+---+
+</pre></div>
 </div>
 <dl class="method">
 <dt id="tftpy.TftpPacketTypes.TftpPacketOACK.match_options">
@@ -350,10 +366,11 @@ options.</p>
 <dt id="tftpy.TftpPacketTypes.TftpPacketRRQ">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpPacketTypes.</tt><tt class="descname">TftpPacketRRQ</tt><a class="headerlink" href="#tftpy.TftpPacketTypes.TftpPacketRRQ" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketInitial" title="tftpy.TftpPacketTypes.TftpPacketInitial"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpPacketTypes.TftpPacketInitial</span></tt></a></p>
-<div class="highlight-python"><pre>        2 bytes    string   1 byte     string   1 byte
+<div class="highlight-python"><div class="highlight"><pre>        2 bytes    string   1 byte     string   1 byte
         -----------------------------------------------
 RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |
-WRQ     -----------------------------------------------</pre>
+WRQ     -----------------------------------------------
+</pre></div>
 </div>
 </dd></dl>
 
@@ -361,10 +378,11 @@ WRQ     -----------------------------------------------</pre>
 <dt id="tftpy.TftpPacketTypes.TftpPacketWRQ">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpPacketTypes.</tt><tt class="descname">TftpPacketWRQ</tt><a class="headerlink" href="#tftpy.TftpPacketTypes.TftpPacketWRQ" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketInitial" title="tftpy.TftpPacketTypes.TftpPacketInitial"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpPacketTypes.TftpPacketInitial</span></tt></a></p>
-<div class="highlight-python"><pre>        2 bytes    string   1 byte     string   1 byte
+<div class="highlight-python"><div class="highlight"><pre>        2 bytes    string   1 byte     string   1 byte
         -----------------------------------------------
 RRQ/  | 01/02 |  Filename  |   0  |    Mode    |   0  |
-WRQ     -----------------------------------------------</pre>
+WRQ     -----------------------------------------------
+</pre></div>
 </div>
 </dd></dl>
 
@@ -451,7 +469,7 @@ is complete, at which point it returns None. That is, unless there is a fatal
 error, in which case a TftpException is returned instead.</p>
 <dl class="class">
 <dt id="tftpy.TftpContexts.TftpContext">
-<em class="property">class </em><tt class="descclassname">tftpy.TftpContexts.</tt><tt class="descname">TftpContext</tt><big>(</big><em>host</em>, <em>port</em>, <em>timeout</em>, <em>dyn_file_func=None</em><big>)</big><a class="headerlink" href="#tftpy.TftpContexts.TftpContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">tftpy.TftpContexts.</tt><tt class="descname">TftpContext</tt><big>(</big><em>host</em>, <em>port</em>, <em>timeout</em><big>)</big><a class="headerlink" href="#tftpy.TftpContexts.TftpContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>The base class of the contexts.</p>
 <dl class="method">
@@ -584,6 +602,23 @@ the next packet in the transfer, and returns a state object until the transfer
 is complete, at which point it returns None. That is, unless there is a fatal
 error, in which case a TftpException is returned instead.</p>
 <dl class="class">
+<dt id="tftpy.TftpStates.TftpServerState">
+<em class="property">class </em><tt class="descclassname">tftpy.TftpStates.</tt><tt class="descname">TftpServerState</tt><big>(</big><em>context</em><big>)</big><a class="headerlink" href="#tftpy.TftpStates.TftpServerState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tftpy.TftpStates.TftpState" title="tftpy.TftpStates.TftpState"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpStates.TftpState</span></tt></a></p>
+<p>The base class for server states.</p>
+<dl class="method">
+<dt id="tftpy.TftpStates.TftpServerState.serverInitial">
+<tt class="descname">serverInitial</tt><big>(</big><em>pkt</em>, <em>raddress</em>, <em>rport</em><big>)</big><a class="headerlink" href="#tftpy.TftpStates.TftpServerState.serverInitial" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method performs initial setup for a server context transfer,
+put here to refactor code out of the TftpStateServerRecvRRQ and
+TftpStateServerRecvWRQ classes, since their initial setup is
+identical. The method returns a boolean, sendoack, to indicate whether
+it is required to send an OACK to the client.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="tftpy.TftpStates.TftpState">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpStates.</tt><tt class="descname">TftpState</tt><big>(</big><em>context</em><big>)</big><a class="headerlink" href="#tftpy.TftpStates.TftpState" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
@@ -652,16 +687,6 @@ compose and send an error packet.</p>
 context.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="tftpy.TftpStates.TftpState.serverInitial">
-<tt class="descname">serverInitial</tt><big>(</big><em>pkt</em>, <em>raddress</em>, <em>rport</em><big>)</big><a class="headerlink" href="#tftpy.TftpStates.TftpState.serverInitial" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method performs initial setup for a server context transfer,
-put here to refactor code out of the TftpStateServerRecvRRQ and
-TftpStateServerRecvWRQ classes, since their initial setup is
-identical. The method returns a boolean, sendoack, to indicate whether
-it is required to send an OACK to the client.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
@@ -722,7 +747,7 @@ download.</p>
 <dl class="class">
 <dt id="tftpy.TftpStates.TftpStateServerRecvRRQ">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpStates.</tt><tt class="descname">TftpStateServerRecvRRQ</tt><big>(</big><em>context</em><big>)</big><a class="headerlink" href="#tftpy.TftpStates.TftpStateServerRecvRRQ" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#tftpy.TftpStates.TftpState" title="tftpy.TftpStates.TftpState"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpStates.TftpState</span></tt></a></p>
+<dd><p>Bases: <a class="reference internal" href="#tftpy.TftpStates.TftpServerState" title="tftpy.TftpStates.TftpServerState"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpStates.TftpServerState</span></tt></a></p>
 <p>This class represents the state of the TFTP server when it has just
 received an RRQ packet.</p>
 <dl class="method">
@@ -736,13 +761,20 @@ received an RRQ packet.</p>
 <dl class="class">
 <dt id="tftpy.TftpStates.TftpStateServerRecvWRQ">
 <em class="property">class </em><tt class="descclassname">tftpy.TftpStates.</tt><tt class="descname">TftpStateServerRecvWRQ</tt><big>(</big><em>context</em><big>)</big><a class="headerlink" href="#tftpy.TftpStates.TftpStateServerRecvWRQ" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#tftpy.TftpStates.TftpState" title="tftpy.TftpStates.TftpState"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpStates.TftpState</span></tt></a></p>
+<dd><p>Bases: <a class="reference internal" href="#tftpy.TftpStates.TftpServerState" title="tftpy.TftpStates.TftpServerState"><tt class="xref py py-class docutils literal"><span class="pre">tftpy.TftpStates.TftpServerState</span></tt></a></p>
 <p>This class represents the state of the TFTP server when it has just
 received a WRQ packet.</p>
 <dl class="method">
 <dt id="tftpy.TftpStates.TftpStateServerRecvWRQ.handle">
 <tt class="descname">handle</tt><big>(</big><em>pkt</em>, <em>raddress</em>, <em>rport</em><big>)</big><a class="headerlink" href="#tftpy.TftpStates.TftpStateServerRecvWRQ.handle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handle an initial WRQ packet as a server.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tftpy.TftpStates.TftpStateServerRecvWRQ.make_subdirs">
+<tt class="descname">make_subdirs</tt><big>(</big><big>)</big><a class="headerlink" href="#tftpy.TftpStates.TftpStateServerRecvWRQ.make_subdirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>The purpose of this method is to, if necessary, create all of the
+subdirectories leading up to the file to the written.</p>
 </dd></dl>
 
 </dd></dl>
@@ -774,9 +806,7 @@ will commit to one of them once we interpret the initial packet.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">TFTPy</a><ul>
-</ul>
-</li>
+<li><a class="reference internal" href="#">TFTPy</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
@@ -807,7 +837,7 @@ will commit to one of them once we interpret the initial packet.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -830,12 +860,12 @@ will commit to one of them once we interpret the initial packet.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="#">TFTPy v0.6.0 documentation</a> &raquo;</li> 
+        <li><a href="#">TFTPy 0.6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Michael P. Soulier.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>
