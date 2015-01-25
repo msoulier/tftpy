@@ -305,6 +305,10 @@ class TftpPacketACK(TftpPacket):
         return self
 
     def decode(self):
+        if len(self.buffer) > 4:
+            log.debug("detected TFTP ACK but request is too large, will truncate")
+            log.debug("buffer was: %s", repr(self.buffer))
+            self.buffer = self.buffer[0:4]
         self.opcode, self.blocknumber = struct.unpack("!HH", self.buffer)
         log.debug("decoded ACK packet: opcode = %d, block = %d",
                      self.opcode, self.blocknumber)
