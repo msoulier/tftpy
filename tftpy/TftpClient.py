@@ -3,9 +3,9 @@ instance of the client, and then use its upload or download method. Logging is
 performed via a standard logging object set in TftpShared."""
 
 import types
-from TftpShared import *
-from TftpPacketTypes import *
-from TftpContexts import TftpContextClientDownload, TftpContextClientUpload
+from .TftpShared import *
+from .TftpPacketTypes import *
+from .TftpContexts import TftpContextClientDownload, TftpContextClientUpload
 
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client. Once instantiated, a
@@ -19,11 +19,11 @@ class TftpClient(TftpSession):
         self.iport = port
         self.filename = None
         self.options = options
-        if self.options.has_key('blksize'):
+        if 'blksize' in self.options:
             size = self.options['blksize']
             tftpassert(types.IntType == type(size), "blksize must be an int")
             if size < MIN_BLKSIZE or size > MAX_BLKSIZE:
-                raise TftpException, "Invalid blksize: %d" % size
+                raise TftpException("Invalid blksize: %d" % size)
 
     def download(self, filename, output, packethook=None, timeout=SOCK_TIMEOUT):
         """This method initiates a tftp download from the configured remote

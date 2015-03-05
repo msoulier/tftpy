@@ -2,7 +2,8 @@
 corresponding encode and decode methods for them."""
 
 import struct
-from TftpShared import *
+import sys
+from .TftpShared import *
 
 class TftpSession(object):
     """This class is the base class for the tftp client and server. Any shared
@@ -63,7 +64,7 @@ class TftpPacketWithOptions(object):
                     format += "%dsx" % length
                     length = -1
                 else:
-                    raise TftpException, "Invalid options in buffer"
+                    raise TftpException("Invalid options in buffer")
             length += 1
 
         log.debug("about to unpack, format is: %s", format)
@@ -92,7 +93,7 @@ class TftpPacket(object):
         order suitable for sending over the wire.
 
         This is an abstract method."""
-        raise NotImplementedError, "Abstract method"
+        raise NotImplementedError("Abstract method")
 
     def decode(self):
         """The decode method of a TftpPacket takes a buffer off of the wire in
@@ -102,7 +103,7 @@ class TftpPacket(object):
         datagram.
 
         This is an abstract method."""
-        raise NotImplementedError, "Abstract method"
+        raise NotImplementedError("Abstract method")
 
 class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
     """This class is a common parent class for the RRQ and WRQ packets, as
@@ -131,7 +132,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         if self.mode == "octet":
             format += "5sx"
         else:
-            raise AssertionError, "Unsupported mode: %s" % mode
+            raise AssertionError("Unsupported mode: %s" % mode)
         # Add options.
         options_list = []
         if self.options.keys() > 0:
@@ -167,7 +168,9 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         log.debug("in decode: about to iterate buffer counting nulls")
         subbuf = self.buffer[2:]
         for c in subbuf:
-            if ord(c) == 0:
+            if sys.version_info[0] <= 2:
+                c = ord(c)
+            if c == 0:
                 nulls += 1
                 log.debug("found a null at length %d, now have %d", length, nulls)
                 format += "%dsx" % length
@@ -429,7 +432,7 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
         the options so that the session can update itself to the negotiated
         options."""
         for name in self.options:
-            if options.has_key(name):
+            if name in options:
                 if name == 'blksize':
                     # We can accept anything between the min and max values.
                     size = self.options[name]
@@ -437,5 +440,5 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
                         log.debug("negotiated blksize of %d bytes", size)
                         options[blksize] = size
                 else:
-                    raise TftpException, "Unsupported option: %s" % name
+                    raise TftpException("Unsupported option: %s" % name)
         return True
