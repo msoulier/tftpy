@@ -311,7 +311,7 @@ class TftpStateServerRecvRRQ(TftpServerState):
             raise TftpException, "File not found: %s" % path
 
         # Options negotiation.
-        if sendoack:
+        if sendoack and self.context.options.has_key('tsize'):
             # getting the file size for the tsize option. As we handle
             # file-like objects and not only real files, we use this seeking
             # method instead of asking the OS
