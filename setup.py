@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='tftpy',
-      version='0.6.2',
+      version='0.6.3_fork',
       description='Python TFTP library',
       author='Michael P. Soulier',
       author_email='msoulier@digitaltorque.ca',

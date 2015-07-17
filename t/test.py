@@ -9,6 +9,7 @@ import threading
 
 log = tftpy.log
 
+
 class TestTftpyClasses(unittest.TestCase):
 
     def setUp(self):
@@ -63,7 +64,6 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(wrq.filename, "myfilename", "Filename correct")
         self.assertEqual(wrq.mode, "octet", "Mode correct")
         self.assertEqual(wrq.options['blksize'], '1024', "Blksize correct")
-
 
     def testTftpPacketDAT(self):
         log.debug("===> Running testcase testTftpPacketDAT")
@@ -134,8 +134,9 @@ class TestTftpyClasses(unittest.TestCase):
         factory = tftpy.TftpPacketFactory()
         for opcode in classes:
             self.assert_(isinstance(factory._TftpPacketFactory__create(opcode),
-                                    classes[opcode]),
-                                    "opcode %d returns the correct class" % opcode)
+                         classes[opcode]),
+                         "opcode %d returns the correct class" % opcode)
+
 
 class TestTftpyState(unittest.TestCase):
 
@@ -162,12 +163,10 @@ class TestTftpyState(unittest.TestCase):
             # parent - let the server start
             try:
                 time.sleep(1)
-                client.upload(filename,
-                              input)
+                client.upload(filename, input)
             finally:
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
-
         else:
             server.listen('localhost', 20001)
 
@@ -237,8 +236,7 @@ class TestTftpyState(unittest.TestCase):
                                               timeout,
                                               root)
 
-        self.assertTrue( isinstance(serverstate,
-                                    tftpy.TftpContextServer) )
+        self.assertTrue(isinstance(serverstate, tftpy.TftpContextServer))
 
         rrq = tftpy.TftpPacketRRQ()
         rrq.filename = '640KBFILE'
@@ -372,12 +370,13 @@ class TestTftpyState(unittest.TestCase):
             signal.alarm(2)
             try:
                 server.listen('localhost', 20001)
-            except Exception, err:
+            except Exception as err:
                 self.assertTrue( err[0] == 4 )
 
-    def testServerDownloadWithStopNotNow(self, output='/tmp/out'):
+    def testServerDownloadWithStopNotNow(self):
         log.debug("===> Running testcase testServerDownloadWithStopNotNow")
         root = os.path.dirname(os.path.abspath(__file__))
+        output='/tmp/out'
         server = tftpy.TftpServer(root)
         client = tftpy.TftpClient('localhost',
                                   20001,
@@ -403,17 +402,19 @@ class TestTftpyState(unittest.TestCase):
 
         else:
             import signal
+
             def handlealarm(signum, frame):
                 server.stop(now=False)
             signal.signal(signal.SIGALRM, handlealarm)
             signal.alarm(2)
             try:
                 server.listen('localhost', 20001)
-            except Exception, err:
-                self.assertTrue( False, "Server should not exit early" )
+            except Exception as err:
+                self.assertTrue(False, "Server should not exit early. %s" % err)
 
-    def testServerDownloadWithDynamicPort(self, output='/tmp/out'):
+    def testServerDownloadWithDynamicPort(self):
         log.debug("===> Running testcase testServerDownloadWithDynamicPort")
+        output='/tmp/out'
         root = os.path.dirname(os.path.abspath(__file__))
 
         server = tftpy.TftpServer(root)
@@ -426,8 +427,7 @@ class TestTftpyState(unittest.TestCase):
             server.is_running.wait()
             client = tftpy.TftpClient('localhost', server.listenport, {})
             time.sleep(1)
-            client.download('640KBFILE',
-                            output)
+            client.download('640KBFILE', output)
         finally:
             server.stop(now=False)
             server_thread.join()

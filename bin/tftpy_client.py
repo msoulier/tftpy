@@ -4,6 +4,7 @@ import sys, logging, os
 from optparse import OptionParser
 import tftpy
 
+
 def main():
     usage=""
     parser = OptionParser(usage=usage)
@@ -67,6 +68,7 @@ def main():
         def __init__(self, out):
             self.progress = 0
             self.out = out
+
         def progresshook(self, pkt):
             if isinstance(pkt, tftpy.TftpPacketDAT):
                 self.progress += len(pkt.data)
@@ -105,7 +107,7 @@ def main():
             tclient.upload(options.upload,
                            options.input,
                            progresshook)
-    except tftpy.TftpException, err:
+    except tftpy.TftpException as err:
         sys.stderr.write("%s\n" % str(err))
         sys.exit(1)
     except KeyboardInterrupt:

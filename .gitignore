@@ -1,5 +1,10 @@
+.idea
+.DS_Store
+
 *.pyc
+
 *.swp
 tags
-.DS_Store
+build
+
 test.log

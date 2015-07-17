@@ -2,8 +2,13 @@
 buffer, and return the appropriate TftpPacket object to represent it, via the
 parse() method."""
 
-from TftpShared import *
-from TftpPacketTypes import *
+try:
+    from TftpShared import *
+    from TftpPacketTypes import *
+except ImportError:
+    from tftpy.TftpShared import *
+    from tftpy.TftpPacketTypes import *
+
 
 class TftpPacketFactory(object):
     """This class generates TftpPacket objects. It is responsible for parsing
@@ -23,9 +28,9 @@ class TftpPacketFactory(object):
         """This method is used to parse an existing datagram into its
         corresponding TftpPacket object. The buffer is the raw bytes off of
         the network."""
-        log.debug("parsing a %d byte packet", len(buffer))
+        log.debug("parsing a %d byte packet" % len(buffer))
         (opcode,) = struct.unpack("!H", buffer[:2])
-        log.debug("opcode is %d", opcode)
+        log.debug("opcode is %d" % opcode)
         packet = self.__create(opcode)
         packet.buffer = buffer
         return packet.decode()

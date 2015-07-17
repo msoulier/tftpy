@@ -1,5 +1,10 @@
 Copyright, Michael P. Soulier, 2010.
 
+About Release 0.6.3_fork:
+====================
+Maintenance release to fix a couple of bugs.
+Don't try to run t/test.py in Win Environment use instead t/testWin.py
+
 About Release 0.6.2:
 ====================
 Maintenance release to fix a couple of reported issues.
