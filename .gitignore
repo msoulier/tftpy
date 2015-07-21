@@ -1,10 +1,8 @@
 .idea
 .DS_Store
-
 *.pyc
-
 *.swp
 tags
 build
-
 test.log
+MANIFEST
