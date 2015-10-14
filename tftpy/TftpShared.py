@@ -25,15 +25,15 @@ logging.basicConfig(level=logging.DEBUG,
 # long as it conforms to Python's logging.
 log = logging.getLogger('tftpy')
 
-def Streamhandler(): 
-    """add Streamhandler output logging.DEBUG msg to stdout. 
+def Streamhandler():
+    """add Streamhandler output logging.DEBUG msg to stdout.
     """
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     formatter = logging.Formatter('%(levelname)-8s %(message)s')
     console.setFormatter(formatter)
     return console
-        
+
 def Rotatingfilehandler():
     """
     add Rotatingfilehandler record the logging.DEBUG msg to logfile. you can change the maxsize (10*1024*1024)
@@ -44,9 +44,9 @@ def Rotatingfilehandler():
     formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
     Rthandler.setFormatter(formatter)
     return Rthandler
-    
+
 def addHandler(hdlr):
-    """add handler methods 
+    """add handler methods
     More details see the page:
     https://docs.python.org/2/library/logging.handlers.html#module-logging.handlers
     """
