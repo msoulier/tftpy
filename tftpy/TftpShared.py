@@ -16,17 +16,14 @@ DEF_TFTP_PORT = 69
 DELAY_BLOCK = 0
 
 # Initialize the logger.
-logging.basicConfig(level=logging.DEBUG,
-                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                datefmt='%a, %d %b %Y %H:%M:%S',
-                filename='tftp.log',
-                filemode='w')
-# The logger used by this library. Feel free to clobber it with your own, if you like, as
-# long as it conforms to Python's logging.
+logging.basicConfig()
+
+# The logger used by this library. Feel free to clobber it with your own, if
+# you like, as long as it conforms to Python's logging.
 log = logging.getLogger('tftpy')
 
-def Streamhandler():
-    """add Streamhandler output logging.DEBUG msg to stdout.
+def create_streamhandler():
+    """add create_streamhandler output logging.DEBUG msg to stdout.
     """
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
@@ -34,13 +31,13 @@ def Streamhandler():
     console.setFormatter(formatter)
     return console
 
-def Rotatingfilehandler():
+def create_rotatingfilehandler(path, maxbytes=10*1024*1024, count=20):
     """
-    add Rotatingfilehandler record the logging.DEBUG msg to logfile. you can change the maxsize (10*1024*1024)
+    add create_rotatingfilehandler record the logging.DEBUG msg to logfile. you can change the maxsize (10*1024*1024)
     and amount of the logfiles
     """
-    Rthandler = RotatingFileHandler('/tftpboot/tftp.log', maxBytes=10*1024*1024,backupCount=20)
-    Rthandler.setLevel(logging.INFO)#maybe logging.INFO is more useful when u debugging.
+    Rthandler = RotatingFileHandler(path, maxbytes, count)
+    Rthandler.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
     Rthandler.setFormatter(formatter)
     return Rthandler
@@ -50,7 +47,6 @@ def addHandler(hdlr):
     More details see the page:
     https://docs.python.org/2/library/logging.handlers.html#module-logging.handlers
     """
-    global log
     log.addHandler(hdlr)
 
 def tftpassert(condition, msg):
@@ -65,7 +61,6 @@ def setLogLevel(level):
     """This function is a utility function for setting the internal log level.
     The log level defaults to logging.NOTSET, so unwanted output to stdout is
     not created."""
-    global log
     log.setLevel(level)
 
 class TftpErrors(object):
