@@ -436,10 +436,15 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
             if options.has_key(name):
                 if name == 'blksize':
                     # We can accept anything between the min and max values.
-                    size = self.options[name]
+                    size = int(self.options[name])
                     if size >= MIN_BLKSIZE and size <= MAX_BLKSIZE:
                         log.debug("negotiated blksize of %d bytes", size)
-                        options[blksize] = size
+                    else:
+                        raise TftpException, "blksize %s option outside allowed range" % size
+                elif name == 'tsize':
+                    size = int(self.options[name])
+                    if size < 0:
+                        raise TftpException, "Negative file sizes not supported"
                 else:
                     raise TftpException, "Unsupported option: %s" % name
         return True
