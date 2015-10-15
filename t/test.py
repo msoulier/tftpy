@@ -196,6 +196,9 @@ class TestTftpyState(unittest.TestCase):
     def testClientServerNoOptions(self):
         self.clientServerDownloadOptions({})
 
+    def testClientServerTsizeOptions(self):
+        self.clientServerDownloadOptions({'tsize': 64*1024})
+
     def testClientFileObject(self):
         output = open('/tmp/out', 'w')
         self.clientServerDownloadOptions({}, output)
@@ -220,6 +223,9 @@ class TestTftpyState(unittest.TestCase):
     def testClientServerUploadOptions(self):
         for blksize in [512, 1024, 2048, 4096]:
             self.clientServerUploadOptions({'blksize': blksize})
+
+    def testClientServerUploadTsize(self):
+        self.clientServerUploadOptions({'tsize': 64*1024}, transmitname='/foo/bar/640KBFILE')
 
     def testClientServerNoOptionsDelay(self):
         tftpy.TftpStates.DELAY_BLOCK = 10
