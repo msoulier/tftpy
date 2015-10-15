@@ -432,5 +432,27 @@ class TestTftpyState(unittest.TestCase):
             server.stop(now=False)
             server_thread.join()
 
+class TestTftpyLoggers(unittest.TestCase):
+
+    def setUp(self):
+        tftpy.setLogLevel(logging.DEBUG)
+
+    def testStreamLogger(self):
+        # Not sure how best to test this. Maybe configure the loggers and look
+        # for any complaints.
+        try:
+            tftpy.addHandler(tftpy.create_streamhandler())
+            self.assertTrue( True )
+        except:
+            self.assertTrue( False )
+
+    def testFileLogger(self):
+        # Same as previous.
+        try:
+            tftpy.addHandler(tftpy.create_rotatingfilehandler('/tmp/log'))
+            self.assertTrue( True )
+        except:
+            self.assertTrue( False )
+
 if __name__ == '__main__':
     unittest.main()

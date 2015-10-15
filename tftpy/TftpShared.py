@@ -1,6 +1,7 @@
 """This module holds all objects shared by all other modules in tftpy."""
 
 import logging
+from logging.handlers import RotatingFileHandler
 
 LOG_LEVEL = logging.NOTSET
 MIN_BLKSIZE = 8
@@ -16,9 +17,37 @@ DELAY_BLOCK = 0
 
 # Initialize the logger.
 logging.basicConfig()
-# The logger used by this library. Feel free to clobber it with your own, if you like, as
-# long as it conforms to Python's logging.
+
+# The logger used by this library. Feel free to clobber it with your own, if
+# you like, as long as it conforms to Python's logging.
 log = logging.getLogger('tftpy')
+
+def create_streamhandler():
+    """add create_streamhandler output logging.DEBUG msg to stdout.
+    """
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(levelname)-8s %(message)s')
+    console.setFormatter(formatter)
+    return console
+
+def create_rotatingfilehandler(path, maxbytes=10*1024*1024, count=20):
+    """
+    add create_rotatingfilehandler record the logging.DEBUG msg to logfile. you can change the maxsize (10*1024*1024)
+    and amount of the logfiles
+    """
+    Rthandler = RotatingFileHandler(path, maxbytes, count)
+    Rthandler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
+    Rthandler.setFormatter(formatter)
+    return Rthandler
+
+def addHandler(hdlr):
+    """add handler methods
+    More details see the page:
+    https://docs.python.org/2/library/logging.handlers.html#module-logging.handlers
+    """
+    log.addHandler(hdlr)
 
 def tftpassert(condition, msg):
     """This function is a simple utility that will check the condition
@@ -32,7 +61,6 @@ def setLogLevel(level):
     """This function is a utility function for setting the internal log level.
     The log level defaults to logging.NOTSET, so unwanted output to stdout is
     not created."""
-    global log
     log.setLevel(level)
 
 class TftpErrors(object):
