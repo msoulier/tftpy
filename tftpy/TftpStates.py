@@ -320,6 +320,7 @@ class TftpStateServerRecvRRQ(TftpServerState):
             self.context.fileobj.seek(0, 0)
             self.context.options['tsize'] = tsize
 
+	if sendoack:
             # Note, next_block is 0 here since that's the proper
             # acknowledgement to an OACK.
             # FIXME: perhaps we do need a TftpStateExpectOACK class...
