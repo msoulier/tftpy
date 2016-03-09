@@ -441,6 +441,12 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
                         log.debug("negotiated blksize of %d bytes", size)
                     else:
                         raise TftpException, "blksize %s option outside allowed range" % size
+                elif name == 'windowsize':
+                    size = int(self.options[name])
+                    if size >= MIN_WINDOWSIZE and size <= MAX_WINDOWSIZE:
+                        log.debug("negotiated windowsize of %d bytes", size)
+                    else:
+                        raise TftpException, "windowsize %s option outside allowed range" % size
                 elif name == 'tsize':
                     size = int(self.options[name])
                     if size < 0:

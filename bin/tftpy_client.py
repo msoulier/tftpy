@@ -26,6 +26,9 @@ def main():
     parser.add_option('-b',
                       '--blksize',
                       help='udp packet size to use (default: 512)')
+    parser.add_option('-w',
+                      '--windowsize',
+                      help='request windowsize for transfer')
     parser.add_option('-o',
                       '--output',
                       help='output file, - for stdout (default: same as download)')
@@ -46,7 +49,7 @@ def main():
                       '--tsize',
                       action='store_true',
                       default=False,
-                      help="ask client to send tsize option in download")
+                      help="ask server to send tsize option in download")
     parser.add_option('-l',
                       '--localip',
                       action='store',
@@ -92,6 +95,8 @@ def main():
     tftp_options = {}
     if options.blksize:
         tftp_options['blksize'] = int(options.blksize)
+    if options.windowsize:
+        tftp_options['windowsize'] = int(options.windowsize)
     if options.tsize:
         tftp_options['tsize'] = 0
 

@@ -25,6 +25,11 @@ class TftpClient(TftpSession):
             tftpassert(types.IntType == type(size), "blksize must be an int")
             if size < MIN_BLKSIZE or size > MAX_BLKSIZE:
                 raise TftpException, "Invalid blksize: %d" % size
+        if self.options.has_key('windowsize'):
+            size = self.options['windowsize']
+            tftpassert(types.IntType == type(size), "windowsize must be an int")
+            if size < MIN_WINDOWSIZE or size > MAX_WINDOWSIZE:
+                raise TftpException, "Invalid blksize: %d" % size
 
     def download(self, filename, output, packethook=None, timeout=SOCK_TIMEOUT):
         """This method initiates a tftp download from the configured remote

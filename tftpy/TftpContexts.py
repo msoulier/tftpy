@@ -81,6 +81,7 @@ class TftpContext(object):
         self.timeout = timeout
         self.state = None
         self.next_block = 0
+        self.window_seq = 0
         self.factory = TftpPacketFactory()
         # Note, setting the host will also set self.address, as it's a property.
         self.host = host
@@ -89,7 +90,7 @@ class TftpContext(object):
         self.tidport = None
         # Metrics
         self.metrics = TftpMetrics()
-        # Fluag when the transfer is pending completion.
+        # Flag when the transfer is pending completion.
         self.pending_complete = False
         # Time when this context last received any traffic.
         # FIXME: does this belong in metrics?
@@ -98,10 +99,28 @@ class TftpContext(object):
         self.last_pkt = None
         # Count the number of retry attempts.
         self.retry_count = 0
+        # Default blksize
+        self.blksize = 512
+        # Default windowsize
+        self.windowsize = 1
+
+    def getoptions(self):
+        "Simple getter method for use in a property."
+        return self.__options
+
+    def setoptions(self, options):
+        """Setter method that also sets cached blksize and windows as a result
+        of the options that are set."""
+        self.__options = options
+        if options:
+            self.blksize = int(options.get('blksize', self.blksize))
+            self.windowsize = int(options.get('windowsize', self.windowsize))
+
+    options = property(getoptions, setoptions)
 
     def getBlocksize(self):
         """Fetch the current blocksize for this session."""
-        return int(self.options.get('blksize', 512))
+        return self.blksize
 
     def __del__(self):
         """Simple destructor to try to call housekeeping in the end method if
@@ -141,11 +160,13 @@ class TftpContext(object):
 
     host = property(gethost, sethost)
 
+    def getBlockOffset(self, block, offset):
+        return (block + offset) & 0xffff
+
     def setNextBlock(self, block):
-        if block >= 2 ** 16:
+        if block > 0xffff:
             log.debug("Block number rollover to 0 again")
-            block = 0
-        self.__eblock = block
+        self.__eblock = block & 0xffff
 
     def getNextBlock(self):
         return self.__eblock
@@ -291,6 +312,7 @@ class TftpContextClientUpload(TftpContext):
         self.sock.sendto(pkt.encode().buffer, (self.host, self.port))
         self.next_block = 1
         self.last_pkt = pkt
+        self.last_file_pos = 0
         # FIXME: should we centralize sendto operations so we can refactor all
         # saving of the packet to the last_pkt field?
 

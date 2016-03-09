@@ -65,6 +65,18 @@ class TftpState(object):
                     accepted_options[option] = MIN_BLKSIZE
                 else:
                     accepted_options[option] = options[option]
+            elif option == 'windowsize':
+                # Make sure it's valid.
+                if int(options[option]) > MAX_WINDOWSIZE:
+                    log.info("Client requested windowsize greater than %d "
+                             "setting to maximum" % MAX_WINDOWSIZE)
+                    accepted_options[option] = MAX_WINDOWSIZE
+                elif int(options[option]) < MIN_WINDOWSIZE:
+                    log.info("Client requested blksize less than %d "
+                             "setting to minimum" % MIN_WINDOWSIZE)
+                    accepted_options[option] = MIN_WINDOWSIZE
+                else:
+                    accepted_options[option] = options[option]
             elif option == 'tsize':
                 log.debug("tsize option is set")
                 accepted_options['tsize'] = 0
@@ -74,35 +86,65 @@ class TftpState(object):
         return accepted_options
 
     def sendDAT(self):
-        """This method sends the next DAT packet based on the data in the
+        """This method sends the next DAT packet(s) based on the data in the
         context. It returns a boolean indicating whether the transfer is
         finished."""
         finished = False
-        blocknumber = self.context.next_block
-        # Test hook
-        if DELAY_BLOCK and DELAY_BLOCK == blocknumber:
-            import time
-            log.debug("Deliberately delaying 10 seconds...")
-            time.sleep(10)
-        dat = None
-        blksize = self.context.getBlocksize()
-        buffer = self.context.fileobj.read(blksize)
-        log.debug("Read %d bytes into buffer", len(buffer))
-        if len(buffer) < blksize:
-            log.info("Reached EOF on file %s"
-                % self.context.file_to_transfer)
-            finished = True
-        dat = TftpPacketDAT()
-        dat.data = buffer
-        dat.blocknumber = blocknumber
-        self.context.metrics.bytes += len(dat.data)
-        log.debug("Sending DAT packet %d", dat.blocknumber)
-        self.context.sock.sendto(dat.encode().buffer,
-                                 (self.context.host, self.context.tidport))
-        if self.context.packethook:
-            self.context.packethook(dat)
-        self.context.last_pkt = dat
+        windowbase = self.context.next_block
+        self.context.last_file_pos = self.context.fileobj.tell()
+        blksize = self.context.blksize
+        for i in range(0, self.context.windowsize):
+            blocknumber = self.context.getBlockOffset(windowbase, i)
+            # Test hook
+            if DELAY_BLOCK and DELAY_BLOCK == blocknumber:
+                import time
+                log.debug("Deliberately delaying 10 seconds...")
+                time.sleep(10)
+            #log.info("WINDOW {}".format(i))
+            dat = None
+            buffer = self.context.fileobj.read(blksize)
+            log.debug("Read %d bytes into buffer", len(buffer))
+            if len(buffer) < blksize:
+                log.info("Reached EOF on file %s"
+                    % self.context.file_to_transfer)
+                finished = True
+            dat = TftpPacketDAT()
+            dat.data = buffer
+            dat.blocknumber = blocknumber
+            self.context.metrics.bytes += len(dat.data)
+            log.debug("Sending DAT packet %d", dat.blocknumber)
+            self.context.sock.sendto(dat.encode().buffer,
+                                     (self.context.host, self.context.tidport))
+            if self.context.packethook:
+                self.context.packethook(dat)
+            if finished:
+                break
+        self.context.window_seq = i
+
+        # Special case for data packets, these are reread from the input stream.
+        self.context.last_pkt = None
         return finished
+
+    def resendDAT(self, blks=0):
+        """This method resends DAT packets continuing from the last context. It
+        returns a boolean indicating whether the transfer is finished."""
+        blksize = self.context.blksize
+        seek_pos = self.context.last_file_pos + (blks * blksize)
+        last_pos = self.context.fileobj.tell()
+        # Reset file position to where we will continue reading
+        self.context.fileobj.seek(seek_pos, 0)
+
+        self.context.metrics.resent_bytes += last_pos - seek_pos
+        dups = self.context.windowsize - blks
+        log.warn("Resending %d DAT packets on session %s"
+            % (dups, self))
+
+        d = TftpPacketDAT()
+        for i in range(0, dups):
+            d.blocknumber = self.context.next_block + i
+            self.context.metrics.add_dup(d)
+
+        return self.sendDAT()
 
     def sendACK(self, blocknumber=None):
         """This method sends an ack packet to the block number specified. If
@@ -143,50 +185,78 @@ class TftpState(object):
 
     def resendLast(self):
         "Resend the last sent packet due to a timeout."
-        log.warn("Resending packet %s on sessions %s"
-            % (self.context.last_pkt, self))
-        self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
-        self.context.metrics.add_dup(self.context.last_pkt)
-        sendto_port = self.context.tidport
-        if not sendto_port:
-            # If the tidport wasn't set, then the remote end hasn't even
-            # started talking to us yet. That's not good. Maybe it's not
-            # there.
-            sendto_port = self.context.port
-        self.context.sock.sendto(self.context.last_pkt.encode().buffer,
-                                 (self.context.host, sendto_port))
-        if self.context.packethook:
-            self.context.packethook(self.context.last_pkt)
+        if self.context.last_pkt:
+            log.warn("Resending packet %s on session %s"
+                % (self.context.last_pkt, self))
+            self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
+            self.context.metrics.add_dup(self.context.last_pkt)
+            sendto_port = self.context.tidport
+            if not sendto_port:
+                # If the tidport wasn't set, then the remote end hasn't even
+                # started talking to us yet. That's not good. Maybe it's not
+                # there.
+                sendto_port = self.context.port
+            self.context.sock.sendto(self.context.last_pkt.encode().buffer,
+                                     (self.context.host, sendto_port))
+            if self.context.packethook:
+                self.context.packethook(self.context.last_pkt)
+        else:
+            self.context.pending_complete = self.resendDAT()
 
     def handleDat(self, pkt):
         """This method handles a DAT packet during a client download, or a
         server upload."""
         log.info("Handling DAT packet - block %d" % pkt.blocknumber)
         log.debug("Expecting block %s", self.context.next_block)
-        if pkt.blocknumber == self.context.next_block:
+
+        delta = pkt.blocknumber - self.context.next_block
+
+        if delta == 0:
             log.debug("Good, received block %d in sequence", pkt.blocknumber)
 
-            self.sendACK()
+            self.context.window_seq += 1
+
+            if self.context.window_seq >= self.context.windowsize:
+                self.context.window_seq = 0
+                self.sendACK()
+            elif len(pkt.data) < self.context.blksize:
+                self.sendACK()
+
             self.context.next_block += 1
 
             log.debug("Writing %d bytes to output file", len(pkt.data))
             self.context.fileobj.write(pkt.data)
             self.context.metrics.bytes += len(pkt.data)
+
             # Check for end-of-file, any less than full data packet.
-            if len(pkt.data) < self.context.getBlocksize():
+            if len(pkt.data) < self.context.blksize:
                 log.info("End of file detected")
                 return None
 
-        elif pkt.blocknumber < self.context.next_block:
-            if pkt.blocknumber == 0:
+            return TftpStateExpectDAT(self.context)
+
+        # Account for block number overflow, get delta in the range
+        # -32768..32767
+        delta = (((2**15) + delta) % (2**16)) - (2**15)
+
+        if delta < 0 and delta + (self.context.windowsize -
+                self.context.window_seq) >= 0:
+            if pkt.blocknumber == 0 and self.context.metrics.bytes == 0:
                 log.warn("There is no block zero!")
                 self.sendError(TftpErrors.IllegalTftpOp)
                 raise TftpException, "There is no block zero!"
             log.warn("Dropping duplicate block %d" % pkt.blocknumber)
             self.context.metrics.add_dup(pkt)
-            log.debug("ACKing block %d again, just in case", pkt.blocknumber)
-            self.sendACK(pkt.blocknumber)
+            last = self.context.getBlockOffset(self.context.next_block, -1)
+            if pkt.blocknumber == last:
+                log.debug("ACKing block %d again, just in case", pkt.blocknumber)
+                self.sendACK(pkt.blocknumber)
 
+        elif delta < (self.context.windowsize - self.context.window_seq):
+            log.warn("Dropping out of sequence block %d" % pkt.blocknumber)
+            last = self.context.getBlockOffset(self.context.next_block, -1)
+            self.context.window_seq = 0
+            self.sendACK(last)
         else:
             # FIXME: should we be more tolerant and just discard instead?
             msg = "Whoa! Received future block %d but expected %d" \
@@ -213,20 +283,22 @@ class TftpServerState(TftpState):
         TftpStateServerRecvWRQ classes, since their initial setup is
         identical. The method returns a boolean, sendoack, to indicate whether
         it is required to send an OACK to the client."""
-        options = pkt.options
+        options_strings = pkt.options
         sendoack = False
         if not self.context.tidport:
             self.context.tidport = rport
             log.info("Setting tidport to %s" % rport)
 
         log.debug("Setting default options, blksize")
-        self.context.options = { 'blksize': DEF_BLKSIZE }
+        options = { 'blksize': DEF_BLKSIZE }
 
-        if options:
-            log.debug("Options requested: %s", options)
-            supported_options = self.returnSupportedOptions(options)
-            self.context.options.update(supported_options)
+        if options_strings:
+            log.debug("Options requested: %s", options_strings)
+            supported_options = self.returnSupportedOptions(options_strings)
+            options.update(supported_options)
             sendoack = True
+
+        self.context.options = options
 
         # FIXME - only octet mode is supported at this time.
         if pkt.mode != 'octet':
@@ -422,17 +494,41 @@ class TftpStateExpectACK(TftpState):
         "Handle a packet, hopefully an ACK since we just sent a DAT."
         if isinstance(pkt, TftpPacketACK):
             log.info("Received ACK for packet %d" % pkt.blocknumber)
-            # Is this an ack to the one we just sent?
-            if self.context.next_block == pkt.blocknumber:
+            # Is this an ack in the window we just sent?
+            expected = self.context.getBlockOffset(self.context.next_block,
+                                                   self.context.window_seq)
+            if self.context.next_block > expected:
+                partial = range(self.context.next_block, 0x10000)
+                partial += range(0, expected)
+            else:
+                partial = range(self.context.next_block, expected)
+            #log.info("R {}".format(partial))
+            #log.info("R {}".format(pkt.blocknumber in partial))
+
+            if pkt.blocknumber == expected:
                 if self.context.pending_complete:
                     log.info("Received ACK to final DAT, we're done.")
                     return None
                 else:
                     log.debug("Good ACK, sending next DAT")
-                    self.context.next_block += 1
+                    self.context.next_block = pkt.blocknumber + 1
                     log.debug("Incremented next_block to %d",
                         self.context.next_block)
                     self.context.pending_complete = self.sendDAT()
+
+            elif pkt.blocknumber in partial:
+                log.warn("Received partial ACK up to block %d"
+                    % pkt.blocknumber)
+
+                next = pkt.blocknumber + 1
+                if next >= self.context.next_block:
+                    blocks = next - self.context.next_block
+                else:
+                    blocks = (next + 0x10000) - self.context.next_block
+                self.context.next_block = next
+                log.debug("Incremented next_block to %d",
+                    self.context.next_block)
+                self.context.pending_complete = self.resendDAT(blocks)
 
             elif pkt.blocknumber < self.context.next_block:
                 log.warn("Received duplicate ACK for block %d"
