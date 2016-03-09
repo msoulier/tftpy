@@ -1,5 +1,3 @@
-# vim: ts=4 sw=4 et ai:
-# -*- coding: utf8 -*-
 """This module implements the TFTP Client functionality. Instantiate an
 instance of the client, and then use its upload or download method. Logging is
 performed via a standard logging object set in TftpShared."""
@@ -30,6 +28,11 @@ class TftpClient(TftpSession):
             size = self.options['blksize']
             tftpassert(int == type(size), "blksize must be an int")
             if size < MIN_BLKSIZE or size > MAX_BLKSIZE:
+                raise TftpException("Invalid blksize: %d" % size)
+        if self.options.has_key('windowsize'):
+            size = self.options['windowsize']
+            tftpassert(types.IntType == type(size), "windowsize must be an int")
+            if size < MIN_WINDOWSIZE or size > MAX_WINDOWSIZE:
                 raise TftpException("Invalid blksize: %d" % size)
 
     def download(self, filename, output, packethook=None, timeout=SOCK_TIMEOUT, retries=DEF_TIMEOUT_RETRIES):
