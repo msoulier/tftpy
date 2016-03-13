@@ -358,8 +358,9 @@ class TestTftpyState(unittest.TestCase):
             stopped_early = False
             try:
                 time.sleep(1)
-                client.download('640KBFILE',
-                                output)
+                def delay_hook(pkt):
+                    time.sleep(0.005) # 5ms
+                client.download('640KBFILE', output, delay_hook)
             except:
                 log.warn("client threw exception as expected")
                 stopped_early = True
@@ -380,6 +381,9 @@ class TestTftpyState(unittest.TestCase):
                 server.listen('localhost', 20001)
             except Exception, err:
                 self.assertTrue( err[0] == 4 )
+            self.assertTrue( False, "Server should not exit early" )
+            while True:
+                time.sleep(1)
 
     def testServerDownloadWithStopNotNow(self, output='/tmp/out'):
         log.debug("===> Running testcase testServerDownloadWithStopNotNow")
@@ -392,14 +396,15 @@ class TestTftpyState(unittest.TestCase):
         child_pid = os.fork()
         if child_pid:
             # parent - let the server start
-            stopped_early = False
+            stopped_early = True
             try:
                 time.sleep(1)
-                client.download('640KBFILE',
-                                output)
+                def delay_hook(pkt):
+                    time.sleep(0.005) # 5ms
+                client.download('640KBFILE', output, delay_hook)
+                stopped_early = False
             except:
                 log.warn("client threw exception as expected")
-                stopped_early = True
 
             finally:
                 os.kill(child_pid, 15)
@@ -416,7 +421,10 @@ class TestTftpyState(unittest.TestCase):
             try:
                 server.listen('localhost', 20001)
             except Exception, err:
+                log.error("server threw exception")
                 self.assertTrue( False, "Server should not exit early" )
+            while True:
+                time.sleep(1)
 
     def testServerDownloadWithDynamicPort(self, output='/tmp/out'):
         log.debug("===> Running testcase testServerDownloadWithDynamicPort")
