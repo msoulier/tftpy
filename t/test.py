@@ -174,6 +174,8 @@ class TestTftpyState(unittest.TestCase):
 
     def clientServerDownloadOptions(self, options, output='/tmp/out'):
         """Fire up a client and a server and do a download."""
+        log.debug("===> Running testcase clientServerDownloadOptions %s" %
+                options)
         root = os.path.dirname(os.path.abspath(__file__))
         server = tftpy.TftpServer(root)
         client = tftpy.TftpClient('localhost',
@@ -207,6 +209,17 @@ class TestTftpyState(unittest.TestCase):
     def testClientServerBlksize(self):
         for blksize in [512, 1024, 2048, 4096]:
             self.clientServerDownloadOptions({'blksize': blksize})
+
+    def testClientServerWindowsize(self):
+        for windowsize in [2, 4, 8, 16, 32, 64]:
+            self.clientServerDownloadOptions({'windowsize': windowsize})
+
+    def testClientServerBlkRollover(self):
+        tftpy.setLogLevel(logging.ERROR)
+        for windowsize in [1, 2, 3, 4]:
+            self.clientServerDownloadOptions({'windowsize': windowsize,
+                'blksize': 8})
+        tftpy.setLogLevel(logging.DEBUG)
 
     def testClientServerUploadNoOptions(self):
         self.clientServerUploadOptions({})
