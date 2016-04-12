@@ -6,6 +6,7 @@ import tftpy
 import os
 import time
 import threading
+from errno import EINTR
 
 log = tftpy.log
 
@@ -354,9 +355,9 @@ class TestTftpyState(unittest.TestCase):
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
-            # parent - let the server start
-            stopped_early = False
             try:
+                # parent - let the server start
+                stopped_early = False
                 time.sleep(1)
                 def delay_hook(pkt):
                     time.sleep(0.005) # 5ms
@@ -369,7 +370,8 @@ class TestTftpyState(unittest.TestCase):
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
 
-            self.assertTrue( stopped_early == True )
+            self.assertTrue( stopped_early == True,
+                            "Server should not exit early" )
 
         else:
             import signal
@@ -379,9 +381,10 @@ class TestTftpyState(unittest.TestCase):
             signal.alarm(2)
             try:
                 server.listen('localhost', 20001)
+                log.error("server didn't throw exception")
             except Exception, err:
-                self.assertTrue( err[0] == 4 )
-            self.assertTrue( False, "Server should not exit early" )
+                log.error("server got unexpected exception %s" % err)
+            # Wait until parent kills us
             while True:
                 time.sleep(1)
 
@@ -395,9 +398,9 @@ class TestTftpyState(unittest.TestCase):
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
-            # parent - let the server start
-            stopped_early = True
             try:
+                stopped_early = True
+                # parent - let the server start
                 time.sleep(1)
                 def delay_hook(pkt):
                     time.sleep(0.005) # 5ms
@@ -410,7 +413,8 @@ class TestTftpyState(unittest.TestCase):
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
 
-            self.assertTrue( stopped_early == False )
+            self.assertTrue( stopped_early == False,
+                            "Server should not exit early" )
 
         else:
             import signal
@@ -421,8 +425,8 @@ class TestTftpyState(unittest.TestCase):
             try:
                 server.listen('localhost', 20001)
             except Exception, err:
-                log.error("server threw exception")
-                self.assertTrue( False, "Server should not exit early" )
+                log.error("server threw exception %s" % err)
+            # Wait until parent kills us
             while True:
                 time.sleep(1)
 

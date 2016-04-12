@@ -6,6 +6,7 @@ TftpShared."""
 import socket, os, time
 import select
 import threading
+from errno import EINTR
 from TftpShared import *
 from TftpPacketTypes import *
 from TftpPacketFactory import TftpPacketFactory
@@ -107,10 +108,16 @@ class TftpServer(TftpSession):
 
             # Block until some socket has input on it.
             log.debug("Performing select on this inputlist: %s", inputlist)
-            readyinput, readyoutput, readyspecial = select.select(inputlist,
-                                                                  [],
-                                                                  [],
-                                                                  SOCK_TIMEOUT)
+            try:
+                readyinput, readyoutput, readyspecial = \
+                        select.select(inputlist, [], [], SOCK_TIMEOUT)
+            except select.error, err:
+                if err[0] == EINTR:
+                    # Interrupted system call
+                    log.debug("Interrupted syscall, retrying")
+                    continue
+                else:
+                    raise
 
             deletion_list = []
 
