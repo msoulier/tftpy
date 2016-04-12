@@ -239,7 +239,10 @@ class TftpState(object):
                 log.info("End of file detected")
                 return None
 
+            # Expect more data
             return TftpStateExpectDAT(self.context)
+
+        # Received something other than what we were expecting.
 
         # Account for block number overflow, get delta in the range
         # -32768..32767
@@ -272,7 +275,7 @@ class TftpState(object):
             log.error(msg)
             raise TftpException(msg)
 
-        # Default is to ack
+        # Expect more data
         return TftpStateExpectDAT(self.context)
 
 class TftpServerState(TftpState):
@@ -365,8 +368,9 @@ class TftpServerState(TftpState):
 class TftpStateServerRecvRRQ(TftpServerState):
     """This class represents the state of the TFTP server when it has just
     received an RRQ packet."""
+
     def handle(self, pkt, raddress, rport):
-        "Handle an initial RRQ packet as a server."
+        """Handle an initial RRQ packet as a server."""
         log.debug("In TftpStateServerRecvRRQ.handle")
         sendoack = self.serverInitial(pkt, raddress, rport)
         path = self.full_path
@@ -420,6 +424,7 @@ class TftpStateServerRecvRRQ(TftpServerState):
 class TftpStateServerRecvWRQ(TftpServerState):
     """This class represents the state of the TFTP server when it has just
     received a WRQ packet."""
+
     def make_subdirs(self):
         """The purpose of this method is to, if necessary, create all of the
         subdirectories leading up to the file to the written."""
@@ -440,7 +445,7 @@ class TftpStateServerRecvWRQ(TftpServerState):
                     os.mkdir(current, 0o700)
 
     def handle(self, pkt, raddress, rport):
-        "Handle an initial WRQ packet as a server."
+        """Handle an initial WRQ packet as a server."""
         log.debug("In TftpStateServerRecvWRQ.handle")
         sendoack = self.serverInitial(pkt, raddress, rport)
         path = self.full_path
@@ -484,6 +489,7 @@ class TftpStateServerStart(TftpState):
     """The start state for the server. This is a transitory state since at
     this point we don't know if we're handling an upload or a download. We
     will commit to one of them once we interpret the initial packet."""
+
     def handle(self, pkt, raddress, rport):
         """Handle a packet we just received."""
         log.debug("In TftpStateServerStart.handle")
@@ -506,8 +512,9 @@ class TftpStateExpectACK(TftpState):
     sent, and we are waiting for an ACK from the server. This class is the
     same one used by the client during the upload, and the server during the
     download."""
+
     def handle(self, pkt, raddress, rport):
-        "Handle a packet, hopefully an ACK since we just sent a DAT."
+        """Handle a packet, hopefully an ACK since we just sent a DAT."""
         if isinstance(pkt, TftpPacketACK):
             log.debug("Received ACK for packet %d" % pkt.blocknumber)
             # Is this an ack in the window we just sent?
@@ -568,6 +575,7 @@ class TftpStateExpectACK(TftpState):
 
 class TftpStateExpectDAT(TftpState):
     """Just sent an ACK packet. Waiting for DAT."""
+
     def handle(self, pkt, raddress, rport):
         """Handle the packet in response to an ACK, which should be a DAT."""
         if isinstance(pkt, TftpPacketDAT):
@@ -593,6 +601,7 @@ class TftpStateExpectDAT(TftpState):
 
 class TftpStateSentWRQ(TftpState):
     """Just sent an WRQ packet for an upload."""
+
     def handle(self, pkt, raddress, rport):
         """Handle a packet we just received."""
         if not self.context.tidport:
@@ -651,6 +660,7 @@ class TftpStateSentWRQ(TftpState):
 
 class TftpStateSentRRQ(TftpState):
     """Just sent an RRQ packet."""
+
     def handle(self, pkt, raddress, rport):
         """Handle the packet in response to an RRQ to the server."""
         if not self.context.tidport:
