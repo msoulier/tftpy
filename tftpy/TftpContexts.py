@@ -54,11 +54,12 @@ class TftpMetrics(object):
         """This method adds a dup for a packet to the metrics."""
         log.debug("Recording a dup of %s", pkt)
         s = str(pkt)
-        if self.dups.has_key(s):
+        try:
             self.dups[s] += 1
-        else:
+        except KeyError:
             self.dups[s] = 1
-        tftpassert(self.dups[s] < MAX_DUPS, "Max duplicates reached")
+        tftpassert(self.dups[s] < MAX_DUPS, "%d duplicates of %s reached"
+                   % (MAX_DUPS, s))
 
 ###############################################################################
 # Context classes
