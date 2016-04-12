@@ -257,6 +257,8 @@ class TftpState(object):
             if pkt.blocknumber == last:
                 log.debug("ACKing block %d again, just in case", pkt.blocknumber)
                 self.sendACK(pkt.blocknumber)
+            else:
+                self.context.discarded = True
 
         elif delta < (self.context.windowsize - self.context.window_seq):
             log.warn("Dropping out of sequence block %d" % pkt.blocknumber)
@@ -548,12 +550,15 @@ class TftpStateExpectACK(TftpState):
                 log.warning("Received duplicate ACK for block %d"
                     % pkt.blocknumber)
                 self.context.metrics.add_dup(pkt)
+                self.context.discarded = True
 
             else:
                 log.warning("Oooh, time warp. Received ACK to packet we "
                          "didn't send yet. Discarding.")
                 self.context.metrics.errors += 1
+                self.context.discarded = True
             return self
+
         elif isinstance(pkt, TftpPacketERR):
             log.error("Received ERR packet from peer: %s" % str(pkt))
             raise TftpException("Received ERR packet from peer: %s" % str(pkt))

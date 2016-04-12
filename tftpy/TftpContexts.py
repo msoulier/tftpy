@@ -104,6 +104,8 @@ class TftpContext(object):
         self.metrics = TftpMetrics()
         # Flag when the transfer is pending completion.
         self.pending_complete = False
+        # Flag when the last recieved packet was discarded.
+        self.discarded = False
         # Time when this context last received any traffic.
         # FIXME: does this belong in metrics?
         self.last_update = 0
@@ -198,8 +200,6 @@ class TftpContext(object):
         # Ok, we've received a packet. Log it.
         log.debug("Received %d bytes from %s:%s",
                         len(buffer), raddress, rport)
-        # And update our last updated time.
-        self.last_update = time.time()
 
         # Decode it.
         recvpkt = self.factory.parse(buffer)
@@ -208,12 +208,14 @@ class TftpContext(object):
         if raddress != self.address:
             log.warning("Received traffic from %s, expected host %s. Discarding"
                         % (raddress, self.host))
+            return
 
         if self.tidport and self.tidport != rport:
             log.warning("Received traffic from %s:%s but we're "
                         "connected to %s:%s. Discarding."
                         % (raddress, rport,
                         self.host, self.tidport))
+            return
 
         # If there is a packethook defined, call it. We unconditionally
         # pass all packets, it's up to the client to screen out different
@@ -224,6 +226,15 @@ class TftpContext(object):
 
         # And handle it, possibly changing state.
         self.state = self.state.handle(recvpkt, raddress, rport)
+
+        # If packet was not discarded, update the last_update timestamp
+        # This avoids duplicate ACKs or other packets affecting the
+        # server's retransmit timeout.
+        if not self.discarded:
+            self.last_update = time.time()
+            # Reset the flag
+            self.discarded = False
+
         # If we didn't throw any exceptions here, reset the retry_count to
         # zero.
         self.retry_count = 0
