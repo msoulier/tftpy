@@ -182,10 +182,14 @@ class TftpState(object):
                 log.warn("There is no block zero!")
                 self.sendError(TftpErrors.IllegalTftpOp)
                 raise TftpException, "There is no block zero!"
-            log.warn("Dropping duplicate block %d" % pkt.blocknumber)
-            self.context.metrics.add_dup(pkt)
-            log.debug("ACKing block %d again, just in case", pkt.blocknumber)
-            self.sendACK(pkt.blocknumber)
+            if pkt.blocknumber == self.context.next_block - 1:
+                log.warn("Received duplicate DAT for "
+                         "previous block %d. Resending last packet.",
+                         pkt.blocknumber)
+                self.resendLast()
+            else:
+                log.warn("Dropping duplicate block %d", pkt.blocknumber)
+                self.context.metrics.add_dup(pkt)
 
         else:
             # FIXME: should we be more tolerant and just discard instead?
@@ -435,9 +439,16 @@ class TftpStateExpectACK(TftpState):
                     self.context.pending_complete = self.sendDAT()
 
             elif pkt.blocknumber < self.context.next_block:
-                log.warn("Received duplicate ACK for block %d"
-                    % pkt.blocknumber)
-                self.context.metrics.add_dup(pkt)
+                if pkt.blocknumber == self.context.next_block - 1:
+                    log.warn("Received duplicate ACK for "
+                             "previous block %d. Resending last packet.",
+                             pkt.blocknumber)
+                    self.resendLast()
+                else:
+                    log.warn("Received duplicate ACK for "
+                             "passed block %d. Discarding.",
+                             pkt.blocknumber)
+                    self.context.metrics.add_dup(pkt)
 
             else:
                 log.warn("Oooh, time warp. Received ACK to packet we "
