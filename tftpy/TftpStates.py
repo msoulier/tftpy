@@ -365,7 +365,7 @@ class TftpStateServerRecvWRQ(TftpServerState):
         sendoack = self.serverInitial(pkt, raddress, rport)
         path = self.full_path
         if self.context.upload_open:
-            f = self.context.upload_open(path)
+            f = self.context.upload_open(path, self.context)
             if f is None:
                 self.sendError(TftpErrors.AccessViolation)
                 raise TftpException, "Dynamic path %s not permitted" % path

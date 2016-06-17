@@ -234,7 +234,7 @@ class TestTftpyState(unittest.TestCase):
     def customUploadHelper(self, return_func):
         q = Queue()
 
-        def upload_open(path):
+        def upload_open(path, context):
             q.put('called')
             return return_func(path)
         self.clientServerUploadOptions(

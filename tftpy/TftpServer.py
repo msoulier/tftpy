@@ -25,8 +25,8 @@ class TftpServer(TftpSession):
     found. This permits the serving of dynamic content.
 
     upload_open is a callable that is triggered on every upload with the
-    requested destination path. It must either return a file-like
-    object ready for writing or None if the path is invalid."""
+    requested destination path and server context. It must either return a
+    file-like object ready for writing or None if the path is invalid."""
 
     def __init__(self,
                  tftproot='/tftpboot',
