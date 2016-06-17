@@ -7,6 +7,7 @@ import os
 import time
 import threading
 from errno import EINTR
+from multiprocessing import Queue
 
 log = tftpy.log
 
@@ -143,7 +144,11 @@ class TestTftpyState(unittest.TestCase):
     def setUp(self):
         tftpy.setLogLevel(logging.DEBUG)
 
-    def clientServerUploadOptions(self, options, input=None, transmitname=None):
+    def clientServerUploadOptions(self,
+                                  options,
+                                  input=None,
+                                  transmitname=None,
+                                  server_kwargs=None):
         """Fire up a client and a server and do an upload."""
         root = '/tmp'
         home = os.path.dirname(os.path.abspath(__file__))
@@ -153,7 +158,8 @@ class TestTftpyState(unittest.TestCase):
             input = input_path
         if transmitname:
             filename = transmitname
-        server = tftpy.TftpServer(root)
+        server_kwargs = server_kwargs or {}
+        server = tftpy.TftpServer(root, **server_kwargs)
         client = tftpy.TftpClient('localhost',
                                   20001,
                                   options)
@@ -224,6 +230,24 @@ class TestTftpyState(unittest.TestCase):
     def testClientServerUploadOptions(self):
         for blksize in [512, 1024, 2048, 4096]:
             self.clientServerUploadOptions({'blksize': blksize})
+
+    def customUploadHelper(self, return_func):
+        q = Queue()
+
+        def upload_open(path):
+            q.put('called')
+            return return_func(path)
+        self.clientServerUploadOptions(
+            {},
+            server_kwargs={'upload_open': upload_open})
+        self.assertEqual(q.get(True, 1), 'called')
+
+    def testClientServerUploadCustomOpen(self):
+        self.customUploadHelper(lambda p: open(p, 'wb'))
+
+    def testClientServerUploadCustomOpenForbids(self):
+        with self.assertRaisesRegexp(tftpy.TftpException, 'Access violation'):
+            self.customUploadHelper(lambda p: None)
 
     def testClientServerUploadTsize(self):
         self.clientServerUploadOptions({'tsize': 64*1024}, transmitname='/foo/bar/640KBFILE')

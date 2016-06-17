@@ -14,20 +14,31 @@ from TftpContexts import TftpContextServer
 
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
-    listen for client requests.  It takes two optional arguments. tftproot is
-    the path to the tftproot directory to serve files from and/or write them
-    to. dyn_file_func is a callable that takes a requested download path that
-    is not present on the file system and must return either a file-like object
-    to read from or None if the path should appear as not found. This permits
-    the serving of dynamic content."""
+    listen for client requests.
 
-    def __init__(self, tftproot='/tftpboot', dyn_file_func=None):
+    tftproot is the path to the tftproot directory to serve files from and/or
+    write them to.
+
+    dyn_file_func is a callable that takes a requested download
+    path that is not present on the file system and must return either a
+    file-like object to read from or None if the path should appear as not
+    found. This permits the serving of dynamic content.
+
+    upload_open is a callable that is triggered on every upload with the
+    requested destination path. It must either return a file-like
+    object ready for writing or None if the path is invalid."""
+
+    def __init__(self,
+                 tftproot='/tftpboot',
+                 dyn_file_func=None,
+                 upload_open=None):
         self.listenip = None
         self.listenport = None
         self.sock = None
         # FIXME: What about multiple roots?
         self.root = os.path.abspath(tftproot)
         self.dyn_file_func = dyn_file_func
+        self.upload_open = upload_open
         # A dict of sessions, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.sessions = {}
@@ -51,10 +62,12 @@ class TftpServer(TftpSession):
             self.poll_mask_in = select.POLLIN
             self.poll_mask_err = select.POLLERR | select.POLLHUP
 
-        if self.dyn_file_func:
-            if not callable(self.dyn_file_func):
-                raise TftpException, "A dyn_file_func supplied, but it is not callable."
-        elif os.path.exists(self.root):
+        for name in 'dyn_file_func', 'upload_open':
+            attr = getattr(self, name)
+            if attr and not callable(attr):
+                raise TftpException, "%s supplied, but it is not callable." % (
+                    name,)
+        if os.path.exists(self.root):
             log.debug("tftproot %s does exist", self.root)
             if not os.path.isdir(self.root):
                 raise TftpException, "The tftproot must be a directory."
@@ -170,7 +183,8 @@ class TftpServer(TftpSession):
                                                                rport,
                                                                timeout,
                                                                self.root,
-                                                               self.dyn_file_func)
+                                                               self.dyn_file_func,
+                                                               self.upload_open)
                         try:
                             self.sessions[key].start(buffer)
                             fd = self.sessions[key].sock.fileno()

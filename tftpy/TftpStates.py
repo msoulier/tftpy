@@ -364,14 +364,23 @@ class TftpStateServerRecvWRQ(TftpServerState):
         log.debug("In TftpStateServerRecvWRQ.handle")
         sendoack = self.serverInitial(pkt, raddress, rport)
         path = self.full_path
-        log.info("Opening file %s for writing" % path)
-        if os.path.exists(path):
-            # FIXME: correct behavior?
-            log.warn("File %s exists already, overwriting..." % self.context.file_to_transfer)
-        # FIXME: I think we should upload to a temp file and not overwrite the
-        # existing file until the file is successfully uploaded.
-        self.make_subdirs()
-        self.context.fileobj = open(path, "wb")
+        if self.context.upload_open:
+            f = self.context.upload_open(path)
+            if f is None:
+                self.sendError(TftpErrors.AccessViolation)
+                raise TftpException, "Dynamic path %s not permitted" % path
+            else:
+                self.context.fileobj = f
+        else:
+            log.info("Opening file %s for writing" % path)
+            if os.path.exists(path):
+                # FIXME: correct behavior?
+                log.warn("File %s exists already, overwriting..." % (
+                    self.context.file_to_transfer))
+            # FIXME: I think we should upload to a temp file and not overwrite
+            # the existing file until the file is successfully uploaded.
+            self.make_subdirs()
+            self.context.fileobj = open(path, "wb")
 
         # Options negotiation.
         if sendoack:
