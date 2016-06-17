@@ -16,9 +16,10 @@ class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
     listen for client requests.  It takes two optional arguments. tftproot is
     the path to the tftproot directory to serve files from and/or write them
-    to. dyn_file_func is a callable that must return a file-like object to
-    read from during downloads. This permits the serving of dynamic
-    content."""
+    to. dyn_file_func is a callable that takes a requested download path that
+    is not present on the file system and must return either a file-like object
+    to read from or None if the path should appear as not found. This permits
+    the serving of dynamic content."""
 
     def __init__(self, tftproot='/tftpboot', dyn_file_func=None):
         self.listenip = None
