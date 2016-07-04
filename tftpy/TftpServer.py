@@ -4,7 +4,7 @@ requests. Logging is performed via a standard logging object set in
 TftpShared."""
 
 import socket, os, time
-import select, errno
+import select
 import threading
 from errno import EINTR
 from TftpShared import *
@@ -30,25 +30,12 @@ class TftpServer(TftpSession):
         # A dict of sessions, where each session is keyed by a string like
         # ip:tid for the remote end.
         self.sessions = {}
-        self.session_keys = {}
         # A threading event to help threads synchronize with the server
         # is_running state.
         self.is_running = threading.Event()
 
         self.shutdown_gracefully = False
         self.shutdown_immediately = False
-
-        # Poll structure for the listen loop
-        try:
-            self.poll = select.epoll()
-            self.poll_mask = select.EPOLLIN | select.EPOLLERR
-            self.poll_mask_in = select.EPOLLIN
-            self.poll_mask_err = select.EPOLLERR | select.EPOLLHUP
-        except:
-            self.poll = select.poll()
-            self.poll_mask = select.POLLIN | select.POLLERR
-            self.poll_mask_in = select.POLLIN
-            self.poll_mask_err = select.POLLERR | select.POLLHUP
 
         if self.dyn_file_func:
             if not callable(self.dyn_file_func):
@@ -95,20 +82,14 @@ class TftpServer(TftpSession):
 
         self.is_running.set()
 
-        self.poll.register(self.sock.fileno(), self.poll_mask)
-
         log.info("Starting receive loop...")
         while True:
             log.debug("shutdown_immediately is %s", self.shutdown_immediately)
             log.debug("shutdown_gracefully is %s", self.shutdown_gracefully)
             if self.shutdown_immediately:
                 log.warn("Shutting down now. Session count: %d" % len(self.sessions))
-                self.poll.unregister(self.sock.fileno())
                 self.sock.close()
                 for key in self.sessions:
-                    fd = self.sessions[key].sock.fileno()
-                    self.poll.unregister(fd)
-                    del self.session_keys[fd]
                     self.sessions[key].end()
                 self.sessions = []
                 break
@@ -116,39 +97,34 @@ class TftpServer(TftpSession):
             elif self.shutdown_gracefully:
                 if not self.sessions:
                     log.warn("In graceful shutdown mode and all sessions complete.")
-                    self.poll.unregister(self.sock.fileno())
                     self.sock.close()
                     break
 
+            # Build the inputlist array of sockets to select() on.
+            inputlist = []
+            inputlist.append(self.sock)
+            for key in self.sessions:
+                inputlist.append(self.sessions[key].sock)
+
             # Block until some socket has input on it.
+            log.debug("Performing select on this inputlist: %s", inputlist)
             try:
-                log.debug("Performing poll with timeout %s", SOCK_TIMEOUT)
-                events = self.poll.poll(SOCK_TIMEOUT * 1000)
-            except select.error, (err, _):
-                if err != errno.EAGAIN and err != errno.EINTR:
-                    log.error("poll failed with: %d", err)
-                    self.shutdown_immediately = True
-                continue
-            except IOError, e:
-                if e.errno != errno.EINTR:
+                readyinput, readyoutput, readyspecial = \
+                        select.select(inputlist, [], [], SOCK_TIMEOUT)
+            except select.error, err:
+                if err[0] == EINTR:
+                    # Interrupted system call
+                    log.debug("Interrupted syscall, retrying")
+                    continue
+                else:
                     raise
-                events = []
 
             deletion_list = []
-            log.debug("Woke up with events: %s", events)
 
             # Handle the available data, if any. Maybe we timed-out.
-            for readysock, event in events:
-                if event & self.poll_mask_err:
-                    log.error("poll received error or HUP: %d", err)
-                    self.shutdown_immediately = True
-                    continue
-                elif not (event & self.poll_mask_in):
-                    log.warn("poll received bad event: %x", event)
-                    continue
-
+            for readysock in readyinput:
                 # Is the traffic on the main server socket? ie. new session?
-                if readysock == self.sock.fileno():
+                if readysock == self.sock:
                     log.debug("Data ready on our main socket")
                     buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
 
@@ -172,9 +148,6 @@ class TftpServer(TftpSession):
                                                                self.dyn_file_func)
                         try:
                             self.sessions[key].start(buffer)
-                            fd = self.sessions[key].sock.fileno()
-                            self.poll.register(fd, self.poll_mask)
-                            self.session_keys[fd] = key
                         except TftpException, err:
                             deletion_list.append(key)
                             log.error("Fatal exception thrown from "
@@ -188,23 +161,25 @@ class TftpServer(TftpSession):
 
                 else:
                     # Must find the owner of this traffic.
-                    try:
-                        key = self.session_keys[readysock]
-                        log.info("Matched input to session key %s" % key)
-                        try:
-                            self.sessions[key].cycle()
-                            if self.sessions[key].state == None:
-                                log.info("Successful transfer.")
+                    for key in self.sessions:
+                        if readysock == self.sessions[key].sock:
+                            log.info("Matched input to session key %s"
+                                % key)
+                            try:
+                                self.sessions[key].cycle()
+                                if self.sessions[key].state == None:
+                                    log.info("Successful transfer.")
+                                    deletion_list.append(key)
+                            except TftpException, err:
                                 deletion_list.append(key)
-                        except TftpException, err:
-                            deletion_list.append(key)
-                            log.error("Fatal exception thrown from "
-                                      "session %s: %s"
-                                      % (key, str(err)))
-                        # Break out of for loop since we found the correct
-                        # session.
-                        break
-                    except KeyError:
+                                log.error("Fatal exception thrown from "
+                                          "session %s: %s"
+                                          % (key, str(err)))
+                            # Break out of for loop since we found the correct
+                            # session.
+                            break
+
+                    else:
                         log.error("Can't find the owner for this packet. "
                                   "Discarding.")
 
@@ -230,9 +205,6 @@ class TftpServer(TftpSession):
                 log.info("Session %s complete" % key)
                 if self.sessions.has_key(key):
                     log.debug("Gathering up metrics from session before deleting")
-                    fd = self.sessions[key].sock.fileno()
-                    self.poll.unregister(fd)
-                    del self.session_keys[fd]
                     self.sessions[key].end()
                     metrics = self.sessions[key].metrics
                     if metrics.duration == 0:
