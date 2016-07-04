@@ -308,6 +308,10 @@ class TftpPacketACK(TftpPacket):
         return self
 
     def decode(self):
+        if len(self.buffer) > 4:
+            log.debug("detected TFTP ACK but request is too large, will truncate")
+            log.debug("buffer was: %s", repr(self.buffer))
+            self.buffer = self.buffer[0:4]
         self.opcode, self.blocknumber = struct.unpack("!HH", self.buffer)
         log.debug("decoded ACK packet: opcode = %d, block = %d",
                      self.opcode, self.blocknumber)
@@ -435,10 +439,15 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
             if name in options:
                 if name == 'blksize':
                     # We can accept anything between the min and max values.
-                    size = self.options[name]
+                    size = int(self.options[name])
                     if size >= MIN_BLKSIZE and size <= MAX_BLKSIZE:
                         log.debug("negotiated blksize of %d bytes", size)
-                        options[blksize] = size
+                    else:
+                        raise TftpException, "blksize %s option outside allowed range" % size
+                elif name == 'tsize':
+                    size = int(self.options[name])
+                    if size < 0:
+                        raise TftpException, "Negative file sizes not supported"
                 else:
                     raise TftpException("Unsupported option: %s" % name)
         return True

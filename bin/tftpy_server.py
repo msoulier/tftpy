@@ -22,6 +22,11 @@ def main():
                       type='string',
                       help='path to serve from',
                       default=None)
+    parser.add_option('-q',
+                      '--quiet',
+                      action='store_true',
+                      default=False,
+                      help="Do not log unless it is critical")
     parser.add_option('-d',
                       '--debug',
                       action='store_true',
@@ -31,6 +36,8 @@ def main():
 
     if options.debug:
         tftpy.setLogLevel(logging.DEBUG)
+    elif options.quiet:
+        tftpy.setLogLevel(logging.WARN)
     else:
         tftpy.setLogLevel(logging.INFO)
 

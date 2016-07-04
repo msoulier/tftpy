@@ -12,13 +12,14 @@ class TftpClient(TftpSession):
     download can be initiated via the download() method, or an upload via the
     upload() method."""
 
-    def __init__(self, host, port, options={}):
+    def __init__(self, host, port, options={}, localip = ""):
         TftpSession.__init__(self)
         self.context = None
         self.host = host
         self.iport = port
         self.filename = None
         self.options = options
+        self.localip = localip
         if 'blksize' in self.options:
             size = self.options['blksize']
             tftpassert(types.IntType == type(size), "blksize must be an int")
@@ -48,7 +49,8 @@ class TftpClient(TftpSession):
                                                  output,
                                                  self.options,
                                                  packethook,
-                                                 timeout)
+                                                 timeout,
+                                                 localip = self.localip)
         self.context.start()
         # Download happens here
         self.context.end()
@@ -82,7 +84,8 @@ class TftpClient(TftpSession):
                                                input,
                                                self.options,
                                                packethook,
-                                               timeout)
+                                               timeout,
+                                               localip = self.localip)
         self.context.start()
         # Upload happens here
         self.context.end()

@@ -47,6 +47,12 @@ def main():
                       action='store_true',
                       default=False,
                       help="ask client to send tsize option in download")
+    parser.add_option('-l',
+                      '--localip',
+                      action='store',
+                      dest='localip',
+                      default="",
+                      help='local IP for client to bind to (ie. interface)')
     options, args = parser.parse_args()
     # Handle legacy --filename argument.
     if options.filename:
@@ -91,7 +97,8 @@ def main():
 
     tclient = tftpy.TftpClient(options.host,
                                int(options.port),
-                               tftp_options)
+                               tftp_options,
+                               options.localip)
     try:
         if options.download:
             if not options.output:
