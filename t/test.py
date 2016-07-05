@@ -382,7 +382,7 @@ class TestTftpyState(unittest.TestCase):
             try:
                 server.listen('localhost', 20001)
                 log.error("server didn't throw exception")
-            except Exception, err:
+            except Exception as err:
                 log.error("server got unexpected exception %s" % err)
             # Wait until parent kills us
             while True:
@@ -424,7 +424,7 @@ class TestTftpyState(unittest.TestCase):
             signal.alarm(2)
             try:
                 server.listen('localhost', 20001)
-            except Exception, err:
+            except Exception as err:
                 log.error("server threw exception %s" % err)
             # Wait until parent kills us
             while True:

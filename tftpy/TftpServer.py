@@ -112,7 +112,7 @@ class TftpServer(TftpSession):
             try:
                 readyinput, readyoutput, readyspecial = \
                         select.select(inputlist, [], [], SOCK_TIMEOUT)
-            except select.error, err:
+            except select.error as err:
                 if err[0] == EINTR:
                     # Interrupted system call
                     log.debug("Interrupted syscall, retrying")
