@@ -2,6 +2,7 @@
 instance of the client, and then use its upload or download method. Logging is
 performed via a standard logging object set in TftpShared."""
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 import types
 from .TftpShared import *
 from .TftpPacketTypes import *

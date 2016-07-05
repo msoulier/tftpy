@@ -8,6 +8,7 @@ the next packet in the transfer, and returns a state object until the transfer
 is complete, at which point it returns None. That is, unless there is a fatal
 error, in which case a TftpException is returned instead."""
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 from .TftpShared import *
 from .TftpPacketTypes import *
 import os

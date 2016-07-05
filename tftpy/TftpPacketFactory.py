@@ -2,6 +2,7 @@
 buffer, and return the appropriate TftpPacket object to represent it, via the
 parse() method."""
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 from .TftpShared import *
 from .TftpPacketTypes import *
 

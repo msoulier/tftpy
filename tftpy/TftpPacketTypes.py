@@ -1,6 +1,7 @@
 """This module implements the packet types of TFTP itself, and the
 corresponding encode and decode methods for them."""
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 import struct
 import sys
 from .TftpShared import *
@@ -118,6 +119,9 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         """Encode the packet's buffer from the instance variables."""
         tftpassert(self.filename, "filename required in initial packet")
         tftpassert(self.mode, "mode required in initial packet")
+        # Make sure filename and mode are bytestrings.
+        self.filename = str(self.filename)
+        self.mode = str(self.mode)
 
         ptype = None
         if self.opcode == 1: ptype = "RRQ"
@@ -140,7 +144,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
             for key in self.options:
                 # Populate the option name
                 format += "%dsx" % len(key)
-                options_list.append(key)
+                options_list.append(str(key))
                 # Populate the option value
                 format += "%dsx" % len(str(self.options[key]))
                 options_list.append(str(self.options[key]))
@@ -348,14 +352,14 @@ class TftpPacketERR(TftpPacket):
         self.errmsg = None
         # FIXME - integrate in TftpErrors references?
         self.errmsgs = {
-            1: "File not found",
-            2: "Access violation",
-            3: "Disk full or allocation exceeded",
-            4: "Illegal TFTP operation",
-            5: "Unknown transfer ID",
-            6: "File already exists",
-            7: "No such user",
-            8: "Failed to negotiate options"
+            1: b"File not found",
+            2: b"Access violation",
+            3: b"Disk full or allocation exceeded",
+            4: b"Illegal TFTP operation",
+            5: b"Unknown transfer ID",
+            6: b"File already exists",
+            7: b"No such user",
+            8: b"Failed to negotiate options"
             }
 
     def __str__(self):
