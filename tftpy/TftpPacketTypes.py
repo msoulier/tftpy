@@ -120,8 +120,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         tftpassert(self.filename, "filename required in initial packet")
         tftpassert(self.mode, "mode required in initial packet")
         # Make sure filename and mode are bytestrings.
-        self.filename = str(self.filename)
-        self.mode = str(self.mode)
+        self.filename = self.filename.encode('ascii')
+        self.mode = self.mode.encode('ascii')
 
         ptype = None
         if self.opcode == 1: ptype = "RRQ"
@@ -131,23 +131,23 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         for key in self.options:
             log.debug("    Option %s = %s", key, self.options[key])
 
-        format = "!H"
-        format += "%dsx" % len(self.filename)
-        if self.mode == "octet":
-            format += "5sx"
+        format = b"!H"
+        format += b"%dsx" % len(self.filename)
+        if self.mode == b"octet":
+            format += b"5sx"
         else:
-            raise AssertionError("Unsupported mode: %s" % mode)
+            raise AssertionError("Unsupported mode: %s" % self.mode)
         # Add options.
         options_list = []
-        if self.options.keys() > 0:
+        if len(self.options.keys()) > 0:
             log.debug("there are options to encode")
             for key in self.options:
                 # Populate the option name
-                format += "%dsx" % len(key)
-                options_list.append(str(key))
+                format += b"%dsx" % len(key)
+                options_list.append(key.encode('ascii'))
                 # Populate the option value
-                format += "%dsx" % len(str(self.options[key]))
-                options_list.append(str(self.options[key]))
+                format += b"%dsx" % len(self.options[key].encode('ascii'))
+                options_list.append(self.options[key].encode('ascii'))
 
         log.debug("format is %s", format)
         log.debug("options_list is %s", options_list)
