@@ -1,5 +1,6 @@
 """This module holds all objects shared by all other modules in tftpy."""
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -55,7 +56,7 @@ def tftpassert(condition, msg):
     with the message passed. This just makes the code throughout cleaner
     by refactoring."""
     if not condition:
-        raise TftpException, msg
+        raise TftpException(msg)
 
 def setLogLevel(level):
     """This function is a utility function for setting the internal log level.

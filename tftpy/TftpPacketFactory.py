@@ -2,8 +2,9 @@
 buffer, and return the appropriate TftpPacket object to represent it, via the
 parse() method."""
 
-from TftpShared import *
-from TftpPacketTypes import *
+from __future__ import absolute_import, division, print_function, unicode_literals
+from .TftpShared import *
+from .TftpPacketTypes import *
 
 class TftpPacketFactory(object):
     """This class generates TftpPacket objects. It is responsible for parsing
@@ -33,7 +34,7 @@ class TftpPacketFactory(object):
     def __create(self, opcode):
         """This method returns the appropriate class object corresponding to
         the passed opcode."""
-        tftpassert(self.classes.has_key(opcode),
+        tftpassert(opcode in self.classes,
                    "Unsupported opcode: %d" % opcode)
 
         packet = self.classes[opcode]()

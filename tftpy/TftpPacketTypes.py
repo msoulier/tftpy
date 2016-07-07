@@ -1,8 +1,10 @@
 """This module implements the packet types of TFTP itself, and the
 corresponding encode and decode methods for them."""
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 import struct
-from TftpShared import *
+import sys
+from .TftpShared import *
 
 class TftpSession(object):
     """This class is the base class for the tftp client and server. Any shared
@@ -63,7 +65,7 @@ class TftpPacketWithOptions(object):
                     format += "%dsx" % length
                     length = -1
                 else:
-                    raise TftpException, "Invalid options in buffer"
+                    raise TftpException("Invalid options in buffer")
             length += 1
 
         log.debug("about to unpack, format is: %s", format)
@@ -92,7 +94,7 @@ class TftpPacket(object):
         order suitable for sending over the wire.
 
         This is an abstract method."""
-        raise NotImplementedError, "Abstract method"
+        raise NotImplementedError("Abstract method")
 
     def decode(self):
         """The decode method of a TftpPacket takes a buffer off of the wire in
@@ -102,7 +104,7 @@ class TftpPacket(object):
         datagram.
 
         This is an abstract method."""
-        raise NotImplementedError, "Abstract method"
+        raise NotImplementedError("Abstract method")
 
 class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
     """This class is a common parent class for the RRQ and WRQ packets, as
@@ -117,6 +119,9 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         """Encode the packet's buffer from the instance variables."""
         tftpassert(self.filename, "filename required in initial packet")
         tftpassert(self.mode, "mode required in initial packet")
+        # Make sure filename and mode are bytestrings.
+        self.filename = self.filename.encode('ascii')
+        self.mode = self.mode.encode('ascii')
 
         ptype = None
         if self.opcode == 1: ptype = "RRQ"
@@ -126,23 +131,23 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         for key in self.options:
             log.debug("    Option %s = %s", key, self.options[key])
 
-        format = "!H"
-        format += "%dsx" % len(self.filename)
-        if self.mode == "octet":
-            format += "5sx"
+        format = b"!H"
+        format += b"%dsx" % len(self.filename)
+        if self.mode == b"octet":
+            format += b"5sx"
         else:
-            raise AssertionError, "Unsupported mode: %s" % mode
+            raise AssertionError("Unsupported mode: %s" % self.mode)
         # Add options.
         options_list = []
-        if self.options.keys() > 0:
+        if len(self.options.keys()) > 0:
             log.debug("there are options to encode")
             for key in self.options:
                 # Populate the option name
-                format += "%dsx" % len(key)
-                options_list.append(key)
+                format += b"%dsx" % len(key)
+                options_list.append(key.encode('ascii'))
                 # Populate the option value
-                format += "%dsx" % len(str(self.options[key]))
-                options_list.append(str(self.options[key]))
+                format += b"%dsx" % len(self.options[key].encode('ascii'))
+                options_list.append(self.options[key].encode('ascii'))
 
         log.debug("format is %s", format)
         log.debug("options_list is %s", options_list)
@@ -167,7 +172,9 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         log.debug("in decode: about to iterate buffer counting nulls")
         subbuf = self.buffer[2:]
         for c in subbuf:
-            if ord(c) == 0:
+            if sys.version_info[0] <= 2:
+                c = ord(c)
+            if c == 0:
                 nulls += 1
                 log.debug("found a null at length %d, now have %d", length, nulls)
                 format += "%dsx" % length
@@ -345,14 +352,14 @@ class TftpPacketERR(TftpPacket):
         self.errmsg = None
         # FIXME - integrate in TftpErrors references?
         self.errmsgs = {
-            1: "File not found",
-            2: "Access violation",
-            3: "Disk full or allocation exceeded",
-            4: "Illegal TFTP operation",
-            5: "Unknown transfer ID",
-            6: "File already exists",
-            7: "No such user",
-            8: "Failed to negotiate options"
+            1: b"File not found",
+            2: b"Access violation",
+            3: b"Disk full or allocation exceeded",
+            4: b"Illegal TFTP operation",
+            5: b"Unknown transfer ID",
+            6: b"File already exists",
+            7: b"No such user",
+            8: b"Failed to negotiate options"
             }
 
     def __str__(self):
@@ -433,18 +440,18 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
         the options so that the session can update itself to the negotiated
         options."""
         for name in self.options:
-            if options.has_key(name):
+            if name in options:
                 if name == 'blksize':
                     # We can accept anything between the min and max values.
                     size = int(self.options[name])
                     if size >= MIN_BLKSIZE and size <= MAX_BLKSIZE:
                         log.debug("negotiated blksize of %d bytes", size)
                     else:
-                        raise TftpException, "blksize %s option outside allowed range" % size
+                        raise TftpException("blksize %s option outside allowed range" % size)
                 elif name == 'tsize':
                     size = int(self.options[name])
                     if size < 0:
-                        raise TftpException, "Negative file sizes not supported"
+                        raise TftpException("Negative file sizes not supported")
                 else:
-                    raise TftpException, "Unsupported option: %s" % name
+                    raise TftpException("Unsupported option: %s" % name)
         return True

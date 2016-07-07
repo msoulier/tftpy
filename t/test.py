@@ -26,8 +26,8 @@ class TestTftpyClasses(unittest.TestCase):
         rrq.encode()
         self.assert_(rrq.buffer != None, "Buffer populated")
         rrq.decode()
-        self.assertEqual(rrq.filename, "myfilename", "Filename correct")
-        self.assertEqual(rrq.mode, "octet", "Mode correct")
+        self.assertEqual(rrq.filename, b"myfilename", "Filename correct")
+        self.assertEqual(rrq.mode, b"octet", "Mode correct")
         self.assertEqual(rrq.options, options, "Options correct")
         # repeat test with options
         rrq.options = { 'blksize': '1024' }
@@ -36,8 +36,8 @@ class TestTftpyClasses(unittest.TestCase):
         rrq.encode()
         self.assert_(rrq.buffer != None, "Buffer populated")
         rrq.decode()
-        self.assertEqual(rrq.filename, "myfilename", "Filename correct")
-        self.assertEqual(rrq.mode, "octet", "Mode correct")
+        self.assertEqual(rrq.filename, b"myfilename", "Filename correct")
+        self.assertEqual(rrq.mode, b"octet", "Mode correct")
         self.assertEqual(rrq.options['blksize'], '1024', "Blksize correct")
 
     def testTftpPacketWRQ(self):
@@ -51,8 +51,8 @@ class TestTftpyClasses(unittest.TestCase):
         self.assert_(wrq.buffer != None, "Buffer populated")
         wrq.decode()
         self.assertEqual(wrq.opcode, 2, "Opcode correct")
-        self.assertEqual(wrq.filename, "myfilename", "Filename correct")
-        self.assertEqual(wrq.mode, "octet", "Mode correct")
+        self.assertEqual(wrq.filename, b"myfilename", "Filename correct")
+        self.assertEqual(wrq.mode, b"octet", "Mode correct")
         self.assertEqual(wrq.options, options, "Options correct")
         # repeat test with options
         wrq.options = { 'blksize': '1024' }
@@ -62,8 +62,8 @@ class TestTftpyClasses(unittest.TestCase):
         self.assert_(wrq.buffer != None, "Buffer populated")
         wrq.decode()
         self.assertEqual(wrq.opcode, 2, "Opcode correct")
-        self.assertEqual(wrq.filename, "myfilename", "Filename correct")
-        self.assertEqual(wrq.mode, "octet", "Mode correct")
+        self.assertEqual(wrq.filename, b"myfilename", "Filename correct")
+        self.assertEqual(wrq.mode, b"octet", "Mode correct")
         self.assertEqual(wrq.options['blksize'], '1024', "Blksize correct")
 
 
@@ -406,7 +406,7 @@ class TestTftpyState(unittest.TestCase):
             try:
                 server.listen('localhost', 20001)
                 log.error("server didn't throw exception")
-            except Exception, err:
+            except Exception as err:
                 log.error("server got unexpected exception %s" % err)
             # Wait until parent kills us
             while True:
@@ -448,7 +448,7 @@ class TestTftpyState(unittest.TestCase):
             signal.alarm(2)
             try:
                 server.listen('localhost', 20001)
-            except Exception, err:
+            except Exception as err:
                 log.error("server threw exception %s" % err)
             # Wait until parent kills us
             while True:
