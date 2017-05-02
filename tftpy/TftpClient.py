@@ -13,7 +13,7 @@ class TftpClient(TftpSession):
     download can be initiated via the download() method, or an upload via the
     upload() method."""
 
-    def __init__(self, host, port, options={}, localip = ""):
+    def __init__(self, host, port=69, options={}, localip = ""):
         TftpSession.__init__(self)
         self.context = None
         self.host = host
