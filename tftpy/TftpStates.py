@@ -446,6 +446,8 @@ class TftpStateExpectACK(TftpState):
                 log.warn("Received duplicate ACK for block %d"
                     % pkt.blocknumber)
                 self.context.metrics.add_dup(pkt)
+                self.context.pending_complete = self.resendLast()
+
 
             else:
                 log.warn("Oooh, time warp. Received ACK to packet we "
