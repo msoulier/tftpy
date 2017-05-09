@@ -357,7 +357,7 @@ class TftpStateServerRecvWRQ(TftpServerState):
                 if os.path.isdir(current):
                     log.debug("%s is already an existing directory", current)
                 else:
-                    os.mkdir(current)
+                    os.mkdir(current, 0o700)
 
     def handle(self, pkt, raddress, rport):
         "Handle an initial WRQ packet as a server."
@@ -525,7 +525,7 @@ class TftpStateSentWRQ(TftpState):
 
         elif isinstance(pkt, TftpPacketERR):
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("Received ERR from server: " + str(pkt))
+            raise TftpException("Received ERR from server: %s" % pkt)
 
         elif isinstance(pkt, TftpPacketRRQ):
             self.sendError(TftpErrors.IllegalTftpOp)
@@ -537,7 +537,7 @@ class TftpStateSentWRQ(TftpState):
 
         else:
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("Received unknown packet type from server: " + str(pkt))
+            raise TftpException("Received unknown packet type from server: %s" % pkt)
 
         # By default, no state change.
         return self
@@ -588,11 +588,11 @@ class TftpStateSentRRQ(TftpState):
 
         elif isinstance(pkt, TftpPacketERR):
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("Received ERR from server: " + str(pkt))
+            raise TftpException("Received ERR from server: %s" % pkt)
 
         else:
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("Received unknown packet type from server: " + str(pkt))
+            raise TftpException("Received unknown packet type from server: %s" % pkt)
 
         # By default, no state change.
         return self

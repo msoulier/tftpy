@@ -4,6 +4,7 @@ import sys, logging
 from optparse import OptionParser
 import tftpy
 
+
 def main():
     usage=""
     parser = OptionParser(usage=usage)
@@ -48,7 +49,7 @@ def main():
     server = tftpy.TftpServer(options.root)
     try:
         server.listen(options.ip, options.port)
-    except tftpy.TftpException, err:
+    except tftpy.TftpException as err:
         sys.stderr.write("%s\n" % str(err))
         sys.exit(1)
     except KeyboardInterrupt:
