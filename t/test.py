@@ -480,21 +480,16 @@ class TestTftpyLoggers(unittest.TestCase):
         tftpy.setLogLevel(logging.DEBUG)
 
     def testStreamLogger(self):
-        # Not sure how best to test this. Maybe configure the loggers and look
-        # for any complaints.
         try:
             tftpy.addHandler(tftpy.create_streamhandler())
-            self.assertTrue( True )
         except:
-            self.assertTrue( False )
+            self.fail('testStreamLogger() unexpectedly raised an exception')
 
     def testFileLogger(self):
-        # Same as previous.
         try:
             tftpy.addHandler(tftpy.create_rotatingfilehandler('/tmp/log'))
-            self.assertTrue( True )
         except:
-            self.assertTrue( False )
+            self.fail('testFileLogger() unexpectedly raised an exception')
 
 if __name__ == '__main__':
     unittest.main()
