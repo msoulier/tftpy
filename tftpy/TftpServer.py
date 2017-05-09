@@ -75,7 +75,8 @@ class TftpServer(TftpSession):
     def listen(self,
                listenip="",
                listenport=DEF_TFTP_PORT,
-               timeout=SOCK_TIMEOUT):
+               timeout=SOCK_TIMEOUT,
+               addrfam=socket.AF_INET):
         """Start a server listening on the supplied interface and port. This
         defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
         supply a different socket timeout value, if desired."""
@@ -88,7 +89,7 @@ class TftpServer(TftpSession):
                 % (listenip, listenport))
         try:
             # FIXME - sockets should be non-blocking
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.sock = socket.socket(addrfam, socket.SOCK_DGRAM)
             self.sock.bind((listenip, listenport))
             _, self.listenport = self.sock.getsockname()
         except socket.error as err:
