@@ -25,7 +25,7 @@ class TftpPacketFactory(object):
         corresponding TftpPacket object. The buffer is the raw bytes off of
         the network."""
         log.debug("parsing a %d byte packet" % len(buffer))
-        (opcode,) = struct.unpack("!H", buffer[:2])
+        (opcode,) = struct.unpack(str("!H"), buffer[:2])
         log.debug("opcode is %d" % opcode)
         packet = self.__create(opcode)
         packet.buffer = buffer
