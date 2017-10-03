@@ -1,6 +1,10 @@
-*.pyc
+*.py[cod]
 *.swp
 tags
 .DS_Store
 test.log
 tftpy.egg-info
+build/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*$py.class
