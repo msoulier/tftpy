@@ -159,7 +159,7 @@ class TftpContext(object):
         try:
             (buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
         except socket.timeout:
-            log.warn("Timeout waiting for traffic, retrying...")
+            log.warning("Timeout waiting for traffic, retrying...")
             raise TftpTimeout("Timed-out waiting for traffic")
 
         # Ok, we've received a packet. Log it.
@@ -173,11 +173,11 @@ class TftpContext(object):
 
         # Check for known "connection".
         if raddress != self.address:
-            log.warn("Received traffic from %s, expected host %s. Discarding"
+            log.warning("Received traffic from %s, expected host %s. Discarding"
                         % (raddress, self.host))
 
         if self.tidport and self.tidport != rport:
-            log.warn("Received traffic from %s:%s but we're "
+            log.warning("Received traffic from %s:%s but we're "
                         "connected to %s:%s. Discarding."
                         % (raddress, rport,
                         self.host, self.tidport))
@@ -315,7 +315,7 @@ class TftpContextClientUpload(TftpContext):
                     log.debug("hit max retries, giving up")
                     raise
                 else:
-                    log.warn("resending last packet")
+                    log.warning("resending last packet")
                     self.state.resendLast()
 
     def end(self):
@@ -395,7 +395,7 @@ class TftpContextClientDownload(TftpContext):
                     log.debug("hit max retries, giving up")
                     raise
                 else:
-                    log.warn("resending last packet")
+                    log.warning("resending last packet")
                     self.state.resendLast()
 
     def end(self):

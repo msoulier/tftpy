@@ -144,7 +144,7 @@ class TftpState(object):
 
     def resendLast(self):
         "Resend the last sent packet due to a timeout."
-        log.warn("Resending packet %s on sessions %s"
+        log.warning("Resending packet %s on sessions %s"
             % (self.context.last_pkt, self))
         self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
         self.context.metrics.add_dup(self.context.last_pkt)
@@ -180,10 +180,10 @@ class TftpState(object):
 
         elif pkt.blocknumber < self.context.next_block:
             if pkt.blocknumber == 0:
-                log.warn("There is no block zero!")
+                log.warning("There is no block zero!")
                 self.sendError(TftpErrors.IllegalTftpOp)
                 raise TftpException("There is no block zero!")
-            log.warn("Dropping duplicate block %d" % pkt.blocknumber)
+            log.warning("Dropping duplicate block %d" % pkt.blocknumber)
             self.context.metrics.add_dup(pkt)
             log.debug("ACKing block %d again, just in case", pkt.blocknumber)
             self.sendACK(pkt.blocknumber)
@@ -274,7 +274,7 @@ class TftpServerState(TftpState):
         if self.full_path.startswith(self.context.root):
             log.info("requested file is in the server root - good")
         else:
-            log.warn("requested file is not within the server root - bad")
+            log.warning("requested file is not within the server root - bad")
             self.sendError(TftpErrors.IllegalTftpOp)
             raise TftpException("bad file path")
 
@@ -368,14 +368,14 @@ class TftpStateServerRecvWRQ(TftpServerState):
             f = self.context.upload_open(path, self.context)
             if f is None:
                 self.sendError(TftpErrors.AccessViolation)
-                raise TftpException, "Dynamic path %s not permitted" % path
+                raise TftpException("Dynamic path %s not permitted" % path)
             else:
                 self.context.fileobj = f
         else:
             log.info("Opening file %s for writing" % path)
             if os.path.exists(path):
                 # FIXME: correct behavior?
-                log.warn("File %s exists already, overwriting..." % (
+                log.warning("File %s exists already, overwriting..." % (
                     self.context.file_to_transfer))
             # FIXME: I think we should upload to a temp file and not overwrite
             # the existing file until the file is successfully uploaded.
@@ -443,12 +443,12 @@ class TftpStateExpectACK(TftpState):
                     self.context.pending_complete = self.sendDAT()
 
             elif pkt.blocknumber < self.context.next_block:
-                log.warn("Received duplicate ACK for block %d"
+                log.warning("Received duplicate ACK for block %d"
                     % pkt.blocknumber)
                 self.context.metrics.add_dup(pkt)
 
             else:
-                log.warn("Oooh, time warp. Received ACK to packet we "
+                log.warning("Oooh, time warp. Received ACK to packet we "
                          "didn't send yet. Discarding.")
                 self.context.metrics.errors += 1
             return self
@@ -456,7 +456,7 @@ class TftpStateExpectACK(TftpState):
             log.error("Received ERR packet from peer: %s" % str(pkt))
             raise TftpException("Received ERR packet from peer: %s" % str(pkt))
         else:
-            log.warn("Discarding unsupported packet: %s" % str(pkt))
+            log.warning("Discarding unsupported packet: %s" % str(pkt))
             return self
 
 class TftpStateExpectDAT(TftpState):
@@ -519,7 +519,7 @@ class TftpStateSentWRQ(TftpState):
                 log.debug("Changing state to TftpStateExpectACK")
                 return TftpStateExpectACK(self.context)
             else:
-                log.warn("Discarding ACK to block %s" % pkt.blocknumber)
+                log.warning("Discarding ACK to block %s" % pkt.blocknumber)
                 log.debug("Still waiting for valid response from server")
                 return self
 

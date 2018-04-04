@@ -24,7 +24,7 @@ class TestTftpyClasses(unittest.TestCase):
         rrq.mode = 'octet'
         rrq.options = options
         rrq.encode()
-        self.assert_(rrq.buffer != None, "Buffer populated")
+        self.assertIsNotNone(rrq.buffer, "Buffer populated")
         rrq.decode()
         self.assertEqual(rrq.filename, b"myfilename", "Filename correct")
         self.assertEqual(rrq.mode, b"octet", "Mode correct")
@@ -34,7 +34,7 @@ class TestTftpyClasses(unittest.TestCase):
         rrq.filename = 'myfilename'
         rrq.mode = 'octet'
         rrq.encode()
-        self.assert_(rrq.buffer != None, "Buffer populated")
+        self.assertIsNotNone(rrq.buffer, "Buffer populated")
         rrq.decode()
         self.assertEqual(rrq.filename, b"myfilename", "Filename correct")
         self.assertEqual(rrq.mode, b"octet", "Mode correct")
@@ -48,7 +48,7 @@ class TestTftpyClasses(unittest.TestCase):
         wrq.mode = 'octet'
         wrq.options = options
         wrq.encode()
-        self.assert_(wrq.buffer != None, "Buffer populated")
+        self.assertIsNotNone(wrq.buffer, "Buffer populated")
         wrq.decode()
         self.assertEqual(wrq.opcode, 2, "Opcode correct")
         self.assertEqual(wrq.filename, b"myfilename", "Filename correct")
@@ -59,7 +59,7 @@ class TestTftpyClasses(unittest.TestCase):
         wrq.filename = 'myfilename'
         wrq.mode = 'octet'
         wrq.encode()
-        self.assert_(wrq.buffer != None, "Buffer populated")
+        self.assertIsNotNone(wrq.buffer, "Buffer populated")
         wrq.decode()
         self.assertEqual(wrq.opcode, 2, "Opcode correct")
         self.assertEqual(wrq.filename, b"myfilename", "Filename correct")
@@ -74,7 +74,7 @@ class TestTftpyClasses(unittest.TestCase):
         data = "this is some data"
         dat.data = data
         dat.encode()
-        self.assert_(dat.buffer != None, "Buffer populated")
+        self.assertIsNotNone(dat.buffer, "Buffer populated")
         dat.decode()
         self.assertEqual(dat.opcode, 3, "DAT opcode is correct")
         self.assertEqual(dat.blocknumber, 5, "Block number is correct")
@@ -85,7 +85,7 @@ class TestTftpyClasses(unittest.TestCase):
         ack = tftpy.TftpPacketACK()
         ack.blocknumber = 6
         ack.encode()
-        self.assert_(ack.buffer != None, "Buffer populated")
+        self.assertIsNotNone(ack.buffer, "Buffer populated")
         ack.decode()
         self.assertEqual(ack.opcode, 4, "ACK opcode is correct")
         self.assertEqual(ack.blocknumber, 6, "ACK blocknumber correct")
@@ -95,7 +95,7 @@ class TestTftpyClasses(unittest.TestCase):
         err = tftpy.TftpPacketERR()
         err.errorcode = 4
         err.encode()
-        self.assert_(err.buffer != None, "Buffer populated")
+        self.assertIsNotNone(err.buffer, "Buffer populated")
         err.decode()
         self.assertEqual(err.opcode, 5, "ERR opcode is correct")
         self.assertEqual(err.errorcode, 4, "ERR errorcode is correct")
@@ -106,7 +106,7 @@ class TestTftpyClasses(unittest.TestCase):
         # Test that if we make blksize a number, it comes back a string.
         oack.options = { 'blksize': 2048 }
         oack.encode()
-        self.assert_(oack.buffer != None, "Buffer populated")
+        self.assertIsNotNone(oack.buffer, "Buffer populated")
         oack.decode()
         self.assertEqual(oack.opcode, 6, "OACK opcode is correct")
         self.assertEqual(oack.options['blksize'],
@@ -115,7 +115,7 @@ class TestTftpyClasses(unittest.TestCase):
         # Test string to string
         oack.options = { 'blksize': '4096' }
         oack.encode()
-        self.assert_(oack.buffer != None, "Buffer populated")
+        self.assertIsNotNone(oack.buffer, "Buffer populated")
         oack.decode()
         self.assertEqual(oack.opcode, 6, "OACK opcode is correct")
         self.assertEqual(oack.options['blksize'],
@@ -135,7 +135,7 @@ class TestTftpyClasses(unittest.TestCase):
             }
         factory = tftpy.TftpPacketFactory()
         for opcode in classes:
-            self.assert_(isinstance(factory._TftpPacketFactory__create(opcode),
+            self.assertTrue(isinstance(factory._TftpPacketFactory__create(opcode),
                                     classes[opcode]),
                                     "opcode %d returns the correct class" % opcode)
 
@@ -387,7 +387,7 @@ class TestTftpyState(unittest.TestCase):
                     time.sleep(0.005) # 5ms
                 client.download('640KBFILE', output, delay_hook)
             except:
-                log.warn("client threw exception as expected")
+                log.warning("client threw exception as expected")
                 stopped_early = True
 
             finally:
@@ -431,7 +431,7 @@ class TestTftpyState(unittest.TestCase):
                 client.download('640KBFILE', output, delay_hook)
                 stopped_early = False
             except:
-                log.warn("client threw exception as expected")
+                log.warning("client threw exception as expected")
 
             finally:
                 os.kill(child_pid, 15)
