@@ -4,6 +4,7 @@ import sys, logging, os
 from optparse import OptionParser
 import tftpy
 
+logging.basicConfig()
 
 def main():
     usage=""

@@ -16,9 +16,6 @@ DEF_TFTP_PORT = 69
 # A hook for deliberately introducing delay in testing.
 DELAY_BLOCK = 0
 
-# Initialize the logger.
-logging.basicConfig()
-
 # The logger used by this library. Feel free to clobber it with your own, if
 # you like, as long as it conforms to Python's logging.
 log = logging.getLogger('tftpy')

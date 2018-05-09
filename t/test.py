@@ -9,6 +9,7 @@ import threading
 from errno import EINTR
 from multiprocessing import Queue
 
+logging.basicConfig()
 log = tftpy.log
 
 class TestTftpyClasses(unittest.TestCase):
