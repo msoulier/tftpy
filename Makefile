@@ -1,5 +1,6 @@
 PY=/usr/bin/env python
 PYTHONPATH=.
+PYTHONIOENCODING=UTF-8
 
 all: test sdist
 
@@ -10,7 +11,7 @@ sdist:
 	PYTHONPATH=$(PYTHONPATH) $(PY) setup.py sdist
 
 test:
-	PYTHONPATH=$(PYTHONPATH) $(PY) t/test.py 2>&1 | tee test.log
+	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) t/test.py 2>&1 | tee test.log
 
 clean:
 	rm -rf dist src tftpy-doc* MANIFEST
