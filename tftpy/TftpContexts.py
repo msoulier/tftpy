@@ -120,13 +120,14 @@ class TftpContext(object):
     def start(self):
         raise NotImplementedError("Abstract method")
 
-    def end(self):
+    def end(self, close_fileobj=True):
         """Perform session cleanup, since the end method should always be
         called explicitely by the calling code, this works better than the
-        destructor."""
+        destructor.
+        Set close_fileobj to False so fileobj can be returned open."""
         log.debug("in TftpContext.end")
         self.sock.close()
-        if self.fileobj is not None and not self.fileobj.closed:
+        if close_fileobj and self.fileobj is not None and not self.fileobj.closed:
             log.debug("self.fileobj is open - closing")
             self.fileobj.close()
 
@@ -347,10 +348,12 @@ class TftpContextClientDownload(TftpContext):
         self.file_to_transfer = filename
         self.options = options
         self.packethook = packethook
+        self.filelike_fileobj = False
         # If the output object has a write() function,
         # assume it is file-like.
         if hasattr(output, 'write'):
             self.fileobj = output
+            self.filelike_fileobj = True
         # If the output filename is -, then use stdout
         elif output == '-':
             self.fileobj = sys.stdout
@@ -400,7 +403,7 @@ class TftpContextClientDownload(TftpContext):
 
     def end(self):
         """Finish up the context."""
-        TftpContext.end(self)
+        TftpContext.end(self, not self.filelike_fileobj)
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
         self.metrics.compute()
