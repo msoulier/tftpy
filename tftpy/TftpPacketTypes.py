@@ -69,7 +69,7 @@ class TftpPacketWithOptions(object):
             length += 1
 
         log.debug("about to unpack, format is: %s" % format)
-        mystruct = struct.unpack(format, buffer)
+        mystruct = struct.unpack(str(format), buffer)
 
         tftpassert(len(mystruct) % 2 == 0,
                    "packet with odd number of option/value pairs")
@@ -153,7 +153,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         log.debug("options_list is %s" % options_list)
         log.debug("size of struct is %d" % struct.calcsize(format))
 
-        self.buffer = struct.pack(format,
+        self.buffer = struct.pack(str(format),
                                   self.opcode,
                                   self.filename,
                                   self.mode,
@@ -192,7 +192,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         shortbuf = subbuf[:tlength+1]
         log.debug("about to unpack buffer with format: %s" % format)
         log.debug("unpacking buffer: " + repr(shortbuf))
-        mystruct = struct.unpack(format, shortbuf)
+        mystruct = struct.unpack(str(format), shortbuf)
 
         tftpassert(len(mystruct) == 2, "malformed packet")
         self.filename = mystruct[0]
@@ -270,7 +270,7 @@ class TftpPacketDAT(TftpPacket):
         if len(self.data) == 0:
             log.debug("Encoding an empty DAT packet")
         format = "!HH%ds" % len(self.data)
-        self.buffer = struct.pack(format,
+        self.buffer = struct.pack(str(format),
                                   self.opcode,
                                   self.blocknumber,
                                   self.data)
@@ -281,7 +281,7 @@ class TftpPacketDAT(TftpPacket):
         easy method chaining."""
         # We know the first 2 bytes are the opcode. The second two are the
         # block number.
-        (self.blocknumber,) = struct.unpack("!H", self.buffer[2:4])
+        (self.blocknumber,) = struct.unpack(str("!H"), self.buffer[2:4])
         log.debug("decoding DAT packet, block number %d" % self.blocknumber)
         log.debug("should be %d bytes in the packet total"
                      % len(self.buffer))
@@ -311,7 +311,7 @@ class TftpPacketACK(TftpPacket):
     def encode(self):
         log.debug("encoding ACK: opcode = %d, block = %d"
                      % (self.opcode, self.blocknumber))
-        self.buffer = struct.pack("!HH", self.opcode, self.blocknumber)
+        self.buffer = struct.pack(str("!HH"), self.opcode, self.blocknumber)
         return self
 
     def decode(self):
@@ -375,7 +375,7 @@ class TftpPacketERR(TftpPacket):
         self.buffer, returning self."""
         format = "!HH%dsx" % len(self.errmsgs[self.errorcode])
         log.debug("encoding ERR packet with format %s" % format)
-        self.buffer = struct.pack(format,
+        self.buffer = struct.pack(str(format),
                                   self.opcode,
                                   self.errorcode,
                                   self.errmsgs[self.errorcode])
@@ -390,13 +390,13 @@ class TftpPacketERR(TftpPacket):
             log.debug("Allowing this affront to the RFC of a 4-byte packet")
             format = "!HH"
             log.debug("Decoding ERR packet with format: %s" % format)
-            self.opcode, self.errorcode = struct.unpack(format,
+            self.opcode, self.errorcode = struct.unpack(str(format),
                                                         self.buffer)
         else:
             log.debug("Good ERR packet > 4 bytes")
             format = "!HH%dsx" % (len(self.buffer) - 5)
             log.debug("Decoding ERR packet with format: %s" % format)
-            self.opcode, self.errorcode, self.errmsg = struct.unpack(format,
+            self.opcode, self.errorcode, self.errmsg = struct.unpack(str(format),
                                                                      self.buffer)
         log.error("ERR packet - errorcode: %d, message: %s"
                      % (self.errorcode, self.errmsg))
@@ -429,7 +429,7 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
             format += "%dsx" % len(self.options[key])
             options_list.append(key)
             options_list.append(self.options[key])
-        self.buffer = struct.pack(format, self.opcode, *options_list)
+        self.buffer = struct.pack(str(format), self.opcode, *options_list)
         return self
 
     def decode(self):
