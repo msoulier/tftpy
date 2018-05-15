@@ -10,17 +10,15 @@ from errno import EINTR
 from multiprocessing import Queue
 
 logging.basicConfig()
-log = tftpy.log
+log = logging.getLogger('tftpy')
+log.setLevel(logging.DEBUG)
 
 class TestTftpyClasses(unittest.TestCase):
-
-    def setUp(self):
-        tftpy.setLogLevel(logging.DEBUG)
 
     def testTftpPacketRRQ(self):
         log.debug("===> Running testcase testTftpPacketRRQ")
         options = {}
-        rrq = tftpy.TftpPacketRRQ()
+        rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
         rrq.filename = 'myfilename'
         rrq.mode = 'octet'
         rrq.options = options
@@ -44,7 +42,7 @@ class TestTftpyClasses(unittest.TestCase):
     def testTftpPacketWRQ(self):
         log.debug("===> Running test case testTftpPacketWRQ")
         options = {}
-        wrq = tftpy.TftpPacketWRQ()
+        wrq = tftpy.TftpPacketTypes.TftpPacketWRQ()
         wrq.filename = 'myfilename'
         wrq.mode = 'octet'
         wrq.options = options
@@ -70,7 +68,7 @@ class TestTftpyClasses(unittest.TestCase):
 
     def testTftpPacketDAT(self):
         log.debug("===> Running testcase testTftpPacketDAT")
-        dat = tftpy.TftpPacketDAT()
+        dat = tftpy.TftpPacketTypes.TftpPacketDAT()
         dat.blocknumber = 5
         data = "this is some data"
         dat.data = data
@@ -83,7 +81,7 @@ class TestTftpyClasses(unittest.TestCase):
 
     def testTftpPacketACK(self):
         log.debug("===> Running testcase testTftpPacketACK")
-        ack = tftpy.TftpPacketACK()
+        ack = tftpy.TftpPacketTypes.TftpPacketACK()
         ack.blocknumber = 6
         ack.encode()
         self.assertIsNotNone(ack.buffer, "Buffer populated")
@@ -93,7 +91,7 @@ class TestTftpyClasses(unittest.TestCase):
 
     def testTftpPacketERR(self):
         log.debug("===> Running testcase testTftpPacketERR")
-        err = tftpy.TftpPacketERR()
+        err = tftpy.TftpPacketTypes.TftpPacketERR()
         err.errorcode = 4
         err.encode()
         self.assertIsNotNone(err.buffer, "Buffer populated")
@@ -103,7 +101,7 @@ class TestTftpyClasses(unittest.TestCase):
 
     def testTftpPacketOACK(self):
         log.debug("===> Running testcase testTftpPacketOACK")
-        oack = tftpy.TftpPacketOACK()
+        oack = tftpy.TftpPacketTypes.TftpPacketOACK()
         # Test that if we make blksize a number, it comes back a string.
         oack.options = { 'blksize': 2048 }
         oack.encode()
@@ -127,23 +125,20 @@ class TestTftpyClasses(unittest.TestCase):
         log.debug("===> Running testcase testTftpPacketFactory")
         # Make sure that the correct class is created for the correct opcode.
         classes = {
-            1: tftpy.TftpPacketRRQ,
-            2: tftpy.TftpPacketWRQ,
-            3: tftpy.TftpPacketDAT,
-            4: tftpy.TftpPacketACK,
-            5: tftpy.TftpPacketERR,
-            6: tftpy.TftpPacketOACK
+            1: tftpy.TftpPacketTypes.TftpPacketRRQ,
+            2: tftpy.TftpPacketTypes.TftpPacketWRQ,
+            3: tftpy.TftpPacketTypes.TftpPacketDAT,
+            4: tftpy.TftpPacketTypes.TftpPacketACK,
+            5: tftpy.TftpPacketTypes.TftpPacketERR,
+            6: tftpy.TftpPacketTypes.TftpPacketOACK
             }
-        factory = tftpy.TftpPacketFactory()
+        factory = tftpy.TftpPacketFactory.TftpPacketFactory()
         for opcode in classes:
             self.assertTrue(isinstance(factory._TftpPacketFactory__create(opcode),
                                     classes[opcode]),
                                     "opcode %d returns the correct class" % opcode)
 
 class TestTftpyState(unittest.TestCase):
-
-    def setUp(self):
-        tftpy.setLogLevel(logging.DEBUG)
 
     def clientServerUploadOptions(self,
                                   options,
@@ -160,10 +155,10 @@ class TestTftpyState(unittest.TestCase):
         if transmitname:
             filename = transmitname
         server_kwargs = server_kwargs or {}
-        server = tftpy.TftpServer(root, **server_kwargs)
-        client = tftpy.TftpClient('localhost',
-                                  20001,
-                                  options)
+        server = tftpy.TftpServer.TftpServer(root, **server_kwargs)
+        client = tftpy.TftpClient.TftpClient('localhost',
+                                             20001,
+                                             options)
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
@@ -182,10 +177,10 @@ class TestTftpyState(unittest.TestCase):
     def clientServerDownloadOptions(self, options, output='/tmp/out'):
         """Fire up a client and a server and do a download."""
         root = os.path.dirname(os.path.abspath(__file__))
-        server = tftpy.TftpServer(root)
-        client = tftpy.TftpClient('localhost',
-                                  20001,
-                                  options)
+        server = tftpy.TftpServer.TftpServer(root)
+        client = tftpy.TftpClient.TftpClient('localhost',
+                                             20001,
+                                             options)
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
@@ -264,15 +259,15 @@ class TestTftpyState(unittest.TestCase):
         timeout = 5
         root = os.path.dirname(os.path.abspath(__file__))
         # Testing without the dyn_func_file set.
-        serverstate = tftpy.TftpContextServer(raddress,
-                                              rport,
-                                              timeout,
-                                              root)
+        serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
+                                                           rport,
+                                                           timeout,
+                                                           root)
 
         self.assertTrue( isinstance(serverstate,
-                                    tftpy.TftpContextServer) )
+                                    tftpy.TftpContexts.TftpContextServer) )
 
-        rrq = tftpy.TftpPacketRRQ()
+        rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
         rrq.filename = '640KBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
@@ -283,14 +278,14 @@ class TestTftpyState(unittest.TestCase):
         for block in range(1, 1281):
             # Should be in expectack state.
             self.assertTrue( isinstance(serverstate.state,
-                                        tftpy.TftpStateExpectACK) )
-            ack = tftpy.TftpPacketACK()
+                                        tftpy.TftpStates.TftpStateExpectACK) )
+            ack = tftpy.TftpPacketTypes.TftpPacketACK()
             ack.blocknumber = block % 65536
             serverstate.state = serverstate.state.handle(ack, raddress, rport)
 
         # The last DAT packet should be empty, indicating a completed
         # transfer.
-        ack = tftpy.TftpPacketACK()
+        ack = tftpy.TftpPacketTypes.TftpPacketACK()
         ack.blocknumber = 1281 % 65536
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue( finalstate is None )
@@ -301,15 +296,15 @@ class TestTftpyState(unittest.TestCase):
         timeout = 5
         root = os.path.dirname(os.path.abspath(__file__))
         # Testing without the dyn_func_file set.
-        serverstate = tftpy.TftpContextServer(raddress,
-                                              rport,
-                                              timeout,
-                                              root)
+        serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
+                                                           rport,
+                                                           timeout,
+                                                           root)
 
         self.assertTrue( isinstance(serverstate,
-                                    tftpy.TftpContextServer) )
+                                    tftpy.TftpContexts.TftpContextServer) )
 
-        rrq = tftpy.TftpPacketRRQ()
+        rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
         rrq.filename = '640KBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
@@ -320,14 +315,14 @@ class TestTftpyState(unittest.TestCase):
         for block in range(1, 1281):
             # Should be in expectack state, or None
             self.assertTrue( isinstance(serverstate.state,
-                                        tftpy.TftpStateExpectACK) )
-            ack = tftpy.TftpPacketACK()
+                                        tftpy.TftpStates.TftpStateExpectACK) )
+            ack = tftpy.TftpPacketTypes.TftpPacketACK()
             ack.blocknumber = block % 65536
             serverstate.state = serverstate.state.handle(ack, raddress, rport)
 
         # The last DAT packet should be empty, indicating a completed
         # transfer.
-        ack = tftpy.TftpPacketACK()
+        ack = tftpy.TftpPacketTypes.TftpPacketACK()
         ack.blocknumber = 1281 % 65536
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue( finalstate is None )
@@ -337,11 +332,11 @@ class TestTftpyState(unittest.TestCase):
         rport = 10000
         timeout = 5
         root = os.path.dirname(os.path.abspath(__file__))
-        serverstate = tftpy.TftpContextServer(raddress,
-                                              rport,
-                                              timeout,
-                                              root)
-        rrq = tftpy.TftpPacketRRQ()
+        serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
+                                                           rport,
+                                                           timeout,
+                                                           root)
+        rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
         rrq.filename = '../setup.py'
         rrq.mode = 'octet'
         rrq.options = {}
@@ -355,11 +350,11 @@ class TestTftpyState(unittest.TestCase):
         rport = 10000
         timeout = 5
         root = os.path.dirname(os.path.abspath(__file__))
-        serverstate = tftpy.TftpContextServer(raddress,
-                                              rport,
-                                              timeout,
-                                              root)
-        rrq = tftpy.TftpPacketRRQ()
+        serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
+                                                           rport,
+                                                           timeout,
+                                                           root)
+        rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
         rrq.filename = '640KBFILE'
         rrq.mode = 'octet'
         rrq.options = {}
@@ -368,15 +363,15 @@ class TestTftpyState(unittest.TestCase):
         serverstate.start(rrq.encode().buffer)
         # Should be in expectack state.
         self.assertTrue(isinstance(serverstate.state,
-                                    tftpy.TftpStateExpectACK))
+                                    tftpy.TftpStates.TftpStateExpectACK))
 
     def testServerDownloadWithStopNow(self, output='/tmp/out'):
         log.debug("===> Running testcase testServerDownloadWithStopNow")
         root = os.path.dirname(os.path.abspath(__file__))
-        server = tftpy.TftpServer(root)
-        client = tftpy.TftpClient('localhost',
-                                  20001,
-                                  {})
+        server = tftpy.TftpServer.TftpServer(root)
+        client = tftpy.TftpClient.TftpClient('localhost',
+                                             20001,
+                                             {})
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
@@ -416,10 +411,10 @@ class TestTftpyState(unittest.TestCase):
     def testServerDownloadWithStopNotNow(self, output='/tmp/out'):
         log.debug("===> Running testcase testServerDownloadWithStopNotNow")
         root = os.path.dirname(os.path.abspath(__file__))
-        server = tftpy.TftpServer(root)
-        client = tftpy.TftpClient('localhost',
-                                  20001,
-                                  {})
+        server = tftpy.TftpServer.TftpServer(root)
+        client = tftpy.TftpClient.TftpClient('localhost',
+                                             20001,
+                                             {})
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
@@ -459,7 +454,7 @@ class TestTftpyState(unittest.TestCase):
         log.debug("===> Running testcase testServerDownloadWithDynamicPort")
         root = os.path.dirname(os.path.abspath(__file__))
 
-        server = tftpy.TftpServer(root)
+        server = tftpy.TftpServer.TftpServer(root)
         server_thread = threading.Thread(target=server.listen,
                                          kwargs={'listenip': 'localhost',
                                                  'listenport': 0})
@@ -467,30 +462,13 @@ class TestTftpyState(unittest.TestCase):
 
         try:
             server.is_running.wait()
-            client = tftpy.TftpClient('localhost', server.listenport, {})
+            client = tftpy.TftpClient.TftpClient('localhost', server.listenport, {})
             time.sleep(1)
             client.download('640KBFILE',
                             output)
         finally:
             server.stop(now=False)
             server_thread.join()
-
-class TestTftpyLoggers(unittest.TestCase):
-
-    def setUp(self):
-        tftpy.setLogLevel(logging.DEBUG)
-
-    def testStreamLogger(self):
-        try:
-            tftpy.addHandler(tftpy.create_streamhandler())
-        except:
-            self.fail('testStreamLogger() unexpectedly raised an exception')
-
-    def testFileLogger(self):
-        try:
-            tftpy.addHandler(tftpy.create_rotatingfilehandler('/tmp/log'))
-        except:
-            self.fail('testFileLogger() unexpectedly raised an exception')
 
 if __name__ == '__main__':
     unittest.main()

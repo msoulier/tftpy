@@ -4,7 +4,15 @@ import sys, logging, os
 from optparse import OptionParser
 import tftpy
 
-logging.basicConfig()
+log = logging.getLogger('tftpy')
+log.setLevel(logging.INFO)
+
+# console handler
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+default_formatter = logging.Formatter('[%(asctime)s] %(message)s')
+handler.setFormatter(default_formatter)
+log.addHandler(handler)
 
 def main():
     usage=""
@@ -77,20 +85,21 @@ def main():
             self.out = out
 
         def progresshook(self, pkt):
-            if isinstance(pkt, tftpy.TftpPacketDAT):
+            if isinstance(pkt, tftpy.TftpPacketTypes.TftpPacketDAT):
                 self.progress += len(pkt.data)
                 self.out("Transferred %d bytes" % self.progress)
             elif isinstance(pkt, tftpy.TftpPacketOACK):
                 self.out("Received OACK, options are: %s" % pkt.options)
         
     if options.debug:
-        tftpy.setLogLevel(logging.DEBUG)
+        log.setLevel(logging.DEBUG)
+        # increase the verbosity of the formatter
+        debug_formatter = logging.Formatter('[%(asctime)s%(msecs)03d] %(levelname)s [%(name)s:%(lineno)s] %(message)s')
+        handler.setFormatter(debug_formatter)
     elif options.quiet:
-        tftpy.setLogLevel(logging.WARNING)
-    else:
-        tftpy.setLogLevel(logging.INFO)
+        log.setLevel(logging.WARNING)
 
-    progresshook = Progress(tftpy.log.info).progresshook
+    progresshook = Progress(log.info).progresshook
 
     tftp_options = {}
     if options.blksize:
@@ -98,10 +107,10 @@ def main():
     if options.tsize:
         tftp_options['tsize'] = 0
 
-    tclient = tftpy.TftpClient(options.host,
-                               int(options.port),
-                               tftp_options,
-                               options.localip)
+    tclient = tftpy.TftpClient.TftpClient(options.host,
+                                          int(options.port),
+                                          tftp_options,
+                                          options.localip)
     try:
         if options.download:
             if not options.output:

@@ -5,6 +5,9 @@ parse() method."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 from .TftpShared import *
 from .TftpPacketTypes import *
+import logging
+
+log = logging.getLogger('tftpy.TftpPacketFactory')
 
 class TftpPacketFactory(object):
     """This class generates TftpPacket objects. It is responsible for parsing

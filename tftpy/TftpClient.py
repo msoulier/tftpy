@@ -4,9 +4,12 @@ performed via a standard logging object set in TftpShared."""
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 import types
+import logging
 from .TftpShared import *
 from .TftpPacketTypes import *
 from .TftpContexts import TftpContextClientDownload, TftpContextClientUpload
+
+log = logging.getLogger('tftpy.TftpClient')
 
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client. Once instantiated, a

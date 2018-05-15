@@ -4,7 +4,15 @@ import sys, logging
 from optparse import OptionParser
 import tftpy
 
-logging.basicConfig()
+log = logging.getLogger('tftpy')
+log.setLevel(logging.INFO)
+
+# console handler
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+default_formatter = logging.Formatter('[%(asctime)s] %(message)s')
+handler.setFormatter(default_formatter)
+log.addHandler(handler)
 
 def main():
     usage=""
@@ -37,17 +45,18 @@ def main():
     options, args = parser.parse_args()
 
     if options.debug:
-        tftpy.setLogLevel(logging.DEBUG)
+        log.setLevel(logging.DEBUG)
+        # increase the verbosity of the formatter
+        debug_formatter = logging.Formatter('[%(asctime)s%(msecs)03d] %(levelname)s [%(name)s:%(lineno)s] %(message)s')
+        handler.setFormatter(debug_formatter)
     elif options.quiet:
-        tftpy.setLogLevel(logging.WARN)
-    else:
-        tftpy.setLogLevel(logging.INFO)
+        log.setLevel(logging.WARN)
 
     if not options.root:
         parser.print_help()
         sys.exit(1)
 
-    server = tftpy.TftpServer(options.root)
+    server = tftpy.TftpServer.TftpServer(options.root)
     try:
         server.listen(options.ip, options.port)
     except tftpy.TftpException as err:

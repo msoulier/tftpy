@@ -7,11 +7,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import socket, os, time
 import select
 import threading
+import logging
 from errno import EINTR
 from .TftpShared import *
 from .TftpPacketTypes import *
 from .TftpPacketFactory import TftpPacketFactory
 from .TftpContexts import TftpContextServer
+
+log = logging.getLogger('tftpy.TftpServer')
 
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to

@@ -4,7 +4,10 @@ corresponding encode and decode methods for them."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 import struct
 import sys
+import logging
 from .TftpShared import *
+
+log = logging.getLogger('tftpy.TftpPacketTypes')
 
 class TftpSession(object):
     """This class is the base class for the tftp client and server. Any shared

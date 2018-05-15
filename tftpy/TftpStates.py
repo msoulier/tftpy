@@ -12,6 +12,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from .TftpShared import *
 from .TftpPacketTypes import *
 import os
+import logging
+
+log = logging.getLogger('tftpy.TftpStates')
 
 ###############################################################################
 # State classes

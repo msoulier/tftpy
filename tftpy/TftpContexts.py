@@ -13,7 +13,12 @@ from .TftpShared import *
 from .TftpPacketTypes import *
 from .TftpPacketFactory import TftpPacketFactory
 from .TftpStates import *
-import socket, time, sys
+import socket
+import time
+import sys
+import logging
+
+log = logging.getLogger('tftpy.TftpContext')
 
 ###############################################################################
 # Utility classes
