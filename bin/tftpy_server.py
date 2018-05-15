@@ -56,7 +56,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    server = tftpy.TftpServer.TftpServer(options.root)
+    server = tftpy.TftpServer(options.root)
     try:
         server.listen(options.ip, options.port)
     except tftpy.TftpException as err:

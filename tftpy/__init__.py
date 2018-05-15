@@ -19,7 +19,7 @@ if sys.version_info < required_version:
 from .TftpShared import *
 from . import TftpPacketTypes
 from . import TftpPacketFactory
-from . import TftpClient
-from . import TftpServer
+from .TftpClient import TftpClient
+from .TftpServer import TftpServer
 from . import TftpContexts
 from . import TftpStates

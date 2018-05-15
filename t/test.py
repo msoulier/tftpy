@@ -9,9 +9,15 @@ import threading
 from errno import EINTR
 from multiprocessing import Queue
 
-logging.basicConfig()
 log = logging.getLogger('tftpy')
 log.setLevel(logging.DEBUG)
+
+# console handler
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(levelname)s [%(name)s:%(lineno)s] %(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 class TestTftpyClasses(unittest.TestCase):
 
@@ -155,10 +161,10 @@ class TestTftpyState(unittest.TestCase):
         if transmitname:
             filename = transmitname
         server_kwargs = server_kwargs or {}
-        server = tftpy.TftpServer.TftpServer(root, **server_kwargs)
-        client = tftpy.TftpClient.TftpClient('localhost',
-                                             20001,
-                                             options)
+        server = tftpy.TftpServer(root, **server_kwargs)
+        client = tftpy.TftpClient('localhost',
+                                  20001,
+                                  options)
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
@@ -177,10 +183,10 @@ class TestTftpyState(unittest.TestCase):
     def clientServerDownloadOptions(self, options, output='/tmp/out'):
         """Fire up a client and a server and do a download."""
         root = os.path.dirname(os.path.abspath(__file__))
-        server = tftpy.TftpServer.TftpServer(root)
-        client = tftpy.TftpClient.TftpClient('localhost',
-                                             20001,
-                                             options)
+        server = tftpy.TftpServer(root)
+        client = tftpy.TftpClient('localhost',
+                                  20001,
+                                  options)
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
@@ -368,10 +374,10 @@ class TestTftpyState(unittest.TestCase):
     def testServerDownloadWithStopNow(self, output='/tmp/out'):
         log.debug("===> Running testcase testServerDownloadWithStopNow")
         root = os.path.dirname(os.path.abspath(__file__))
-        server = tftpy.TftpServer.TftpServer(root)
-        client = tftpy.TftpClient.TftpClient('localhost',
-                                             20001,
-                                             {})
+        server = tftpy.TftpServer(root)
+        client = tftpy.TftpClient('localhost',
+                                  20001,
+                                  {})
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
@@ -411,10 +417,10 @@ class TestTftpyState(unittest.TestCase):
     def testServerDownloadWithStopNotNow(self, output='/tmp/out'):
         log.debug("===> Running testcase testServerDownloadWithStopNotNow")
         root = os.path.dirname(os.path.abspath(__file__))
-        server = tftpy.TftpServer.TftpServer(root)
-        client = tftpy.TftpClient.TftpClient('localhost',
-                                             20001,
-                                             {})
+        server = tftpy.TftpServer(root)
+        client = tftpy.TftpClient('localhost',
+                                  20001,
+                                  {})
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
@@ -454,7 +460,7 @@ class TestTftpyState(unittest.TestCase):
         log.debug("===> Running testcase testServerDownloadWithDynamicPort")
         root = os.path.dirname(os.path.abspath(__file__))
 
-        server = tftpy.TftpServer.TftpServer(root)
+        server = tftpy.TftpServer(root)
         server_thread = threading.Thread(target=server.listen,
                                          kwargs={'listenip': 'localhost',
                                                  'listenport': 0})
@@ -462,7 +468,7 @@ class TestTftpyState(unittest.TestCase):
 
         try:
             server.is_running.wait()
-            client = tftpy.TftpClient.TftpClient('localhost', server.listenport, {})
+            client = tftpy.TftpClient('localhost', server.listenport, {})
             time.sleep(1)
             client.download('640KBFILE',
                             output)

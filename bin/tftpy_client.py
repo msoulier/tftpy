@@ -107,10 +107,10 @@ def main():
     if options.tsize:
         tftp_options['tsize'] = 0
 
-    tclient = tftpy.TftpClient.TftpClient(options.host,
-                                          int(options.port),
-                                          tftp_options,
-                                          options.localip)
+    tclient = tftpy.TftpClient(options.host,
+                               int(options.port),
+                               tftp_options,
+                               options.localip)
     try:
         if options.download:
             if not options.output:
