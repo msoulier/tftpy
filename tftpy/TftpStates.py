@@ -130,11 +130,11 @@ class TftpState(object):
         errpkt = TftpPacketERR()
         errpkt.errorcode = errorcode
         if self.context.tidport == None:
-            log.debug("Error packet recieved outside session. Discarding")
+            log.debug("Error packet received outside session. Discarding")
         else:
             self.context.sock.sendto(errpkt.encode().buffer,
-                                    (self.context.host,
-                                    self.context.tidport))
+                                     (self.context.host,
+                                      self.context.tidport))
         self.context.last_pkt = errpkt
 
     def sendOACK(self):
