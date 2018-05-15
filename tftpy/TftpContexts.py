@@ -131,7 +131,7 @@ class TftpContext(object):
         called explicitely by the calling code, this works better than the
         destructor.
         Set close_fileobj to False so fileobj can be returned open."""
-        log.debug("in TftpContext.end")
+        log.debug("in TftpContext.end - closing socket")
         self.sock.close()
         if close_fileobj and self.fileobj is not None and not self.fileobj.closed:
             log.debug("self.fileobj is open - closing")
@@ -363,6 +363,7 @@ class TftpContextClientDownload(TftpContext):
         # If the output filename is -, then use stdout
         elif output == '-':
             self.fileobj = sys.stdout
+            self.filelike_fileobj = True
         else:
             self.fileobj = open(output, "wb")
 
