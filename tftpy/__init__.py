@@ -11,10 +11,10 @@ directly. The TftpClient and TftpServer classes can be reached through it.
 from __future__ import absolute_import, division, print_function, unicode_literals
 import sys
 
-# Make sure that this is at least Python 2.6
-required_version = (2, 6)
+# Make sure that this is at least Python 2.7
+required_version = (2, 7)
 if sys.version_info < required_version:
-    raise ImportError("Requires at least Python 2.6")
+    raise ImportError("Requires at least Python 2.7")
 
 from .TftpShared import *
 from . import TftpPacketTypes

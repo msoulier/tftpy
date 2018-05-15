@@ -310,8 +310,9 @@ class TftpStateServerRecvRRQ(TftpServerState):
                 self.sendError(TftpErrors.FileNotFound)
                 raise TftpException("File not found: %s" % path)
         else:
+            log.warn("File not found: %s", path)
             self.sendError(TftpErrors.FileNotFound)
-            raise TftpException("File not found: %s" % path)
+            raise TftpException("File not found: {}".format(path))
 
         # Options negotiation.
         if sendoack and self.context.options.has_key('tsize'):
@@ -591,7 +592,11 @@ class TftpStateSentRRQ(TftpState):
 
         elif isinstance(pkt, TftpPacketERR):
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("Received ERR from server: %s" % pkt)
+            log.debug("Received ERR packet: %s", pkt)
+            if pkt.errorcode == TftpErrors.FileNotFound:
+                raise TftpFileNotFoundError("File not found")
+            else:
+                raise TftpException("Received ERR from server: {}".format(pkt))
 
         else:
             self.sendError(TftpErrors.IllegalTftpOp)

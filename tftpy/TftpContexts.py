@@ -16,6 +16,7 @@ from .TftpStates import *
 import socket
 import time
 import sys
+import os
 import logging
 
 log = logging.getLogger('tftpy.TftpContext')
@@ -405,6 +406,17 @@ class TftpContextClientDownload(TftpContext):
                 else:
                     log.warning("resending last packet")
                     self.state.resendLast()
+            except TftpFileNotFoundError as err:
+                # If we received file not found, then we should not save the open
+                # output file or we'll be left with a size zero file. Delete it,
+                # if it exists.
+                log.error("Received File not found error")
+                if self.fileobj is not None and not self.filelike_fileobj:
+                    if os.path.exists(self.fileobj.name):
+                        log.debug("unlinking output file of %s", self.fileobj.name)
+                        os.unlink(self.fileobj.name)
+
+                raise
 
     def end(self):
         """Finish up the context."""
