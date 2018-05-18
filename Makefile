@@ -1,11 +1,12 @@
 PY=/usr/bin/env python
 PYTHONPATH=.
 PYTHONIOENCODING=UTF-8
+PGPID=5BC8BE08
 
 all: test sdist
 
-pypi:
-	PYTHONPATH=$(PYTHONPATH) $(PY) setup.py sdist upload --sign --identity 5BC8BE08
+pypi: sdist
+	twine upload dist/*
 
 sdist:
 	PYTHONPATH=$(PYTHONPATH) $(PY) setup.py sdist
