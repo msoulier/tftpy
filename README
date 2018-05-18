@@ -100,7 +100,7 @@ easy inclusion in a UI for populating progress indicators. It supports RFCs
 
 Dependencies:
 -------------
-Python 2.3+, hopefully. Let me know if it fails to work.
+Python 2.7+, hopefully. Let me know if it fails to work.
 
 Trifles:
 --------
