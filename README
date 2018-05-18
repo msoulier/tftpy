@@ -1,5 +1,11 @@
 Copyright, Michael P. Soulier, 2010.
 
+About Release 0.7.0:
+====================
+Various bugfixes and refactoring for improved logging.
+Now requiring python 2.7+ and tightening syntax in
+preparation for supporting python 3.
+
 About Release 0.6.2:
 ====================
 Maintenance release to fix a couple of reported issues.
