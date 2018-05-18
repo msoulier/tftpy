@@ -1,3 +1,5 @@
+# vim: ts=4 sw=4 et ai:
+# -*- coding: utf8 -*-
 """This module holds all objects shared by all other modules in tftpy."""
 
 from __future__ import absolute_import, division, print_function, unicode_literals

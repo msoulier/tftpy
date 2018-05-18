@@ -1,4 +1,6 @@
 """Unit tests for tftpy."""
+# vim: ts=4 sw=4 et ai:
+# -*- coding: utf8 -*-
 
 import unittest
 import logging

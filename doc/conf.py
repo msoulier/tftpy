@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# vim: ts=4 sw=4 et ai:
+# -*- coding: utf8 -*-
 #
 # TFTPy documentation build configuration file, created by
 # sphinx-quickstart on Sun Jul 11 18:48:32 2010.

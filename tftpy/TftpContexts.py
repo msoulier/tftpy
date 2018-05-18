@@ -1,3 +1,5 @@
+# vim: ts=4 sw=4 et ai:
+# -*- coding: utf8 -*-
 """This module implements all contexts for state handling during uploads and
 downloads, the main interface to which being the TftpContext base class.
 

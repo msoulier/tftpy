@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# vim: ts=4 sw=4 et ai:
+# -*- coding: utf8 -*-
 
 import sys, logging, os
 from optparse import OptionParser

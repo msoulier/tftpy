@@ -1,3 +1,5 @@
+# vim: ts=4 sw=4 et ai:
+# -*- coding: utf8 -*-
 """This module implements the TFTP Server functionality. Instantiate an
 instance of the server, and then run the listen() method to listen for client
 requests. Logging is performed via a standard logging object set in
