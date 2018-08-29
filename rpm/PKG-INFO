@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: tftpy
+Version: 0.7.0
+Summary: Python TFTP library
+Home-page: http://tftpy.sourceforge.net
+Author: Michael P. Soulier
+Author-email: msoulier@digitaltorque.ca
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Environment :: No Input/Output (Daemon)
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Internet
