@@ -1,5 +1,5 @@
 Name: python-tftpy
-Version: 0.5.1
+Version: 0.7.0
 Release: 01
 Packager: Michael P. Soulier <michael_soulier@mitel.com>
 Summary: A pure python TFTP library.
