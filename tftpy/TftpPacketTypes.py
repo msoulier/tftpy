@@ -124,8 +124,10 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         tftpassert(self.filename, "filename required in initial packet")
         tftpassert(self.mode, "mode required in initial packet")
         # Make sure filename and mode are bytestrings.
-        self.filename = self.filename.encode('ascii')
-        self.mode = self.mode.encode('ascii')
+        if not isinstance(self.filename, bytes):
+            self.filename = self.filename.encode('ascii')
+        if not isinstance(self.mode, bytes):
+            self.mode = self.mode.encode('ascii')
 
         ptype = None
         if self.opcode == 1: ptype = "RRQ"
