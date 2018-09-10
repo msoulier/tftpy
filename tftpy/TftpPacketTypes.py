@@ -422,15 +422,14 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
         options_list = []
         log.debug("in TftpPacketOACK.encode")
         for key in self.options:
+            value = self.options[key].encode()
+            key = key.encode()
             log.debug("looping on option key %s", key)
-            log.debug("value is %s", self.options[key])
+            log.debug("value is %s", value)
             fmt += b"%dsx" % len(key)
-            fmt += b"%dsx" % len(self.options[key])
+            fmt += b"%dsx" % len(value)
             options_list.append(key)
-            options_list.append(self.options[key])
-        print(options_list)
-        options_list2 = bytes(options_list)
-        print(options_list2)
+            options_list.append(value)
         self.buffer = struct.pack(fmt, self.opcode, *options_list)
         return self
 
