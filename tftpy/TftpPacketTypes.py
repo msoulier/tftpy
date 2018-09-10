@@ -62,10 +62,8 @@ class TftpPacketWithOptions(object):
         # Count the nulls in the buffer. Each one terminates a string.
         log.debug("about to iterate options buffer counting nulls")
         length = 0
-        for c in buffer:
-            if sys.version_info[0] <= 2:
-                c = ord(c)
-            if c == 0:
+        for i in range(len(buffer)):
+            if ord(buffer[i:i+1]) == 0:
                 log.debug("found a null at length %d", length)
                 if length > 0:
                     fmt += b"%dsx" % length
@@ -177,10 +175,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         nulls = length = tlength = 0
         log.debug("in decode: about to iterate buffer counting nulls")
         subbuf = self.buffer[2:]
-        for c in subbuf:
-            if sys.version_info[0] <= 2:
-                c = ord(c)
-            if c == 0:
+        for i in range(len(subbuf)):
+            if ord(subbuf[i:i+1]) == 0:
                 nulls += 1
                 log.debug("found a null at length %d, now have %d", length, nulls)
                 fmt += b"%dsx" % length
