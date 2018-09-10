@@ -10,7 +10,7 @@ the next packet in the transfer, and returns a state object until the transfer
 is complete, at which point it returns None. That is, unless there is a fatal
 error, in which case a TftpException is returned instead."""
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+
 from .TftpShared import *
 from .TftpPacketTypes import *
 import os
@@ -39,7 +39,7 @@ class TftpState(object):
     def handleOACK(self, pkt):
         """This method handles an OACK from the server, syncing any accepted
         options."""
-        if pkt.options.keys() > 0:
+        if list(pkt.options.keys()) > 0:
             if pkt.match_options(self.context.options):
                 log.info("Successful negotiation of options")
                 # Set options to OACK options
@@ -320,7 +320,7 @@ class TftpStateServerRecvRRQ(TftpServerState):
             raise TftpException("File not found: {}".format(path))
 
         # Options negotiation.
-        if sendoack and self.context.options.has_key('tsize'):
+        if sendoack and 'tsize' in self.context.options:
             # getting the file size for the tsize option. As we handle
             # file-like objects and not only real files, we use this seeking
             # method instead of asking the OS

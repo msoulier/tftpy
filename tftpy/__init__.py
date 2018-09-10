@@ -10,7 +10,7 @@ As a client of tftpy, this is the only module that you should need to import
 directly. The TftpClient and TftpServer classes can be reached through it.
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+
 import sys
 
 # Make sure that this is at least Python 2.7

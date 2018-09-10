@@ -3,7 +3,7 @@
 """This module implements the packet types of TFTP itself, and the
 corresponding encode and decode methods for them."""
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+
 import struct
 import sys
 import logging
@@ -63,7 +63,9 @@ class TftpPacketWithOptions(object):
         log.debug("about to iterate options buffer counting nulls")
         length = 0
         for c in buffer:
-            if ord(c) == 0:
+            if sys.version_info[0] <= 2:
+                c = ord(c)
+            if c == 0:
                 log.debug("found a null at length %d", length)
                 if length > 0:
                     fmt += b"%dsx" % length
@@ -143,7 +145,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
             raise AssertionError("Unsupported mode: %s" % self.mode)
         # Add options.
         options_list = []
-        if len(self.options.keys()) > 0:
+        if len(list(self.options.keys())) > 0:
             log.debug("there are options to encode")
             for key in self.options:
                 # Populate the option name
@@ -156,7 +158,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         log.debug("fmt is %s", fmt)
         log.debug("options_list is %s", options_list)
         log.debug("size of struct is %d", struct.calcsize(fmt))
-
+        
         self.buffer = struct.pack(fmt,
                                   self.opcode,
                                   self.filename,
@@ -430,6 +432,9 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
             fmt += b"%dsx" % len(self.options[key])
             options_list.append(key)
             options_list.append(self.options[key])
+        print(options_list)
+        options_list2 = bytes(options_list)
+        print(options_list2)
         self.buffer = struct.pack(fmt, self.opcode, *options_list)
         return self
 

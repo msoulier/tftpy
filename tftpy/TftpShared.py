@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 """This module holds all objects shared by all other modules in tftpy."""
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+
 
 MIN_BLKSIZE = 8
 DEF_BLKSIZE = 512
