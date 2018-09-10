@@ -4,7 +4,7 @@
 instance of the client, and then use its upload or download method. Logging is
 performed via a standard logging object set in TftpShared."""
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+
 import types
 import logging
 from .TftpShared import *
@@ -28,7 +28,7 @@ class TftpClient(TftpSession):
         self.localip = localip
         if 'blksize' in self.options:
             size = self.options['blksize']
-            tftpassert(types.IntType == type(size), "blksize must be an int")
+            tftpassert(int == type(size), "blksize must be an int")
             if size < MIN_BLKSIZE or size > MAX_BLKSIZE:
                 raise TftpException("Invalid blksize: %d" % size)
 

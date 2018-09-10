@@ -5,7 +5,7 @@ instance of the server, and then run the listen() method to listen for client
 requests. Logging is performed via a standard logging object set in
 TftpShared."""
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+
 import socket, os, time
 import select
 import threading
@@ -176,7 +176,7 @@ class TftpServer(TftpSession):
                         log.warning("received traffic on main socket for "
                                  "existing session??")
                     log.info("Currently handling these sessions:")
-                    for session_key, session in self.sessions.items():
+                    for session_key, session in list(self.sessions.items()):
                         log.info("    %s" % session)
 
                 else:
