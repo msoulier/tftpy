@@ -269,22 +269,25 @@ class TftpServerState(TftpState):
         # begin with a '/' strip it off as otherwise os.path.join will
         # treat it as absolute (regardless of whether it is ntpath or
         # posixpath module
-        if pkt.filename.startswith(self.context.root.encode()):
-            full_path = pkt.filename
+        if self.context.root != None:
+            if pkt.filename.startswith(self.context.root.encode()):
+                full_path = pkt.filename
+            else:
+                full_path = os.path.join(self.context.root, pkt.filename.decode().lstrip('/'))
         else:
-            full_path = os.path.join(self.context.root, pkt.filename.decode().lstrip('/'))
-
+            full_path = None
         # Use abspath to eliminate any remaining relative elements
         # (e.g. '..') and ensure that is still within the server's
         # root directory
-        self.full_path = os.path.abspath(full_path)
-        log.debug("full_path is %s", full_path)
-        if self.full_path.startswith(self.context.root):
-            log.info("requested file is in the server root - good")
-        else:
-            log.warning("requested file is not within the server root - bad")
-            self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("bad file path")
+        if full_path != None:
+            self.full_path = os.path.abspath(full_path)
+            log.debug("full_path is %s", full_path)
+            if self.full_path.startswith(self.context.root):
+                log.info("requested file is in the server root - good")
+            else:
+                log.warning("requested file is not within the server root - bad")
+                self.sendError(TftpErrors.IllegalTftpOp)
+                raise TftpException("bad file path")
 
         self.context.file_to_transfer = pkt.filename
 
@@ -300,7 +303,7 @@ class TftpStateServerRecvRRQ(TftpServerState):
         sendoack = self.serverInitial(pkt, raddress, rport)
         path = self.full_path
         log.info("Opening file %s for reading" % path)
-        if os.path.exists(path):
+        if path != None and os.path.exists(path):
             # Note: Open in binary mode for win32 portability, since win32
             # blows.
             self.context.fileobj = open(path, "rb")
