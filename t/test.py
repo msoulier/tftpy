@@ -78,7 +78,7 @@ class TestTftpyClasses(unittest.TestCase):
         log.debug("===> Running testcase testTftpPacketDAT")
         dat = tftpy.TftpPacketTypes.TftpPacketDAT()
         dat.blocknumber = 5
-        data = "this is some data"
+        data = b"this is some data"
         dat.data = data
         dat.encode()
         self.assertIsNotNone(dat.buffer, "Buffer populated")
