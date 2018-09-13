@@ -33,8 +33,8 @@ class TestTftpyClasses(unittest.TestCase):
         rrq.encode()
         self.assertIsNotNone(rrq.buffer, "Buffer populated")
         rrq.decode()
-        self.assertEqual(rrq.filename, b"myfilename", "Filename correct")
-        self.assertEqual(rrq.mode, b"octet", "Mode correct")
+        self.assertEqual(rrq.filename, "myfilename", "Filename correct")
+        self.assertEqual(rrq.mode, "octet", "Mode correct")
         self.assertEqual(rrq.options, options, "Options correct")
         # repeat test with options
         rrq.options = { 'blksize': '1024' }
@@ -43,9 +43,9 @@ class TestTftpyClasses(unittest.TestCase):
         rrq.encode()
         self.assertIsNotNone(rrq.buffer, "Buffer populated")
         rrq.decode()
-        self.assertEqual(rrq.filename, b"myfilename", "Filename correct")
-        self.assertEqual(rrq.mode, b"octet", "Mode correct")
-        self.assertEqual(rrq.options['blksize'], '1024', "Blksize correct")
+        self.assertEqual(rrq.filename, "myfilename", "Filename correct")
+        self.assertEqual(rrq.mode, "octet", "Mode correct")
+        self.assertEqual(rrq.options['blksize'], '1024', "blksize correct")
 
     def testTftpPacketWRQ(self):
         log.debug("===> Running test case testTftpPacketWRQ")
@@ -58,8 +58,8 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertIsNotNone(wrq.buffer, "Buffer populated")
         wrq.decode()
         self.assertEqual(wrq.opcode, 2, "Opcode correct")
-        self.assertEqual(wrq.filename, b"myfilename", "Filename correct")
-        self.assertEqual(wrq.mode, b"octet", "Mode correct")
+        self.assertEqual(wrq.filename, "myfilename", "Filename correct")
+        self.assertEqual(wrq.mode, "octet", "Mode correct")
         self.assertEqual(wrq.options, options, "Options correct")
         # repeat test with options
         wrq.options = { 'blksize': '1024' }
@@ -69,8 +69,8 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertIsNotNone(wrq.buffer, "Buffer populated")
         wrq.decode()
         self.assertEqual(wrq.opcode, 2, "Opcode correct")
-        self.assertEqual(wrq.filename, b"myfilename", "Filename correct")
-        self.assertEqual(wrq.mode, b"octet", "Mode correct")
+        self.assertEqual(wrq.filename, "myfilename", "Filename correct")
+        self.assertEqual(wrq.mode, "octet", "Mode correct")
         self.assertEqual(wrq.options['blksize'], '1024', "Blksize correct")
 
 

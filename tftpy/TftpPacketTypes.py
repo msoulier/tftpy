@@ -25,13 +25,20 @@ class TftpPacketWithOptions(object):
     def __init__(self):
         self.options = {}
 
+    # Always use unicode strings, except at the encode/decode barrier.
+    # Simpler to keep things clear.
     def setoptions(self, options):
         log.debug("in TftpPacketWithOptions.setoptions")
         log.debug("options: %s", options)
         myoptions = {}
         for key in options:
-            newkey = str(key)
-            myoptions[newkey] = str(options[key])
+            newkey = key
+            if isinstance(key, bytes):
+                newkey = newkey.decode('ascii')
+            newval = options[key]
+            if isinstance(newval, bytes):
+                newval = newval.decode('ascii')
+            myoptions[newkey] = newval
             log.debug("populated myoptions with %s = %s", newkey, myoptions[newkey])
 
         log.debug("setting options hash to: %s", myoptions)
@@ -79,8 +86,11 @@ class TftpPacketWithOptions(object):
                    "packet with odd number of option/value pairs")
 
         for i in range(0, len(mystruct), 2):
-            log.debug("setting option %s to %s", mystruct[i], mystruct[i+1])
-            options[mystruct[i]] = mystruct[i+1]
+            key = mystruct[i].decode('ascii')
+            val = mystruct[i+1].decode('ascii')
+            log.debug("setting option %s to %s", key, val)
+            log.debug("types are %s and %s", type(key), type(val))
+            options[key] = val
 
         return options
 
@@ -124,36 +134,47 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         tftpassert(self.filename, "filename required in initial packet")
         tftpassert(self.mode, "mode required in initial packet")
         # Make sure filename and mode are bytestrings.
-        if not isinstance(self.filename, bytes):
-            self.filename = self.filename.encode('ascii')
+        filename = self.filename
+        mode = self.mode
+        if not isinstance(filename, bytes):
+            filename = filename.encode('ascii')
         if not isinstance(self.mode, bytes):
-            self.mode = self.mode.encode('ascii')
+            mode = mode.encode('ascii')
 
         ptype = None
         if self.opcode == 1: ptype = "RRQ"
         else:                ptype = "WRQ"
         log.debug("Encoding %s packet, filename = %s, mode = %s",
-            ptype, self.filename, self.mode)
+            ptype, filename, mode)
         for key in self.options:
             log.debug("    Option %s = %s", key, self.options[key])
 
         fmt = b"!H"
-        fmt += b"%dsx" % len(self.filename)
-        if self.mode == b"octet":
+        fmt += b"%dsx" % len(filename)
+        if mode == b"octet":
             fmt += b"5sx"
         else:
-            raise AssertionError("Unsupported mode: %s" % self.mode)
-        # Add options.
+            raise AssertionError("Unsupported mode: %s" % mode)
+        # Add options. Note that the options list must be bytes.
         options_list = []
         if len(list(self.options.keys())) > 0:
             log.debug("there are options to encode")
             for key in self.options:
                 # Populate the option name
-                fmt += b"%dsx" % len(key)
-                options_list.append(key.encode('ascii'))
+                name = key
+                if not isinstance(name, bytes):
+                    name = name.encode('ascii')
+                options_list.append(name)
+                fmt += b"%dsx" % len(name)
                 # Populate the option value
-                fmt += b"%dsx" % len(self.options[key].encode('ascii'))
-                options_list.append(self.options[key].encode('ascii'))
+                value = self.options[key]
+                # Work with all strings.
+                if isinstance(value, int):
+                    value = str(value)
+                if not isinstance(value, bytes):
+                    value = value.encode('ascii')
+                options_list.append(value)
+                fmt += b"%dsx" % len(value)
 
         log.debug("fmt is %s", fmt)
         log.debug("options_list is %s", options_list)
@@ -161,8 +182,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         
         self.buffer = struct.pack(fmt,
                                   self.opcode,
-                                  self.filename,
-                                  self.mode,
+                                  filename,
+                                  mode,
                                   *options_list)
 
         log.debug("buffer is %s", repr(self.buffer))
@@ -198,12 +219,13 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         mystruct = struct.unpack(fmt, shortbuf)
 
         tftpassert(len(mystruct) == 2, "malformed packet")
-        self.filename = mystruct[0]
-        self.mode = mystruct[1].lower() # force lc - bug 17
+        self.filename = mystruct[0].decode('ascii')
+        self.mode = mystruct[1].decode('ascii').lower() # force lc - bug 17
         log.debug("set filename to %s", self.filename)
         log.debug("set mode to %s", self.mode)
 
         self.options = self.decode_options(subbuf[tlength+1:])
+        log.debug("options dict is now %s", self.options)
         return self
 
 class TftpPacketRRQ(TftpPacketInitial):
@@ -424,8 +446,11 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
         options_list = []
         log.debug("in TftpPacketOACK.encode")
         for key in self.options:
-            value = self.options[key].encode()
-            key = key.encode()
+            value = self.options[key]
+            if isinstance(value, int):
+                value = str(value)
+            key = key.encode('ascii')
+            value = value.encode('ascii')
             log.debug("looping on option key %s", key)
             log.debug("value is %s", value)
             fmt += b"%dsx" % len(key)
