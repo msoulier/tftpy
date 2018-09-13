@@ -13,6 +13,7 @@ sdist:
 	PYTHONPATH=$(PYTHONPATH) $(PY) setup.py sdist
 
 test:
+	rm -rf /tmp/foo
 	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) t/test.py $(TESTCASE) 2>&1 | tee test.log
 
 clean:

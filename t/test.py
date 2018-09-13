@@ -211,7 +211,7 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerDownloadOptions({'tsize': 64*1024})
 
     def testClientFileObject(self):
-        output = open('/tmp/out', 'w')
+        output = open('/tmp/out', 'wb')
         self.clientServerDownloadOptions({}, output)
 
     def testClientServerBlksize(self):
@@ -222,7 +222,7 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerUploadOptions({})
 
     def testClientServerUploadFileObj(self):
-        fileobj = open('t/640KBFILE', 'r')
+        fileobj = open('t/640KBFILE', 'rb')
         self.clientServerUploadOptions({}, input=fileobj)
 
     def testClientServerUploadWithSubdirs(self):
