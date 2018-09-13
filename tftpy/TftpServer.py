@@ -79,6 +79,9 @@ class TftpServer(TftpSession):
                         log.warning("The tftproot %s is not writable" % self.root)
             else:
                 raise TftpException("The tftproot does not exist.")
+        else:
+            if dyn_file_func == None:
+                raise TftpException("No tftproot and no dyn_file_func given")
 
     def listen(self, listenip="", listenport=DEF_TFTP_PORT,
                timeout=SOCK_TIMEOUT):
