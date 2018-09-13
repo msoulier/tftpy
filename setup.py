@@ -7,6 +7,11 @@ from distutils.core import setup
 long_description = """\
 Copyright, Michael P. Soulier, 2010.
 
+About Release 0.8.0:
+====================
+This version introduces Python 3.X support.
+Yay.
+
 About Release 0.7.0:
 ====================
 Various bugfixes and refactoring for improved logging.
