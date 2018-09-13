@@ -269,10 +269,10 @@ class TftpServerState(TftpState):
         # begin with a '/' strip it off as otherwise os.path.join will
         # treat it as absolute (regardless of whether it is ntpath or
         # posixpath module
-        if pkt.filename.startswith(self.context.root.encode()):
+        if pkt.filename.startswith(self.context.root):
             full_path = pkt.filename
         else:
-            full_path = os.path.join(self.context.root, pkt.filename.decode().lstrip('/'))
+            full_path = os.path.join(self.context.root, pkt.filename.lstrip('/'))
 
         # Use abspath to eliminate any remaining relative elements
         # (e.g. '..') and ensure that is still within the server's

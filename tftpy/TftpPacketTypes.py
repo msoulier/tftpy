@@ -294,11 +294,14 @@ class TftpPacketDAT(TftpPacket):
         returns self for easy method chaining."""
         if len(self.data) == 0:
             log.debug("Encoding an empty DAT packet")
-        fmt = b"!HH%ds" % len(self.data)
+        data = self.data
+        if not isinstance(self.data, bytes):
+            data = self.data.encode('ascii')
+        fmt = b"!HH%ds" % len(data)
         self.buffer = struct.pack(fmt,
                                   self.opcode,
                                   self.blocknumber,
-                                  self.data)
+                                  data)
         return self
 
     def decode(self):
@@ -449,8 +452,10 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
             value = self.options[key]
             if isinstance(value, int):
                 value = str(value)
-            key = key.encode('ascii')
-            value = value.encode('ascii')
+            if not isinstance(key, bytes):
+                key = key.encode('ascii')
+            if not isinstance(value, bytes):
+                value = value.encode('ascii')
             log.debug("looping on option key %s", key)
             log.debug("value is %s", value)
             fmt += b"%dsx" % len(key)
