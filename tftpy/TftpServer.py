@@ -42,7 +42,10 @@ class TftpServer(TftpSession):
         self.listenport = None
         self.sock = None
         # FIXME: What about multiple roots?
-        self.root = os.path.abspath(tftproot)
+        if tftproot != None:
+            self.root = os.path.abspath(tftproot)
+        else:
+            self.root = None
         self.dyn_file_func = dyn_file_func
         self.upload_open = upload_open
         # A dict of sessions, where each session is keyed by a string like
@@ -59,22 +62,26 @@ class TftpServer(TftpSession):
             attr = getattr(self, name)
             if attr and not callable(attr):
                 raise TftpException("{} supplied, but it is not callable.".format(name))
-        if os.path.exists(self.root):
-            log.debug("tftproot %s does exist", self.root)
-            if not os.path.isdir(self.root):
-                raise TftpException("The tftproot must be a directory.")
+        if self.root != None:
+            if os.path.exists(self.root):
+                log.debug("tftproot %s does exist", self.root)
+                if not os.path.isdir(self.root):
+                    raise TftpException("The tftproot must be a directory.")
+                else:
+                    log.debug("tftproot %s is a directory" % self.root)
+                    if os.access(self.root, os.R_OK):
+                        log.debug("tftproot %s is readable" % self.root)
+                    else:
+                        raise TftpException("The tftproot must be readable")
+                    if os.access(self.root, os.W_OK):
+                        log.debug("tftproot %s is writable" % self.root)
+                    else:
+                        log.warning("The tftproot %s is not writable" % self.root)
             else:
-                log.debug("tftproot %s is a directory" % self.root)
-                if os.access(self.root, os.R_OK):
-                    log.debug("tftproot %s is readable" % self.root)
-                else:
-                    raise TftpException("The tftproot must be readable")
-                if os.access(self.root, os.W_OK):
-                    log.debug("tftproot %s is writable" % self.root)
-                else:
-                    log.warning("The tftproot %s is not writable" % self.root)
+                raise TftpException("The tftproot does not exist.")
         else:
-            raise TftpException("The tftproot does not exist.")
+            if dyn_file_func == None:
+                raise TftpException("No tftproot and no dyn_file_func given")
 
     def listen(self, listenip="", listenport=DEF_TFTP_PORT,
                timeout=SOCK_TIMEOUT):
