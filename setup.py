@@ -129,7 +129,7 @@ Michael P. Soulier <msoulier@digitaltorque.ca>
 """
 
 setup(name='tftpy',
-      version='0.7.0',
+      version='0.8.0',
       description='Python TFTP library',
       long_description=long_description,
       long_description_content_type='text/plain',
@@ -146,6 +146,7 @@ setup(name='tftpy',
       python_requires='>=2.7',
       classifiers=[
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Environment :: No Input/Output (Daemon)',
