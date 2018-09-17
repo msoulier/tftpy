@@ -16,7 +16,7 @@ from .TftpPacketTypes import *
 import os
 import logging
 
-log = logging.getLogger('tftpy.TftpStates')
+log = logging.getLogger(__name__)
 
 ###############################################################################
 # State classes

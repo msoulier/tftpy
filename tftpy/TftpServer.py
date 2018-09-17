@@ -6,7 +6,7 @@ requests. Logging is performed via a standard logging object set in
 TftpShared."""
 
 
-import socket, os, time
+import socket, os, time, grp, pwd
 import select
 import threading
 import logging
@@ -16,7 +16,7 @@ from .TftpPacketTypes import *
 from .TftpPacketFactory import TftpPacketFactory
 from .TftpContexts import TftpContextServer
 
-log = logging.getLogger('tftpy.TftpServer')
+log = logging.getLogger(__name__)
 
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
@@ -36,11 +36,14 @@ class TftpServer(TftpSession):
 
     def __init__(self,
                  tftproot='/tftpboot',
+                 drop_privileges=(None, None),
                  dyn_file_func=None,
                  upload_open=None):
         self.listenip = None
         self.listenport = None
         self.sock = None
+        self.user = drop_privileges[0]
+        self.group = drop_privileges[1]
         # FIXME: What about multiple roots?
         self.root = os.path.abspath(tftproot)
         self.dyn_file_func = dyn_file_func
@@ -54,7 +57,6 @@ class TftpServer(TftpSession):
 
         self.shutdown_gracefully = False
         self.shutdown_immediately = False
-
         for name in 'dyn_file_func', 'upload_open':
             attr = getattr(self, name)
             if attr and not callable(attr):
@@ -95,6 +97,8 @@ class TftpServer(TftpSession):
         except socket.error as err:
             # Reraise it for now.
             raise err
+
+        self.drop_privileges()
 
         self.is_running.set()
 
@@ -245,6 +249,43 @@ class TftpServer(TftpSession):
 
         log.debug("server returning from while loop")
         self.shutdown_gracefully = self.shutdown_immediately = False
+
+    def drop_privileges(self):
+
+        def drop_user(user):
+            if self.user is not None:
+                try:
+                    self.user = int(self.user)
+                except ValueError:
+                    self.user = pwd.getpwnam(self.user).pw_uid
+
+                if os.setreuid(self.user, self.user) is not None:
+                    raise OSError('setresuid() faiiled')
+
+        def drop_group(group):
+            if self.group is not None:
+                try:
+                    self.group = int(self.group)
+                except ValueError:
+                    self.group = grp.getgrnam(self.group).gr_gid
+                if os.setregid(self.group, self.group):
+                    raise OSError('setresuid() faiiled')
+
+        if os.getuid() != 0:
+            raise RuntimeError('unable to drop privileges, must be root')
+
+        if os.name != 'posix' and filter(None, user_groups):
+            raise RuntimeError('unable to drop privileges, posix systems only')
+
+        os.setgroups([])
+
+
+        
+        drop_group(self.group)
+        drop_user(self.user)
+
+        self._old_umask = os.umask(077)
+
 
     def stop(self, now=False):
         """Stop the server gracefully. Do not take any new transfers,

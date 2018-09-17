@@ -11,7 +11,7 @@ from .TftpShared import *
 from .TftpPacketTypes import *
 from .TftpContexts import TftpContextClientDownload, TftpContextClientUpload
 
-log = logging.getLogger('tftpy.TftpClient')
+log = logging.getLogger(__name__)
 
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client. Once instantiated, a

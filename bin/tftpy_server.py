@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # vim: ts=4 sw=4 et ai:
 # -*- coding: utf8 -*-
-
-import sys, logging
+import os, sys, logging
 from optparse import OptionParser
 import tftpy
 
@@ -44,7 +43,20 @@ def main():
                       action='store_true',
                       default=False,
                       help='upgrade logging from info to debug')
+    parser.add_option('-u',
+                      '--userpriv',
+                      default=None,
+                      help='Drop privileges to user fter binding service')
+    parser.add_option('-g',
+                      '--grouppriv',
+                      default=None,
+                      help='Drop privileges to group after binding service')
+    parser.add_option('-U',
+                      '--umask',
+                      default=0o033)
     options, args = parser.parse_args()
+
+    os.umask(options.umask)
 
     if options.debug:
         log.setLevel(logging.DEBUG)
@@ -58,7 +70,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    server = tftpy.TftpServer(options.root)
+    server = tftpy.TftpServer(options.root, drop_privileges=(options.userpriv, options.grouppriv))
     try:
         server.listen(options.ip, options.port)
     except tftpy.TftpException as err:
