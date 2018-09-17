@@ -278,14 +278,8 @@ class TftpServer(TftpSession):
             raise RuntimeError('unable to drop privileges, posix systems only')
 
         os.setgroups([])
-
-
-        
         drop_group(self.group)
         drop_user(self.user)
-
-        self._old_umask = os.umask(077)
-
 
     def stop(self, now=False):
         """Stop the server gracefully. Do not take any new transfers,
