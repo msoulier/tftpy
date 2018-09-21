@@ -258,33 +258,33 @@ class TftpServerState(TftpState):
 
         log.debug("Requested filename is %s", pkt.filename)
 
-        # Build the filename on this server and ensure it is contained
-        # in the specified root directory.
-        #
-        # Filenames that begin with server root are accepted. It's
-        # assumed the client and server are tightly connected and this
-        # provides backwards compatibility.
-        #
-        # Filenames otherwise are relative to the server root. If they
-        # begin with a '/' strip it off as otherwise os.path.join will
-        # treat it as absolute (regardless of whether it is ntpath or
-        # posixpath module
-        if pkt.filename.startswith(self.context.root):
-            full_path = pkt.filename
-        else:
-            full_path = os.path.join(self.context.root, pkt.filename.lstrip('/'))
-
-        # Use abspath to eliminate any remaining relative elements
-        # (e.g. '..') and ensure that is still within the server's
-        # root directory
-        self.full_path = os.path.abspath(full_path)
-        log.debug("full_path is %s", full_path)
-        if self.full_path.startswith(self.context.root):
-            log.info("requested file is in the server root - good")
-        else:
-            log.warning("requested file is not within the server root - bad")
-            self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("bad file path")
+        if self.context.root != None:
+            # Build the filename on this server and ensure it is contained
+            # in the specified root directory.
+            #
+            # Filenames that begin with server root are accepted. It's
+            # assumed the client and server are tightly connected and this
+            # provides backwards compatibility.
+            #
+            # Filenames otherwise are relative to the server root. If they
+            # begin with a '/' strip it off as otherwise os.path.join will
+            # treat it as absolute (regardless of whether it is ntpath or
+            # posixpath module
+            if pkt.filename.startswith(self.context.root):
+                full_path = pkt.filename
+            else:
+                full_path = os.path.join(self.context.root, pkt.filename.lstrip('/'))
+            # Use abspath to eliminate any remaining relative elements
+            # (e.g. '..') and ensure that is still within the server's
+            # root directory
+            self.full_path = os.path.abspath(full_path)
+            log.debug("full_path is %s", full_path)
+            if self.full_path.startswith(self.context.root):
+                log.info("requested file is in the server root - good")
+            else:
+                log.warning("requested file is not within the server root - bad")
+                self.sendError(TftpErrors.IllegalTftpOp)
+                raise TftpException("bad file path")
 
         self.context.file_to_transfer = pkt.filename
 
@@ -300,7 +300,7 @@ class TftpStateServerRecvRRQ(TftpServerState):
         sendoack = self.serverInitial(pkt, raddress, rport)
         path = self.full_path
         log.info("Opening file %s for reading" % path)
-        if os.path.exists(path):
+        if path != None and os.path.exists(path):
             # Note: Open in binary mode for win32 portability, since win32
             # blows.
             self.context.fileobj = open(path, "rb")
