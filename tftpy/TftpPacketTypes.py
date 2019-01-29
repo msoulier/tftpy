@@ -73,7 +73,7 @@ class TftpPacketWithOptions(object):
             if ord(buffer[i:i+1]) == 0:
                 log.debug("found a null at length %d", length)
                 if length > 0:
-                    fmt += b"%dsx" % length
+                    fmt +=  "{}sx".format(length).encode()
                     length = -1
                 else:
                     raise TftpException("Invalid options in buffer")
@@ -150,7 +150,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
             log.debug("    Option %s = %s", key, self.options[key])
 
         fmt = b"!H"
-        fmt += b"%dsx" % len(filename)
+        fmt += "{}sx".format(filename).encode()
         if mode == b"octet":
             fmt += b"5sx"
         else:
@@ -165,7 +165,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
                 if not isinstance(name, bytes):
                     name = name.encode('ascii')
                 options_list.append(name)
-                fmt += b"%dsx" % len(name)
+                fmt += "{}sx".format(name).encode()
                 # Populate the option value
                 value = self.options[key]
                 # Work with all strings.
@@ -174,7 +174,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
                 if not isinstance(value, bytes):
                     value = value.encode('ascii')
                 options_list.append(value)
-                fmt += b"%dsx" % len(value)
+                fmt += "{}sx".format(value).encode()
 
         log.debug("fmt is %s", fmt)
         log.debug("options_list is %s", options_list)
@@ -202,7 +202,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
             if ord(subbuf[i:i+1]) == 0:
                 nulls += 1
                 log.debug("found a null at length %d, now have %d", length, nulls)
-                fmt += b"%dsx" % length
+                fmt += "{}sx".format(length).encode()
                 length = -1
                 # At 2 nulls, we want to mark that position for decoding.
                 if nulls == 2:
@@ -297,7 +297,7 @@ class TftpPacketDAT(TftpPacket):
         data = self.data
         if not isinstance(self.data, bytes):
             data = self.data.encode('ascii')
-        fmt = b"!HH%ds" % len(data)
+        fmt = "!HH{}s".format(len(data)).encode()
         self.buffer = struct.pack(fmt,
                                   self.opcode,
                                   self.blocknumber,
@@ -399,7 +399,7 @@ class TftpPacketERR(TftpPacket):
     def encode(self):
         """Encode the DAT packet based on instance variables, populating
         self.buffer, returning self."""
-        fmt = b"!HH%dsx" % len(self.errmsgs[self.errorcode])
+        fmt = "!HH{}sx".format(len(self.errmsgs[self.errorcode])).encode()
         log.debug("encoding ERR packet with fmt %s", fmt)
         self.buffer = struct.pack(fmt,
                                   self.opcode,
@@ -420,7 +420,7 @@ class TftpPacketERR(TftpPacket):
                                                         self.buffer)
         else:
             log.debug("Good ERR packet > 4 bytes")
-            fmt = b"!HH%dsx" % (len(self.buffer) - 5)
+            fmt = "!HH{}sx".format((len(self.buffer) - 5)).encode()
             log.debug("Decoding ERR packet with fmt: %s", fmt)
             self.opcode, self.errorcode, self.errmsg = struct.unpack(fmt,
                                                                      self.buffer)
@@ -458,8 +458,8 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
                 value = value.encode('ascii')
             log.debug("looping on option key %s", key)
             log.debug("value is %s", value)
-            fmt += b"%dsx" % len(key)
-            fmt += b"%dsx" % len(value)
+            fmt += "!{}sx".format(len(key)).encode()
+            fmt += "!{}sx".format(len(value)).encode()
             options_list.append(key)
             options_list.append(value)
         self.buffer = struct.pack(fmt, self.opcode, *options_list)
