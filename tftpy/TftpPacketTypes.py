@@ -150,7 +150,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
             log.debug("    Option %s = %s", key, self.options[key])
 
         fmt = b"!H"
-        fmt += "{}sx".format(filename).encode()
+        fmt += "{}sx".format(len(filename)).encode()
         if mode == b"octet":
             fmt += b"5sx"
         else:
@@ -165,7 +165,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
                 if not isinstance(name, bytes):
                     name = name.encode('ascii')
                 options_list.append(name)
-                fmt += "{}sx".format(name).encode()
+                fmt += "{}sx".format(len(name)).encode()
                 # Populate the option value
                 value = self.options[key]
                 # Work with all strings.
@@ -174,7 +174,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
                 if not isinstance(value, bytes):
                     value = value.encode('ascii')
                 options_list.append(value)
-                fmt += "{}sx".format(value).encode()
+                fmt += "{}sx".format(len(value)).encode()
 
         log.debug("fmt is %s", fmt)
         log.debug("options_list is %s", options_list)
