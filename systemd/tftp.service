@@ -1,0 +1,15 @@
+[Unit]
+Description=tftp
+After=network.target
+
+[Service]
+Type=simple
+User=tftp
+Group=tftp
+WorkingDirectory=/home/tftp/
+ExecStart=/home/tftp/venv/bin/python /home/tftp/venv/bin/tftpy_server.py -r /home/tftp/tftproot
+Restart=on-abort
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
