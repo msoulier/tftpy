@@ -5,7 +5,6 @@ corresponding encode and decode methods for them."""
 
 
 import struct
-import sys
 import logging
 from .TftpShared import *
 
