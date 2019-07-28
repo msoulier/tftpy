@@ -313,13 +313,12 @@ class TftpStateServerRecvRRQ(TftpServerState):
                 self.context.fileobj = open(path, "rb")
             except IOError as err:
                 if err.errno in (EPERM, EACCES):
-                    print(err.errno)
                     self.sendError(TftpErrors.AccessViolation)
                     raise TftpException("Permission denied {}".format(path))
                 else:
-                    print(err.errno)
-                    self.sendError(TftpErrors.FileNotFound)
-                    raise TftpException("File not found {} ".format(path))
+                    self.sendError(TftpErrors.NotDefined)
+                    raise TftpException("Unexpected error {} ({})".format(
+                        path, os.strerror(err.errno)))
         elif self.context.dyn_file_func:
             log.debug("No such file %s but using dyn_file_func", path)
             self.context.fileobj = \
