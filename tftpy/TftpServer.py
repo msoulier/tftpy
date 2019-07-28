@@ -6,17 +6,22 @@ requests. Logging is performed via a standard logging object set in
 TftpShared."""
 
 
-import socket, os, time, grp, pwd
-import select
-import threading
+import grp
 import logging
-from errno import EINTR
+import os
+import pwd
+import select
+import socket
+import threading
+import time
+from errno import EINTR, EPERM, EADDRINUSE
 from .TftpShared import *
 from .TftpPacketTypes import *
 from .TftpPacketFactory import TftpPacketFactory
 from .TftpContexts import TftpContextServer
 
 log = logging.getLogger(__name__)
+
 
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
@@ -32,7 +37,12 @@ class TftpServer(TftpSession):
 
     upload_open is a callable that is triggered on every upload with the
     requested destination path and server context. It must either return a
-    file-like object ready for writing or None if the path is invalid."""
+    file-like object ready for writing or None if the path is invalid.
+
+    drop_privileges is a tuple containing a uid/user name and gid/group name
+    that the process should run as if the process is running with root privs
+    and the user would like to drop these privileges after binding a privilegeed
+    port"""
 
     def __init__(self,
                  tftproot='/tftpboot',
@@ -42,8 +52,9 @@ class TftpServer(TftpSession):
         self.listenip = None
         self.listenport = None
         self.sock = None
-        self.user = drop_privileges[0]
-        self.group = drop_privileges[1]
+        # Validation of privilege drop parameters is deferred
+        self._drop_group = None
+        self._drop_user = None
         # FIXME: What about multiple roots?
         self.root = os.path.abspath(tftproot)
         self.dyn_file_func = dyn_file_func
@@ -54,9 +65,9 @@ class TftpServer(TftpSession):
         # A threading event to help threads synchronize with the server
         # is_running state.
         self.is_running = threading.Event()
-
         self.shutdown_gracefully = False
         self.shutdown_immediately = False
+
         for name in 'dyn_file_func', 'upload_open':
             attr = getattr(self, name)
             if attr and not callable(attr):
@@ -78,6 +89,12 @@ class TftpServer(TftpSession):
         else:
             raise TftpException("The tftproot does not exist.")
 
+        if filter(None, drop_privileges):
+            # Only invoke privilege dropping related logic if specfied
+            self._normalize_priv_drop(
+                drop_privileges)
+            # Privilege dropping is requested, normalize the user/group params
+
     def listen(self, listenip="", listenport=DEF_TFTP_PORT,
                timeout=SOCK_TIMEOUT):
         """Start a server listening on the supplied interface and port. This
@@ -87,18 +104,41 @@ class TftpServer(TftpSession):
 
         # Don't use new 2.5 ternary operator yet
         # listenip = listenip if listenip else '0.0.0.0'
-        if not listenip: listenip = '0.0.0.0'
+        if not listenip:
+            listenip = '0.0.0.0'
         log.info("Server requested on ip %s, port %s" % (listenip, listenport))
+
         try:
             # FIXME - sockets should be non-blocking
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sock.bind((listenip, listenport))
             _, self.listenport = self.sock.getsockname()
         except socket.error as err:
-            # Reraise it for now.
-            raise err
+            errno, errmsg = err
+            if errno == EPERM:
+                raise TftpException(
+                    "Permission denied, unable to bind {}:{}'".format(
+                        listenip,
+                        listenport))
+            elif errno == EADDRINUSE:
+                raise TftpException(
+                    "Address in use, unable to bind {}:{}'".format(
+                        listenip,
+                        listenport))
+            else:
+                raise TftpException(
+                    'Socket error {}, unable to bind {}:{}'.format(
+                        os.strerror(errno),
+                        listenip,
+                        listenport))
 
-        self.drop_privileges()
+        try:
+            if filter(None, (self._drop_group, self._drop_user)):
+                log.info('User request for privilege dropping')
+                self._do_drop_privileges()
+        except Exception as err:
+            log.error(str(err))
+            raise
 
         self.is_running.set()
 
@@ -107,8 +147,8 @@ class TftpServer(TftpSession):
             log.debug("shutdown_immediately is %s" % self.shutdown_immediately)
             log.debug("shutdown_gracefully is %s" % self.shutdown_gracefully)
             if self.shutdown_immediately:
-                log.warning("Shutting down now. Session count: %d" %
-                         len(self.sessions))
+                log.warning(
+                    "Shutting down now. Session count: %d" % len(self.sessions))
                 self.sock.close()
                 for key in self.sessions:
                     self.sessions[key].end()
@@ -117,8 +157,8 @@ class TftpServer(TftpSession):
 
             elif self.shutdown_gracefully:
                 if not self.sessions:
-                    log.warning("In graceful shutdown mode and all "
-                             "sessions complete.")
+                    log.warning(
+                        "In graceful shutdown mode and all sessions complete.")
                     self.sock.close()
                     break
 
@@ -131,8 +171,8 @@ class TftpServer(TftpSession):
             # Block until some socket has input on it.
             log.debug("Performing select on this inputlist: %s", inputlist)
             try:
-                readyinput, readyoutput, readyspecial = \
-                        select.select(inputlist, [], [], SOCK_TIMEOUT)
+                readyinput, readyoutput, readyspecial = select.select(
+                    inputlist, [], [], SOCK_TIMEOUT)
             except select.error as err:
                 if err[0] == EINTR:
                     # Interrupted system call
@@ -154,22 +194,23 @@ class TftpServer(TftpSession):
 
                     if self.shutdown_gracefully:
                         log.warning("Discarding data on main port, "
-                                 "in graceful shutdown mode")
+                                    "in graceful shutdown mode")
                         continue
 
                     # Forge a session key based on the client's IP and port,
                     # which should safely work through NAT.
                     key = "%s:%s" % (raddress, rport)
 
-                    if not key in self.sessions:
+                    if key not in self.sessions:
                         log.debug("Creating new server context for "
-                                     "session key = %s" % key)
-                        self.sessions[key] = TftpContextServer(raddress,
-                                                               rport,
-                                                               timeout,
-                                                               self.root,
-                                                               self.dyn_file_func,
-                                                               self.upload_open)
+                                  "session key = %s" % key)
+                        self.sessions[key] = TftpContextServer(
+                            raddress,
+                            rport,
+                            timeout,
+                            self.root,
+                            self.dyn_file_func,
+                            self.upload_open)
                         try:
                             self.sessions[key].start(buffer)
                         except TftpException as err:
@@ -178,7 +219,7 @@ class TftpServer(TftpSession):
                                       "session %s: %s" % (key, str(err)))
                     else:
                         log.warning("received traffic on main socket for "
-                                 "existing session??")
+                                    "existing session??")
                     log.info("Currently handling these sessions:")
                     for session_key, session in list(self.sessions.items()):
                         log.info("    %s" % session)
@@ -187,11 +228,10 @@ class TftpServer(TftpSession):
                     # Must find the owner of this traffic.
                     for key in self.sessions:
                         if readysock == self.sessions[key].sock:
-                            log.debug("Matched input to session key %s"
-                                % key)
+                            log.debug("Matched input to session key %s" % key)
                             try:
                                 self.sessions[key].cycle()
-                                if self.sessions[key].state == None:
+                                if self.sessions[key].state is None:
                                     log.info("Successful transfer.")
                                     deletion_list.append(key)
                             except TftpException as err:
@@ -215,8 +255,8 @@ class TftpServer(TftpSession):
                     log.error(str(err))
                     self.sessions[key].retry_count += 1
                     if self.sessions[key].retry_count >= TIMEOUT_RETRIES:
-                        log.debug("hit max retries on %s, giving up" %
-                            self.sessions[key])
+                        log.debug("hit max retries on %s, giving up" % (
+                            self.sessions[key]))
                         deletion_list.append(key)
                     else:
                         log.debug("resending on session %s" % self.sessions[key])
@@ -233,8 +273,8 @@ class TftpServer(TftpSession):
                     if metrics.duration == 0:
                         log.info("Duration too short, rate undetermined")
                     else:
-                        log.info("Transferred %d bytes in %.2f seconds"
-                            % (metrics.bytes, metrics.duration))
+                        log.info("Transferred %d bytes in %.2f seconds" % (
+                            metrics.bytes, metrics.duration))
                         log.info("Average rate: %.2f kbps" % metrics.kbps)
                     log.info("%.2f bytes in resent data" % metrics.resent_bytes)
                     log.info("%d duplicate packets" % metrics.dupcount)
@@ -250,37 +290,6 @@ class TftpServer(TftpSession):
         log.debug("server returning from while loop")
         self.shutdown_gracefully = self.shutdown_immediately = False
 
-    def drop_privileges(self):
-
-        def drop_user(user):
-            if self.user is not None:
-                try:
-                    self.user = int(self.user)
-                except ValueError:
-                    self.user = pwd.getpwnam(self.user).pw_uid
-
-                if os.setreuid(self.user, self.user) is not None:
-                    raise OSError('setresuid() faiiled')
-
-        def drop_group(group):
-            if self.group is not None:
-                try:
-                    self.group = int(self.group)
-                except ValueError:
-                    self.group = grp.getgrnam(self.group).gr_gid
-                if os.setregid(self.group, self.group):
-                    raise OSError('setresuid() faiiled')
-
-        if os.getuid() != 0:
-            raise RuntimeError('unable to drop privileges, must be root')
-
-        if os.name != 'posix' and filter(None, user_groups):
-            raise RuntimeError('unable to drop privileges, posix systems only')
-
-        os.setgroups([])
-        drop_group(self.group)
-        drop_user(self.user)
-
     def stop(self, now=False):
         """Stop the server gracefully. Do not take any new transfers,
         but complete the existing ones. If force is True, drop everything
@@ -291,3 +300,116 @@ class TftpServer(TftpSession):
             self.shutdown_immediately = True
         else:
             self.shutdown_gracefully = True
+
+    def _do_drop_privileges(self):
+        """Drop user and/or group privileges, called after bind()"""
+        os.setgroups([])
+        if self._drop_group is not None:
+            if os.setregid(self._drop_group, self._drop_group):
+                raise OSError('setregid() failed')
+            log.info('Dropped group to gid=%d' % self._drop_group)
+        else:
+            log.info('User elected to not drop group ID')
+        if self._drop_user is not None:
+            if os.setreuid(self._drop_user, self._drop_user):
+                raise OSError('setreuid() faiiled')
+            log.info('Dropped user to uid=%d' % self._drop_user)
+        else:
+            log.info('User elected to not drop user ID')
+
+        uid, gid = os.getuid(), os.getgid()
+        log.info('Serving TFTP as uid=%d,gid=%d' % (uid, gid))
+
+    def _normalize_priv_drop(self, privs):
+        """Normalize and sanity check for privilege dropping"""
+
+        def normalize_group(group):
+            """Given a GID or group name, return a validated system GID"""
+            if group is None:
+                return None
+            try:
+                group = int(group)
+            except ValueError:
+                pass
+            groupname = groupid = None
+            if isinstance(group, basestring):
+                """Get the numeric GID"""
+                groupname = group
+                try:
+                    groupid = grp.getgrnam(groupname).gr_gid
+                except KeyError:
+                    log.error('Group name "%s" does not exist' % group_name)
+            elif isinstance(group, int):
+                """Validate a numeric GID"""
+                groupid = group
+                try:
+                    groupname = grp.getgrgid(groupid).gr_name
+                except KeyError:
+                    log.error('Group ID #%d does not exist' % groupid)
+            else:
+                raise TypeError('Expected int or basestring for system group')
+            if None in (groupname, groupid):
+                raise ValueError('Invalid system group, unable to resolve')
+
+            return groupid
+
+        def normalize_user(user):
+            """Given a UID or user name, return a validated system UID"""
+            if user is None:
+                return None
+            try:
+                user = int(user)
+            except ValueError:
+                pass
+            username = userid = None
+            if isinstance(user, basestring):
+                # Get the numeric UID from a username
+                username = user
+                try:
+                    userid = pwd.getpwnam(username).pw_uid
+                except KeyError:
+                    log.error('User name "%s" does not exist' % username)
+            elif isinstance(user, int):
+                # Validate a numeric ID
+                userid = user
+                try:
+                    username = pwd.getpwuid(userid).pw_name
+                except KeyError:
+                    log.error('User ID #%d does not exist' % userid)
+            else:
+                raise TypeError('Expected int or basestring for system user')
+            if None in (username, userid):
+                raise ValueError('Invalid system user, unable to resolve')
+            return userid
+
+        def assert_droppable():
+            if os.getuid() != 0:
+                log.error('Requested to drop permissions as non-root user!')
+                # Should this be a TftpException?
+                raise RuntimeError(
+                    'Unable to drop permissions as non-root user')
+
+            if os.name != 'posix':
+                log.error('Requested to drop privileges on unsupported system!')
+                # Should this be a TftpException?
+                raise RuntimeError(
+                    'Unable to drop privileges, posix systems only')
+
+        if not isinstance(privs, (list, tuple)):
+            raise TypeError(
+                'drop_privileges should be a list or tuple')
+
+        if len(privs) != 2:
+            raise ValueError('drop_privileges should contain two elements')
+
+        assert_droppable()
+
+        filtered = filter(None, privs)  # Sanitize only non-None
+
+        if filter(lambda v: not isinstance(v, (basestring, int)), filtered):
+            log.error('drop_privileges must contain only strings or integers')
+            raise ValueError('Invalid ')
+
+        self._drop_user = normalize_user(privs[0])
+        self._drop_group = normalize_group(privs[1])
+
