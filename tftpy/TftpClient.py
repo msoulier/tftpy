@@ -5,7 +5,6 @@ instance of the client, and then use its upload or download method. Logging is
 performed via a standard logging object set in TftpShared."""
 
 
-import types
 import logging
 from .TftpShared import *
 from .TftpPacketTypes import *
@@ -13,12 +12,13 @@ from .TftpContexts import TftpContextClientDownload, TftpContextClientUpload
 
 log = logging.getLogger(__name__)
 
+
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client. Once instantiated, a
     download can be initiated via the download() method, or an upload via the
     upload() method."""
 
-    def __init__(self, host, port=69, options={}, localip = ""):
+    def __init__(self, host, port=69, options={}, localip=""):
         TftpSession.__init__(self)
         self.context = None
         self.host = host
@@ -54,7 +54,7 @@ class TftpClient(TftpSession):
                                                  self.options,
                                                  packethook,
                                                  timeout,
-                                                 localip = self.localip)
+                                                 localip=self.localip)
         self.context.start()
         # Download happens here
         self.context.end()
@@ -89,7 +89,7 @@ class TftpClient(TftpSession):
                                                self.options,
                                                packethook,
                                                timeout,
-                                               localip = self.localip)
+                                               localip=self.localip)
         self.context.start()
         # Upload happens here
         self.context.end()
