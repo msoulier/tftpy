@@ -2,14 +2,23 @@
 # vim: ts=4 sw=4 et ai:
 # -*- coding: utf8 -*-
 
-import unittest
 import logging
-import tftpy
 import os
-import time
+import tftpy
 import threading
-from errno import EINTR
+import time
+import unittest
 from multiprocessing import Queue
+
+# Valid, non-root UID/GID for testing privilege dropping
+VALID_UID = 1
+VALID_GID = 1
+VALID_USER = 'bin'
+VALID_GROUP = 'bin'
+ROOT_UID = 0
+ROOT_GID = 0
+# Privileged port for testing privilege dropping
+PRIVILEGED_PORT = 69
 
 log = logging.getLogger('tftpy')
 log.setLevel(logging.DEBUG)
@@ -20,6 +29,7 @@ handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(levelname)s [%(name)s:%(lineno)s] %(message)s')
 handler.setFormatter(formatter)
 log.addHandler(handler)
+
 
 class TestTftpyClasses(unittest.TestCase):
 
@@ -37,7 +47,7 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(rrq.mode, "octet", "Mode correct")
         self.assertEqual(rrq.options, options, "Options correct")
         # repeat test with options
-        rrq.options = { 'blksize': '1024' }
+        rrq.options = {'blksize': '1024'}
         rrq.filename = 'myfilename'
         rrq.mode = 'octet'
         rrq.encode()
@@ -62,7 +72,7 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(wrq.mode, "octet", "Mode correct")
         self.assertEqual(wrq.options, options, "Options correct")
         # repeat test with options
-        wrq.options = { 'blksize': '1024' }
+        wrq.options = {'blksize': '1024'}
         wrq.filename = 'myfilename'
         wrq.mode = 'octet'
         wrq.encode()
@@ -72,7 +82,6 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(wrq.filename, "myfilename", "Filename correct")
         self.assertEqual(wrq.mode, "octet", "Mode correct")
         self.assertEqual(wrq.options['blksize'], '1024', "Blksize correct")
-
 
     def testTftpPacketDAT(self):
         log.debug("===> Running testcase testTftpPacketDAT")
@@ -111,7 +120,7 @@ class TestTftpyClasses(unittest.TestCase):
         log.debug("===> Running testcase testTftpPacketOACK")
         oack = tftpy.TftpPacketTypes.TftpPacketOACK()
         # Test that if we make blksize a number, it comes back a string.
-        oack.options = { 'blksize': 2048 }
+        oack.options = {'blksize': 2048}
         oack.encode()
         self.assertIsNotNone(oack.buffer, "Buffer populated")
         oack.decode()
@@ -120,7 +129,7 @@ class TestTftpyClasses(unittest.TestCase):
                          '2048',
                          "OACK blksize option is correct")
         # Test string to string
-        oack.options = { 'blksize': '4096' }
+        oack.options = {'blksize': '4096'}
         oack.encode()
         self.assertIsNotNone(oack.buffer, "Buffer populated")
         oack.decode()
@@ -138,13 +147,13 @@ class TestTftpyClasses(unittest.TestCase):
             3: tftpy.TftpPacketTypes.TftpPacketDAT,
             4: tftpy.TftpPacketTypes.TftpPacketACK,
             5: tftpy.TftpPacketTypes.TftpPacketERR,
-            6: tftpy.TftpPacketTypes.TftpPacketOACK
-            }
+            6: tftpy.TftpPacketTypes.TftpPacketOACK}
         factory = tftpy.TftpPacketFactory.TftpPacketFactory()
         for opcode in classes:
             self.assertTrue(isinstance(factory._TftpPacketFactory__create(opcode),
-                                    classes[opcode]),
-                                    "opcode %d returns the correct class" % opcode)
+                                       classes[opcode]),
+                            "opcode %d returns the correct class" % opcode)
+
 
 class TestTftpyState(unittest.TestCase):
 
@@ -203,12 +212,13 @@ class TestTftpyState(unittest.TestCase):
 
         else:
             server.listen('localhost', 20001)
+            os.unlink(output)
 
     def testClientServerNoOptions(self):
         self.clientServerDownloadOptions({})
 
     def testClientServerTsizeOptions(self):
-        self.clientServerDownloadOptions({'tsize': 64*1024})
+        self.clientServerDownloadOptions({'tsize': 64 * 1024})
 
     def testClientFileObject(self):
         output = open('/tmp/out', 'wb')
@@ -254,7 +264,7 @@ class TestTftpyState(unittest.TestCase):
             self.customUploadHelper(lambda p: None)
 
     def testClientServerUploadTsize(self):
-        self.clientServerUploadOptions({'tsize': 64*1024}, transmitname='/foo/bar/640KBFILE')
+        self.clientServerUploadOptions({'tsize': 64 * 1024}, transmitname='/foo/bar/640KBFILE')
 
     def testClientServerNoOptionsDelay(self):
         tftpy.TftpStates.DELAY_BLOCK = 10
@@ -272,8 +282,8 @@ class TestTftpyState(unittest.TestCase):
                                                            timeout,
                                                            root)
 
-        self.assertTrue( isinstance(serverstate,
-                                    tftpy.TftpContexts.TftpContextServer) )
+        self.assertTrue(isinstance(serverstate,
+                                   tftpy.TftpContexts.TftpContextServer))
 
         rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
         rrq.filename = '640KBFILE'
@@ -285,8 +295,8 @@ class TestTftpyState(unittest.TestCase):
         # At a 512 byte blocksize, this should be 1280 packets exactly.
         for block in range(1, 1281):
             # Should be in expectack state.
-            self.assertTrue( isinstance(serverstate.state,
-                                        tftpy.TftpStates.TftpStateExpectACK) )
+            self.assertTrue(isinstance(serverstate.state,
+                                       tftpy.TftpStates.TftpStateExpectACK))
             ack = tftpy.TftpPacketTypes.TftpPacketACK()
             ack.blocknumber = block % 65536
             serverstate.state = serverstate.state.handle(ack, raddress, rport)
@@ -296,7 +306,7 @@ class TestTftpyState(unittest.TestCase):
         ack = tftpy.TftpPacketTypes.TftpPacketACK()
         ack.blocknumber = 1281 % 65536
         finalstate = serverstate.state.handle(ack, raddress, rport)
-        self.assertTrue( finalstate is None )
+        self.assertTrue(finalstate is None)
 
     def testServerNoOptionsSubdir(self):
         raddress = '127.0.0.2'
@@ -309,8 +319,8 @@ class TestTftpyState(unittest.TestCase):
                                                            timeout,
                                                            root)
 
-        self.assertTrue( isinstance(serverstate,
-                                    tftpy.TftpContexts.TftpContextServer) )
+        self.assertTrue(isinstance(serverstate,
+                                   tftpy.TftpContexts.TftpContextServer))
 
         rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
         rrq.filename = '640KBFILE'
@@ -322,8 +332,8 @@ class TestTftpyState(unittest.TestCase):
         # At a 512 byte blocksize, this should be 1280 packets exactly.
         for block in range(1, 1281):
             # Should be in expectack state, or None
-            self.assertTrue( isinstance(serverstate.state,
-                                        tftpy.TftpStates.TftpStateExpectACK) )
+            self.assertTrue(
+                isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK))
             ack = tftpy.TftpPacketTypes.TftpPacketACK()
             ack.blocknumber = block % 65536
             serverstate.state = serverstate.state.handle(ack, raddress, rport)
@@ -333,7 +343,7 @@ class TestTftpyState(unittest.TestCase):
         ack = tftpy.TftpPacketTypes.TftpPacketACK()
         ack.blocknumber = 1281 % 65536
         finalstate = serverstate.state.handle(ack, raddress, rport)
-        self.assertTrue( finalstate is None )
+        self.assertTrue(finalstate is None)
 
     def testServerInsecurePath(self):
         raddress = '127.0.0.2'
@@ -350,8 +360,8 @@ class TestTftpyState(unittest.TestCase):
         rrq.options = {}
 
         # Start the download.
-        self.assertRaises(tftpy.TftpException,
-                serverstate.start, rrq.encode().buffer)
+        self.assertRaises(
+            tftpy.TftpException, serverstate.start, rrq.encode().buffer)
 
     def testServerSecurePath(self):
         raddress = '127.0.0.2'
@@ -371,7 +381,7 @@ class TestTftpyState(unittest.TestCase):
         serverstate.start(rrq.encode().buffer)
         # Should be in expectack state.
         self.assertTrue(isinstance(serverstate.state,
-                                    tftpy.TftpStates.TftpStateExpectACK))
+                                   tftpy.TftpStates.TftpStateExpectACK))
 
     def testServerDownloadWithStopNow(self, output='/tmp/out'):
         log.debug("===> Running testcase testServerDownloadWithStopNow")
@@ -387,10 +397,11 @@ class TestTftpyState(unittest.TestCase):
                 # parent - let the server start
                 stopped_early = False
                 time.sleep(1)
+
                 def delay_hook(pkt):
-                    time.sleep(0.005) # 5ms
+                    time.sleep(0.005)  # 5ms
                 client.download('640KBFILE', output, delay_hook)
-            except:
+            except Exception:
                 log.warning("client threw exception as expected")
                 stopped_early = True
 
@@ -398,11 +409,12 @@ class TestTftpyState(unittest.TestCase):
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
 
-            self.assertTrue( stopped_early == True,
-                            "Server should not exit early" )
+            self.assertTrue(stopped_early is True,
+                            "Server should not exit early")
 
         else:
             import signal
+
             def handlealarm(signum, frame):
                 server.stop(now=True)
             signal.signal(signal.SIGALRM, handlealarm)
@@ -415,6 +427,7 @@ class TestTftpyState(unittest.TestCase):
             # Wait until parent kills us
             while True:
                 time.sleep(1)
+        os.unlink(output)
 
     def testServerDownloadWithStopNotNow(self, output='/tmp/out'):
         log.debug("===> Running testcase testServerDownloadWithStopNotNow")
@@ -430,22 +443,24 @@ class TestTftpyState(unittest.TestCase):
                 stopped_early = True
                 # parent - let the server start
                 time.sleep(1)
+
                 def delay_hook(pkt):
-                    time.sleep(0.005) # 5ms
+                    time.sleep(0.005)  # 5ms
                 client.download('640KBFILE', output, delay_hook)
                 stopped_early = False
-            except:
+            except Exception:
                 log.warning("client threw exception as expected")
 
             finally:
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
 
-            self.assertTrue( stopped_early == False,
-                            "Server should not exit early" )
+            self.assertTrue(stopped_early is False,
+                            "Server should not exit early")
 
         else:
             import signal
+
             def handlealarm(signum, frame):
                 server.stop(now=False)
             signal.signal(signal.SIGALRM, handlealarm)
@@ -457,6 +472,7 @@ class TestTftpyState(unittest.TestCase):
             # Wait until parent kills us
             while True:
                 time.sleep(1)
+        os.unlink(output)
 
     def testServerDownloadWithDynamicPort(self, output='/tmp/out'):
         log.debug("===> Running testcase testServerDownloadWithDynamicPort")
@@ -477,6 +493,151 @@ class TestTftpyState(unittest.TestCase):
         finally:
             server.stop(now=False)
             server_thread.join()
+            os.unlink(output)
+
+    def testServerDownloadWithPrivDropPrivilegedPortUidGid(self, output='/tmp/out'):
+        """Basic test of privilege dropping- the test must be started as root"""
+        log.debug("===> Running testcase testServerDownloadWithPrivDropPrivilegedPortUidGid")
+        root = os.path.dirname(os.path.abspath(__file__))
+
+        server = tftpy.TftpServer(root, drop_privileges=(VALID_UID, VALID_GID), paranoid=False)
+        server_thread = threading.Thread(target=server.listen,
+                                         kwargs={'listenip': 'localhost',
+                                                 'listenport': 69})
+        server_thread.start()
+
+        try:
+            server.is_running.wait()
+            client = tftpy.TftpClient('localhost', server.listenport, {})
+            time.sleep(1)
+            client.download('640KBFILE',
+                            output)
+        finally:
+            server.stop(now=False)
+            server_thread.join()
+            # Remove the file and re-escalate privileges so that they can be dropped
+            # again in other privilege dropping test cases. The file must be unlinked
+            # because privileges may be dropped to a user that does not have permission
+            # to read or write it
+            os.unlink(output)
+            os.setreuid(ROOT_UID, ROOT_UID)
+            os.setregid(ROOT_GID, ROOT_GID)
+
+    def testServerDownloadWithPrivDropPrivilegedPortUsernameGroupname(self, output='/tmp/out'):
+        """Basic test of privilege dropping- the test must be started as root"""
+        log.debug("===> Running testcase testServerDownloadWithPrivDropPrivilegedPortUsernameGroupname")
+        root = os.path.dirname(os.path.abspath(__file__))
+
+        server = tftpy.TftpServer(root, drop_privileges=(VALID_USER, VALID_GROUP), paranoid=False)
+        server_thread = threading.Thread(target=server.listen,
+                                         kwargs={'listenip': 'localhost',
+                                                 'listenport': 69})
+        server_thread.start()
+
+        try:
+            server.is_running.wait()
+            client = tftpy.TftpClient('localhost', server.listenport, {})
+            time.sleep(1)
+            client.download('640KBFILE',
+                            output)
+        finally:
+            server.stop(now=False)
+            server_thread.join()
+            # Remove the file and re-escalate privileges so that they can be dropped
+            # again in other privilege dropping test cases. The file must be unlinked
+            # because privileges may be dropped to a user that does not have permission
+            # to read or write it
+            os.unlink(output)
+            os.setreuid(ROOT_UID, ROOT_UID)
+            os.setregid(ROOT_GID, ROOT_GID)
+
+    def testServerDownloadWithPrivDropPrivilegedPortUsernameOnly(self, output='/tmp/out'):
+        """Basic test of privilege dropping- the test must be started as root"""
+        log.debug("===> Running testcase testServerDownloadWithPrivDropPrivilegedPortUsernameOnly")
+        root = os.path.dirname(os.path.abspath(__file__))
+
+        server = tftpy.TftpServer(root, drop_privileges=(VALID_USER, None), paranoid=False)
+        server_thread = threading.Thread(target=server.listen,
+                                         kwargs={'listenip': 'localhost',
+                                                 'listenport': 69})
+        server_thread.start()
+
+        try:
+            server.is_running.wait()
+            client = tftpy.TftpClient('localhost', server.listenport, {})
+            time.sleep(1)
+            client.download('640KBFILE',
+                            output)
+        finally:
+            server.stop(now=False)
+            server_thread.join()
+            # Remove the file and re-escalate privileges so that they can be dropped
+            # again in other privilege dropping test cases. The file must be unlinked
+            # because privileges may be dropped to a user that does not have permission
+            # to read or write it
+            os.unlink(output)
+            os.setreuid(ROOT_UID, ROOT_UID)
+            os.setregid(ROOT_GID, ROOT_GID)
+
+    def testServerDownloadWithPrivDropPrivilegedPortGroupnameOnly(self, output='/tmp/out'):
+        """Basic test of privilege dropping- the test must be started as root"""
+        log.debug("===> Running testcase testServerDownloadWithPrivDropPrivilegedPortGroupnameOnly")
+        root = os.path.dirname(os.path.abspath(__file__))
+
+        server = tftpy.TftpServer(root, drop_privileges=(None, VALID_GROUP), paranoid=False)
+        server_thread = threading.Thread(target=server.listen,
+                                         kwargs={'listenip': 'localhost',
+                                                 'listenport': 69})
+        server_thread.start()
+
+        try:
+            server.is_running.wait()
+            client = tftpy.TftpClient('localhost', server.listenport, {})
+            time.sleep(1)
+            client.download('640KBFILE',
+                            output)
+        finally:
+            server.stop(now=False)
+            server_thread.join()
+            # Remove the file and re-escalate privileges so that they can be dropped
+            # again in other privilege dropping test cases. The file must be unlinked
+            # because privileges may be dropped to a user that does not have permission
+            # to read or write it
+            os.unlink(output)
+            os.setreuid(ROOT_UID, ROOT_UID)
+            os.setregid(ROOT_GID, ROOT_GID)
+
+    def testServerDownloadWithPrivDropPrivilegedPortUseridOnly(self, output='/tmp/out'):
+        """Basic test of privilege dropping- the test must be started as root"""
+        log.debug("===> Running testcase testServerDownloadWithPrivDropPrivilegedPortUseridOnly")
+        root = os.path.dirname(os.path.abspath(__file__))
+
+        server = tftpy.TftpServer(root, drop_privileges=(VALID_UID, None), paranoid=False)
+        server_thread = threading.Thread(target=server.listen,
+                                         kwargs={'listenip': 'localhost',
+                                                 'listenport': 69})
+        server_thread.start()
+
+        try:
+            server.is_running.wait()
+            client = tftpy.TftpClient('localhost', server.listenport, {})
+            time.sleep(1)
+            client.download('640KBFILE',
+                            output)
+        finally:
+            server.stop(now=False)
+            server_thread.join()
+            # Remove the file and re-escalate privileges so that they can be dropped
+            # again in other privilege dropping test cases. The file must be unlinked
+            # because privileges may be dropped to a user that does not have permission
+            # to read or write it
+            os.unlink(output)
+            os.setreuid(ROOT_UID, ROOT_UID)
+            os.setregid(ROOT_GID, ROOT_GID)
+
 
 if __name__ == '__main__':
+    if os.getuid() != 0:
+        log.error('Unit tests will fail on privilege dropping test cases unless run as uid=0')
+        raw_input('Press enter to continue anyway ...')
     unittest.main()
