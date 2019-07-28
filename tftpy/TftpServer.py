@@ -42,11 +42,19 @@ class TftpServer(TftpSession):
     drop_privileges is a tuple containing a uid/user name and gid/group name
     that the process should run as if the process is running with root privs
     and the user would like to drop these privileges after binding a privilegeed
-    port"""
+    port
+
+    paranoid is a bool that specifies whether privileges should be permanently
+    or temporarily dropped. If True, they will be permanenty dropped using
+    setreuid()/setregid(), if False seteuid()/setegid() will be used. This flag
+    is only here so that unit tests can succeed since using setre[gu]id() will
+    break when executed twice in a process as the process no longer has the
+    privs required to perform any set[re][ug]id() calls"""
 
     def __init__(self,
                  tftproot='/tftpboot',
                  drop_privileges=(None, None),
+                 paranoid=True,
                  dyn_file_func=None,
                  upload_open=None):
         self.listenip = None
@@ -55,6 +63,7 @@ class TftpServer(TftpSession):
         # Validation of privilege drop parameters is deferred
         self._drop_group = None
         self._drop_user = None
+        self._paranoid = paranoid
         # FIXME: What about multiple roots?
         self.root = os.path.abspath(tftproot)
         self.dyn_file_func = dyn_file_func
@@ -301,24 +310,57 @@ class TftpServer(TftpSession):
             self.shutdown_gracefully = True
 
     def _do_drop_privileges(self):
-        """Drop user and/or group privileges, called after bind()"""
-        log.info('Dropping privileges from root')
+        """Drop user and/or group privileges, called after bind()
+
+        Filesystem access controls are based on the effective userid so all
+        that is necessary is seteuid()/setegid() to *temporarily* drop privs.
+        However, the process can always perform an os.seteuid(0);os.setegid(0)
+        and revert back to root. This is a danger if there is some logic flaw
+        or internal flaw in the Python engine that allows a user to execute
+        arbitrary code in the process since they will be able to reclaim full
+        root privileges. Very unlikely, but possible
+
+        A more secure way to do this would be to *permanently* drop privileges
+        with setregid()/setreuid() but this breaks unit tests since the process
+        can't reclaim root, which it needs to do to perform more than one priv
+        dropping test case, all in the same process. As a workaround, the default
+        is paranoid mode and the unit tests set pranoid=False so that multiple
+        tests in the same process can switch back and forth from root
+        """
+
+        # See function docstring for explanation of this block
+        if self._paranoid is True:
+            dropgid = os.setregid
+            dropgid_args = (self._drop_group, self._drop_group)
+            dropuid = os.setreuid
+            dropuid_args = (self._drop_user, self._drop_user)
+        else:
+            dropgid = os.setegid
+            dropgid_args = (self._drop_group, )
+            dropuid = os.seteuid
+            dropuid_args = (self._drop_user, )
+
+        log.info('Dropping privileges from root (paranoid mode %s' % (
+            'disabled' if self._paranoid is False else 'enabled'))
         os.setgroups([])
         if self._drop_group is not None:
-            if os.setregid(self._drop_group, self._drop_group):
-                raise OSError('setregid() failed')
+            if dropgid(*dropgid_args):
+                raise OSError('setegid() failed')
             log.info('Dropped group to gid=%d' % self._drop_group)
         else:
             log.info('User elected to not drop group ID')
         if self._drop_user is not None:
-            if os.setreuid(self._drop_user, self._drop_user):
-                raise OSError('setreuid() faiiled')
+            if dropuid(*dropuid_args):
+                raise OSError('seteuid() faiiled')
             log.info('Dropped user to uid=%d' % self._drop_user)
         else:
             log.info('User elected to not drop user ID')
 
         uid, gid = os.getuid(), os.getgid()
-        log.info('Serving TFTP as uid=%d,gid=%d' % (uid, gid))
+        euid, egid = os.geteuid(), os.getegid()
+        log.info('Serving TFTP as uid=%d,euid=%d,gid=%d,egid=%d, ' % (
+            uid, euid, gid, egid))
+        log.info('Filesystem access checks will be checked using euid')
 
     def _normalize_priv_drop(self, privs):
         """Normalize and sanity check for privilege dropping"""
@@ -383,11 +425,12 @@ class TftpServer(TftpSession):
             return userid
 
         def assert_droppable():
-            if os.getuid() != 0:
+            uid = os.getuid()
+            if uid != 0:
                 log.error('Requested to drop permissions as non-root user!')
                 # Should this be a TftpException?
                 raise RuntimeError(
-                    'Unable to drop permissions as non-root user')
+                    'Unable to drop permissions as non-root user %d' % uid)
 
             if os.name != 'posix':
                 log.error('Requested to drop privileges on unsupported system!')
