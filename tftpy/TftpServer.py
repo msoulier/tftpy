@@ -134,7 +134,6 @@ class TftpServer(TftpSession):
 
         try:
             if filter(None, (self._drop_group, self._drop_user)):
-                log.info('User request for privilege dropping')
                 self._do_drop_privileges()
         except Exception as err:
             log.error(str(err))
@@ -303,6 +302,7 @@ class TftpServer(TftpSession):
 
     def _do_drop_privileges(self):
         """Drop user and/or group privileges, called after bind()"""
+        log.info('Dropping privileges from root')
         os.setgroups([])
         if self._drop_group is not None:
             if os.setregid(self._drop_group, self._drop_group):
