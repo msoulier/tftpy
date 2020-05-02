@@ -447,9 +447,10 @@ class TftpServer(TftpSession):
 
         assert_droppable()
 
-        filtered = filter(None, privs)  # Sanitize only non-None
+        filtered = list(filter(None, privs))  # Sanitize only non-None
 
-        if filter(lambda v: not isinstance(v, (basestring, int)), filtered):
+        if list(filter(lambda v: not isinstance(v, (basestring, int)), filtered)):
+            print(filtered)
             log.error('drop_privileges must contain only strings or integers')
             raise ValueError('Invalid ')
 
