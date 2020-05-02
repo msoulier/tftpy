@@ -54,7 +54,7 @@ class TftpServer(TftpSession):
     def __init__(self,
                  tftproot='/tftpboot',
                  drop_privileges=(None, None),
-                 paranoid=True,
+                 paranoid=False,
                  dyn_file_func=None,
                  upload_open=None):
         self.listenip = None
