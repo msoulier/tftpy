@@ -8,8 +8,11 @@ import tftpy
 import os
 import time
 import threading
+from contextlib import contextmanager
 from errno import EINTR
 from multiprocessing import Queue
+from shutil import rmtree
+from tempfile import mkdtemp
 
 log = logging.getLogger('tftpy')
 log.setLevel(logging.DEBUG)
@@ -204,6 +207,19 @@ class TestTftpyState(unittest.TestCase):
         else:
             server.listen('localhost', 20001)
 
+    @contextmanager
+    def dummyServerDir(self):
+        tmpdir = mkdtemp()
+        for dirname in ("foo", "foo-private", "other"):
+            os.mkdir(os.path.join(tmpdir, dirname))
+            with open(os.path.join(tmpdir, dirname, "bar"), "w") as w:
+                w.write("baz")
+
+        try:
+            yield tmpdir
+        finally:
+            rmtree(tmpdir)
+
     def testClientServerNoOptions(self):
         self.clientServerDownloadOptions({})
 
@@ -335,42 +351,103 @@ class TestTftpyState(unittest.TestCase):
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue( finalstate is None )
 
-    def testServerInsecurePath(self):
+    def testServerInsecurePathAbsolute(self):
         raddress = '127.0.0.2'
         rport = 10000
         timeout = 5
-        root = os.path.dirname(os.path.abspath(__file__))
-        serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
-                                                           rport,
-                                                           timeout,
-                                                           root)
-        rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
-        rrq.filename = '../setup.py'
-        rrq.mode = 'octet'
-        rrq.options = {}
+        with self.dummyServerDir() as d:
+            root = os.path.join(os.path.abspath(d), "foo")
+            serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
+                                                            rport,
+                                                            timeout,
+                                                            root)
+            rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
+            rrq.filename = os.path.join(os.path.abspath(d), "other/bar")
+            rrq.mode = 'octet'
+            rrq.options = {}
 
-        # Start the download.
-        self.assertRaises(tftpy.TftpException,
-                serverstate.start, rrq.encode().buffer)
+            # Start the download.
+            self.assertRaises(tftpy.TftpException,
+                    serverstate.start, rrq.encode().buffer)
 
-    def testServerSecurePath(self):
+    def testServerInsecurePathRelative(self):
         raddress = '127.0.0.2'
         rport = 10000
         timeout = 5
-        root = os.path.dirname(os.path.abspath(__file__))
-        serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
-                                                           rport,
-                                                           timeout,
-                                                           root)
-        rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
-        rrq.filename = '640KBFILE'
-        rrq.mode = 'octet'
-        rrq.options = {}
+        with self.dummyServerDir() as d:
+            root = os.path.join(os.path.abspath(d), "foo")
+            serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
+                                                            rport,
+                                                            timeout,
+                                                            root)
+            rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
+            rrq.filename = '../other/bar'
+            rrq.mode = 'octet'
+            rrq.options = {}
 
-        # Start the download.
-        serverstate.start(rrq.encode().buffer)
-        # Should be in expectack state.
-        self.assertTrue(isinstance(serverstate.state,
+            # Start the download.
+            self.assertRaises(tftpy.TftpException,
+                    serverstate.start, rrq.encode().buffer)
+
+    def testServerInsecurePathRootSibling(self):
+        raddress = '127.0.0.2'
+        rport = 10000
+        timeout = 5
+        with self.dummyServerDir() as d:
+            root = os.path.join(os.path.abspath(d), "foo")
+            serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
+                                                            rport,
+                                                            timeout,
+                                                            root)
+            rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
+            rrq.filename = root + "-private/bar"
+            rrq.mode = 'octet'
+            rrq.options = {}
+
+            # Start the download.
+            self.assertRaises(tftpy.TftpException,
+                    serverstate.start, rrq.encode().buffer)
+
+    def testServerSecurePathAbsolute(self):
+        raddress = '127.0.0.2'
+        rport = 10000
+        timeout = 5
+        with self.dummyServerDir() as d:
+            root = os.path.join(os.path.abspath(d), "foo")
+            serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
+                                                            rport,
+                                                            timeout,
+                                                            root)
+            rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
+            rrq.filename = os.path.join(root, "bar")
+            rrq.mode = 'octet'
+            rrq.options = {}
+
+            # Start the download.
+            serverstate.start(rrq.encode().buffer)
+            # Should be in expectack state.
+            self.assertTrue(isinstance(serverstate.state,
+                                    tftpy.TftpStates.TftpStateExpectACK))
+
+    def testServerSecurePathRelative(self):
+        raddress = '127.0.0.2'
+        rport = 10000
+        timeout = 5
+        with self.dummyServerDir() as d:
+            root = os.path.join(os.path.abspath(d), "foo")
+            serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
+                                                            rport,
+                                                            timeout,
+                                                            root)
+            rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
+            rrq.filename = "bar"
+            rrq.mode = 'octet'
+            rrq.options = {}
+
+            # Start the download.
+            serverstate.start(rrq.encode().buffer)
+            # Should be in expectack state.
+            self.assertTrue(isinstance(serverstate.state,
                                     tftpy.TftpStates.TftpStateExpectACK))
 
     def testServerDownloadWithStopNow(self, output='/tmp/out'):
