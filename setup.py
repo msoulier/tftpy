@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 # vim: ts=4 sw=4 et ai:
 
-from distutils.core import setup
+from setuptools import setup
 
 long_description = """\
 Copyright, Michael P. Soulier, 2010.
