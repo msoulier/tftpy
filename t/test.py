@@ -270,7 +270,8 @@ class TestTftpyState(unittest.TestCase):
         serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
                                                            rport,
                                                            timeout,
-                                                           root)
+                                                           root,
+                                                           packethook=None)
 
         self.assertTrue( isinstance(serverstate,
                                     tftpy.TftpContexts.TftpContextServer) )
@@ -307,7 +308,8 @@ class TestTftpyState(unittest.TestCase):
         serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
                                                            rport,
                                                            timeout,
-                                                           root)
+                                                           root,
+                                                           packethook=None)
 
         self.assertTrue( isinstance(serverstate,
                                     tftpy.TftpContexts.TftpContextServer) )
@@ -343,7 +345,8 @@ class TestTftpyState(unittest.TestCase):
         serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
                                                            rport,
                                                            timeout,
-                                                           root)
+                                                           root,
+                                                           packethook=None)
         rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
         rrq.filename = '../setup.py'
         rrq.mode = 'octet'
@@ -361,7 +364,8 @@ class TestTftpyState(unittest.TestCase):
         serverstate = tftpy.TftpContexts.TftpContextServer(raddress,
                                                            rport,
                                                            timeout,
-                                                           root)
+                                                           root,
+                                                           packethook=None)
         rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
         rrq.filename = '640KBFILE'
         rrq.mode = 'octet'

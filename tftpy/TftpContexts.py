@@ -211,6 +211,7 @@ class TftpContextServer(TftpContext):
                  port,
                  timeout,
                  root,
+                 packethook,
                  dyn_file_func=None,
                  upload_open=None):
         TftpContext.__init__(self,
@@ -225,6 +226,7 @@ class TftpContextServer(TftpContext):
         self.root = root
         self.dyn_file_func = dyn_file_func
         self.upload_open = upload_open
+        self.packethook = packethook
 
     def __str__(self):
         return "%s:%s %s" % (self.host, self.port, self.state)

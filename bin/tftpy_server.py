@@ -16,6 +16,19 @@ default_formatter = logging.Formatter('[%(asctime)s] %(message)s')
 handler.setFormatter(default_formatter)
 log.addHandler(handler)
 
+
+class Progress(object):
+    def __init__(self, out):
+        self.progress = 0
+        self.out = out
+
+    def progresshook(self, pkt):
+        if isinstance(pkt, tftpy.TftpPacketTypes.TftpPacketDAT):
+            self.progress += len(pkt.data)
+            self.out("Transferred %d bytes" % self.progress)
+        elif isinstance(pkt, tftpy.TftpPacketTypes.TftpPacketOACK):
+            self.out("Received OACK, options are: %s" % pkt.options)
+
 def main():
     usage=""
     parser = OptionParser(usage=usage)
@@ -58,9 +71,11 @@ def main():
         parser.print_help()
         sys.exit(1)
 
+    hook = Progress(log.info).progresshook
+
     server = tftpy.TftpServer(options.root)
     try:
-        server.listen(options.ip, options.port)
+        server.listen(options.ip, options.port, packethook=hook)
     except tftpy.TftpException as err:
         sys.stderr.write("%s\n" % str(err))
         sys.exit(1)
