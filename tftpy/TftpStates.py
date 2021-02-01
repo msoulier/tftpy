@@ -315,7 +315,7 @@ class TftpStateServerRecvRRQ(TftpServerState):
                 self.sendError(TftpErrors.FileNotFound)
                 raise TftpException("File not found: %s" % path)
         else:
-            log.warn("File not found: %s", path)
+            log.warning("File not found: %s", path)
             self.sendError(TftpErrors.FileNotFound)
             raise TftpException("File not found: {}".format(path))
 
