@@ -128,7 +128,7 @@ class TftpServer(TftpSession):
             log.debug("Performing select on this inputlist: %s", inputlist)
             try:
                 readyinput, readyoutput, readyspecial = \
-                        select.select(inputlist, [], [], SOCK_TIMEOUT)
+                        select.select(inputlist, [], [], timeout)
             except select.error as err:
                 if err[0] == EINTR:
                     # Interrupted system call
