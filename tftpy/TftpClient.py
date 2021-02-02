@@ -3,8 +3,7 @@
 """This module implements the TFTP Client functionality. Instantiate an
 instance of the client, and then use its upload or download method. Logging is
 performed via a standard logging object set in TftpShared."""
-
-
+import socket
 import types
 import logging
 from .TftpShared import *
@@ -18,7 +17,7 @@ class TftpClient(TftpSession):
     download can be initiated via the download() method, or an upload via the
     upload() method."""
 
-    def __init__(self, host, port=69, options={}, localip = ""):
+    def __init__(self, host, port=69, options={}, localip = "", af_family=socket.AF_INET):
         TftpSession.__init__(self)
         self.context = None
         self.host = host
@@ -26,6 +25,7 @@ class TftpClient(TftpSession):
         self.filename = None
         self.options = options
         self.localip = localip
+        self.af_family = af_family
         if 'blksize' in self.options:
             size = self.options['blksize']
             tftpassert(int == type(size), "blksize must be an int")
@@ -54,7 +54,8 @@ class TftpClient(TftpSession):
                                                  self.options,
                                                  packethook,
                                                  timeout,
-                                                 localip = self.localip)
+                                                 localip=self.localip,
+                                                 af_family=self.af_family)
         self.context.start()
         # Download happens here
         self.context.end()
