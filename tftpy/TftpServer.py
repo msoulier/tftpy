@@ -77,7 +77,7 @@ class TftpServer(TftpSession):
             raise TftpException("The tftproot does not exist.")
 
     def listen(self, listenip="", listenport=DEF_TFTP_PORT,
-               timeout=SOCK_TIMEOUT):
+               timeout=SOCK_TIMEOUT, retries=DEF_TIMEOUT_RETRIES):
         """Start a server listening on the supplied interface and port. This
         defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
         supply a different socket timeout value, if desired."""
@@ -165,7 +165,8 @@ class TftpServer(TftpSession):
                                                                timeout,
                                                                self.root,
                                                                self.dyn_file_func,
-                                                               self.upload_open)
+                                                               self.upload_open,
+                                                               retries=retries)
                         try:
                             self.sessions[key].start(buffer)
                         except TftpException as err:

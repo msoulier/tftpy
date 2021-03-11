@@ -32,7 +32,7 @@ class TftpClient(TftpSession):
             if size < MIN_BLKSIZE or size > MAX_BLKSIZE:
                 raise TftpException("Invalid blksize: %d" % size)
 
-    def download(self, filename, output, packethook=None, timeout=SOCK_TIMEOUT):
+    def download(self, filename, output, packethook=None, timeout=SOCK_TIMEOUT, retries=DEF_TIMEOUT_RETRIES):
         """This method initiates a tftp download from the configured remote
         host, requesting the filename passed. It writes the file to output,
         which can be a file-like object or a path to a local file. If a
@@ -41,6 +41,9 @@ class TftpClient(TftpSession):
         form of a TftpPacketDAT object. The timeout parameter may be used to
         override the default SOCK_TIMEOUT setting, which is the amount of time
         that the client will wait for a receive packet to arrive.
+        The retires paramater may be used to override the default DEF_TIMEOUT_RETRIES
+        settings, which is the amount of retransmission attemtpts the client will initiate
+        after encountering a timeout.
 
         Note: If output is a hyphen, stdout is used."""
         # We're downloading.
@@ -54,7 +57,8 @@ class TftpClient(TftpSession):
                                                  self.options,
                                                  packethook,
                                                  timeout,
-                                                 localip = self.localip)
+                                                 retries=retries,
+                                                 localip=self.localip)
         self.context.start()
         # Download happens here
         self.context.end()
@@ -71,7 +75,7 @@ class TftpClient(TftpSession):
         log.info("%.2f bytes in resent data" % metrics.resent_bytes)
         log.info("Received %d duplicate packets" % metrics.dupcount)
 
-    def upload(self, filename, input, packethook=None, timeout=SOCK_TIMEOUT):
+    def upload(self, filename, input, packethook=None, timeout=SOCK_TIMEOUT, retries=DEF_TIMEOUT_RETRIES):
         """This method initiates a tftp upload to the configured remote host,
         uploading the filename passed. It reads the file from input, which
         can be a file-like object or a path to a local file. If a packethook
@@ -80,6 +84,9 @@ class TftpClient(TftpSession):
         TftpPacketDAT object. The timeout parameter may be used to override
         the default SOCK_TIMEOUT setting, which is the amount of time that
         the client will wait for a DAT packet to be ACKd by the server.
+        The retires paramater may be used to override the default DEF_TIMEOUT_RETRIES
+        settings, which is the amount of retransmission attemtpts the client will initiate
+        after encountering a timeout.
 
         Note: If input is a hyphen, stdin is used."""
         self.context = TftpContextClientUpload(self.host,
@@ -89,7 +96,8 @@ class TftpClient(TftpSession):
                                                self.options,
                                                packethook,
                                                timeout,
-                                               localip = self.localip)
+                                               retries=retries,
+                                               localip=self.localip)
         self.context.start()
         # Upload happens here
         self.context.end()
