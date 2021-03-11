@@ -210,7 +210,7 @@ class TftpServer(TftpSession):
                 except TftpTimeout as err:
                     log.error(str(err))
                     self.sessions[key].retry_count += 1
-                    if self.sessions[key].retry_count >= TIMEOUT_RETRIES:
+                    if self.sessions[key].retry_count >= self.sessions[key].retries:
                         log.debug("hit max retries on %s, giving up" %
                             self.sessions[key])
                         deletion_list.append(key)

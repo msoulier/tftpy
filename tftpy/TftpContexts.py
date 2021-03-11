@@ -76,7 +76,7 @@ class TftpMetrics(object):
 class TftpContext(object):
     """The base class of the contexts."""
 
-    def __init__(self, host, port, timeout, localip = ""):
+    def __init__(self, host, port, timeout, retries=DEF_TIMEOUT_RETRIES, localip = ""):
         """Constructor for the base context, setting shared instance
         variables."""
         self.file_to_transfer = None
@@ -88,6 +88,7 @@ class TftpContext(object):
             self.sock.bind((localip, 0))
         self.sock.settimeout(timeout)
         self.timeout = timeout
+        self.retries = retries
         self.state = None
         self.next_block = 0
         self.factory = TftpPacketFactory()
@@ -212,11 +213,13 @@ class TftpContextServer(TftpContext):
                  timeout,
                  root,
                  dyn_file_func=None,
-                 upload_open=None):
+                 upload_open=None,
+                 retries=DEF_TIMEOUT_RETRIES):
         TftpContext.__init__(self,
                              host,
                              port,
                              timeout,
+                             retries
                              )
         # At this point we have no idea if this is a download or an upload. We
         # need to let the start state determine that.
@@ -267,11 +270,13 @@ class TftpContextClientUpload(TftpContext):
                  options,
                  packethook,
                  timeout,
+                 retries=DEF_TIMEOUT_RETRIES,
                  localip = ""):
         TftpContext.__init__(self,
                              host,
                              port,
                              timeout,
+                             retries,
                              localip)
         self.file_to_transfer = filename
         self.options = options
@@ -320,7 +325,7 @@ class TftpContextClientUpload(TftpContext):
             except TftpTimeout as err:
                 log.error(str(err))
                 self.retry_count += 1
-                if self.retry_count >= TIMEOUT_RETRIES:
+                if self.retry_count >= self.retries:
                     log.debug("hit max retries, giving up")
                     raise
                 else:
@@ -346,11 +351,13 @@ class TftpContextClientDownload(TftpContext):
                  options,
                  packethook,
                  timeout,
+                 retries=DEF_TIMEOUT_RETRIES,
                  localip = ""):
         TftpContext.__init__(self,
                              host,
                              port,
                              timeout,
+                             retries,
                              localip)
         # FIXME: should we refactor setting of these params?
         self.file_to_transfer = filename
@@ -403,7 +410,7 @@ class TftpContextClientDownload(TftpContext):
             except TftpTimeout as err:
                 log.error(str(err))
                 self.retry_count += 1
-                if self.retry_count >= TIMEOUT_RETRIES:
+                if self.retry_count >= self.retries:
                     log.debug("hit max retries, giving up")
                     raise
                 else:
