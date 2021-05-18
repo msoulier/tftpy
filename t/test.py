@@ -185,7 +185,11 @@ class TestTftpyState(unittest.TestCase):
         else:
             server.listen('localhost', 20001)
 
-    def clientServerDownloadOptions(self, options, output='/tmp/out'):
+    def clientServerDownloadOptions(self,
+                                    options,
+                                    output='/tmp/out',
+                                    cretries=tftpy.DEF_TIMEOUT_RETRIES,
+                                    sretries=tftpy.DEF_TIMEOUT_RETRIES):
         """Fire up a client and a server and do a download."""
         root = os.path.dirname(os.path.abspath(__file__))
         server = tftpy.TftpServer(root)
@@ -199,13 +203,14 @@ class TestTftpyState(unittest.TestCase):
             try:
                 time.sleep(1)
                 client.download('640KBFILE',
-                                output)
+                                output,
+                                retries=cretries)
             finally:
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
 
         else:
-            server.listen('localhost', 20001)
+            server.listen('localhost', 20001, retries=sretries)
 
     @contextmanager
     def dummyServerDir(self):
@@ -222,6 +227,9 @@ class TestTftpyState(unittest.TestCase):
 
     def testClientServerNoOptions(self):
         self.clientServerDownloadOptions({})
+
+    def testClientServerNoOptionsRetries(self):
+        self.clientServerDownloadOptions({}, cretries=5, sretries=5)
 
     def testClientServerTsizeOptions(self):
         self.clientServerDownloadOptions({'tsize': 64*1024})

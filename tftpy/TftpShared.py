@@ -9,7 +9,7 @@ DEF_BLKSIZE = 512
 MAX_BLKSIZE = 65536
 SOCK_TIMEOUT = 5
 MAX_DUPS = 20
-DEF_TIMEOUT_RETRIES = 5
+DEF_TIMEOUT_RETRIES = 3
 DEF_TFTP_PORT = 69
 
 # A hook for deliberately introducing delay in testing.
