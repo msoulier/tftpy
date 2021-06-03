@@ -1,4 +1,14 @@
-Copyright, Michael P. Soulier, 2010.
+Copyright, Michael P. Soulier, 2010-2021.
+
+About Release 0.8.1:
+====================
+Bugfix release:
+- replace deprecated log.warn( with log.warning(
+- fixing a security issue in breaking out of the tftproot
+- setup with setuptools instead of distutils.
+- allow overriding select timeout in listen
+- fixing reading binary data from stdin on multiple platforms
+- defaulting Makefile to python3 interpreter
 
 About Release 0.8.0:
 ====================

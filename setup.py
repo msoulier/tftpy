@@ -5,7 +5,17 @@
 from setuptools import setup
 
 long_description = """\
-Copyright, Michael P. Soulier, 2010.
+Copyright, Michael P. Soulier, 2010-2021.
+
+About Release 0.8.1:
+====================
+Bugfix release:
+- replace deprecated log.warn( with log.warning(
+- fixing a security issue in breaking out of the tftproot
+- setup with setuptools instead of distutils.
+- allow overriding select timeout in listen
+- fixing reading binary data from stdin on multiple platforms
+- defaulting Makefile to python3 interpreter
 
 About Release 0.8.0:
 ====================
@@ -134,7 +144,7 @@ Michael P. Soulier <msoulier@digitaltorque.ca>
 """
 
 setup(name='tftpy',
-      version='0.8.0',
+      version='0.8.1',
       description='Python TFTP library',
       long_description=long_description,
       long_description_content_type='text/plain',
