@@ -1,4 +1,4 @@
-PY=/usr/bin/env python
+PY=/usr/bin/env python3
 PYTHONPATH=.
 PYTHONIOENCODING=UTF-8
 PGPID=5BC8BE08
