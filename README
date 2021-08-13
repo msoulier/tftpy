@@ -1,5 +1,12 @@
 Copyright, Michael P. Soulier, 2010-2021.
 
+Note: ChangeLog produced with python's git-changelog
+
+About Release 0.8.2:
+====================
+Bugfix release:
+- / hardcoded making problems for windows users
+
 About Release 0.8.1:
 ====================
 Bugfix release:

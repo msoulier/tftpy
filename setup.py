@@ -7,6 +7,11 @@ from setuptools import setup
 long_description = """\
 Copyright, Michael P. Soulier, 2010-2021.
 
+About Release 0.8.2:
+====================
+Bugfix release:
+- / hardcoded making problems for windows users
+
 About Release 0.8.1:
 ====================
 Bugfix release:
@@ -144,7 +149,7 @@ Michael P. Soulier <msoulier@digitaltorque.ca>
 """
 
 setup(name='tftpy',
-      version='0.8.1',
+      version='0.8.2',
       description='Python TFTP library',
       long_description=long_description,
       long_description_content_type='text/plain',
