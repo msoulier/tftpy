@@ -212,5 +212,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 - Removed redundant comparison. ([2a98d72](nicodemus.digitaltorque.ca:git/tftpy/commit/2a98d725401609ac9ab7ece6428a875e71e05d50) by msoulier).
 - Removed mention of sorceror's apprentice problem. ([5c52975](nicodemus.digitaltorque.ca:git/tftpy/commit/5c52975f5fa07bd4d540d3b73042b40077ec3ca3) by msoulier).
-
-

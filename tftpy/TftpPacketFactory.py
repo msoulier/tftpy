@@ -5,16 +5,19 @@ buffer, and return the appropriate TftpPacket object to represent it, via the
 parse() method."""
 
 
-from .TftpShared import *
-from .TftpPacketTypes import *
 import logging
 
-log = logging.getLogger('tftpy.TftpPacketFactory')
+from .TftpPacketTypes import *
+from .TftpShared import *
+
+log = logging.getLogger("tftpy.TftpPacketFactory")
+
 
 class TftpPacketFactory(object):
     """This class generates TftpPacket objects. It is responsible for parsing
     raw buffers off of the wire and returning objects representing them, via
     the parse() method."""
+
     def __init__(self):
         self.classes = {
             1: TftpPacketRRQ,
@@ -22,8 +25,8 @@ class TftpPacketFactory(object):
             3: TftpPacketDAT,
             4: TftpPacketACK,
             5: TftpPacketERR,
-            6: TftpPacketOACK
-            }
+            6: TftpPacketOACK,
+        }
 
     def parse(self, buffer):
         """This method is used to parse an existing datagram into its
@@ -39,8 +42,7 @@ class TftpPacketFactory(object):
     def __create(self, opcode):
         """This method returns the appropriate class object corresponding to
         the passed opcode."""
-        tftpassert(opcode in self.classes,
-                   "Unsupported opcode: %d" % opcode)
+        tftpassert(opcode in self.classes, "Unsupported opcode: %d" % opcode)
 
         packet = self.classes[opcode]()
 

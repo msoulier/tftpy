@@ -56,7 +56,7 @@ Blocksize Option Specification
 
 
 Malkin & Harkin             Standards Track                     [Page 1]
-
+
 RFC 2348                 TFTP Blocksize Option                  May 1998
 
 
@@ -112,7 +112,7 @@ Proof of Concept
 
 
 Malkin & Harkin             Standards Track                     [Page 2]
-
+
 RFC 2348                 TFTP Blocksize Option                  May 1998
 
 
@@ -168,7 +168,7 @@ RFC 2348                 TFTP Blocksize Option                  May 1998
 
 
 Malkin & Harkin             Standards Track                     [Page 3]
-
+
 RFC 2348                 TFTP Blocksize Option                  May 1998
 
 
@@ -224,7 +224,7 @@ Authors' Addresses
 
 
 Malkin & Harkin             Standards Track                     [Page 4]
-
+
 RFC 2348                 TFTP Blocksize Option                  May 1998
 
 
@@ -280,4 +280,3 @@ Full Copyright Statement
 
 
 Malkin & Harkin             Standards Track                     [Page 5]
-

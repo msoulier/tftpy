@@ -58,7 +58,7 @@ Now fully implements downloading and uploading.
 
 About Release 0.4.6:
 ====================
-Feature release to add the tsize option. 
+Feature release to add the tsize option.
 Thanks to Kuba Kończyk for the patch.
 
 About Release 0.4.5:

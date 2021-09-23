@@ -6,17 +6,21 @@ requests. Logging is performed via a standard logging object set in
 TftpShared."""
 
 
-import socket, os, time
-import select
-import threading
 import logging
+import os
+import select
+import socket
+import threading
+import time
 from errno import EINTR
-from .TftpShared import *
-from .TftpPacketTypes import *
-from .TftpPacketFactory import TftpPacketFactory
-from .TftpContexts import TftpContextServer
 
-log = logging.getLogger('tftpy.TftpServer')
+from .TftpContexts import TftpContextServer
+from .TftpPacketFactory import TftpPacketFactory
+from .TftpPacketTypes import *
+from .TftpShared import *
+
+log = logging.getLogger("tftpy.TftpServer")
+
 
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
@@ -34,10 +38,7 @@ class TftpServer(TftpSession):
     requested destination path and server context. It must either return a
     file-like object ready for writing or None if the path is invalid."""
 
-    def __init__(self,
-                 tftproot='/tftpboot',
-                 dyn_file_func=None,
-                 upload_open=None):
+    def __init__(self, tftproot="/tftpboot", dyn_file_func=None, upload_open=None):
         self.listenip = None
         self.listenport = None
         self.sock = None
@@ -55,7 +56,7 @@ class TftpServer(TftpSession):
         self.shutdown_gracefully = False
         self.shutdown_immediately = False
 
-        for name in 'dyn_file_func', 'upload_open':
+        for name in "dyn_file_func", "upload_open":
             attr = getattr(self, name)
             if attr and not callable(attr):
                 raise TftpException("{} supplied, but it is not callable.".format(name))
@@ -76,8 +77,13 @@ class TftpServer(TftpSession):
         else:
             raise TftpException("The tftproot does not exist.")
 
-    def listen(self, listenip="", listenport=DEF_TFTP_PORT,
-               timeout=SOCK_TIMEOUT, retries=DEF_TIMEOUT_RETRIES):
+    def listen(
+        self,
+        listenip="",
+        listenport=DEF_TFTP_PORT,
+        timeout=SOCK_TIMEOUT,
+        retries=DEF_TIMEOUT_RETRIES,
+    ):
         """Start a server listening on the supplied interface and port. This
         defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
         supply a different socket timeout value, if desired."""
@@ -85,7 +91,8 @@ class TftpServer(TftpSession):
 
         # Don't use new 2.5 ternary operator yet
         # listenip = listenip if listenip else '0.0.0.0'
-        if not listenip: listenip = '0.0.0.0'
+        if not listenip:
+            listenip = "0.0.0.0"
         log.info("Server requested on ip %s, port %s" % (listenip, listenport))
         try:
             # FIXME - sockets should be non-blocking
@@ -103,8 +110,7 @@ class TftpServer(TftpSession):
             log.debug("shutdown_immediately is %s" % self.shutdown_immediately)
             log.debug("shutdown_gracefully is %s" % self.shutdown_gracefully)
             if self.shutdown_immediately:
-                log.warning("Shutting down now. Session count: %d" %
-                         len(self.sessions))
+                log.warning("Shutting down now. Session count: %d" % len(self.sessions))
                 self.sock.close()
                 for key in self.sessions:
                     self.sessions[key].end()
@@ -113,8 +119,7 @@ class TftpServer(TftpSession):
 
             elif self.shutdown_gracefully:
                 if not self.sessions:
-                    log.warning("In graceful shutdown mode and all "
-                             "sessions complete.")
+                    log.warning("In graceful shutdown mode and all sessions complete.")
                     self.sock.close()
                     break
 
@@ -127,8 +132,9 @@ class TftpServer(TftpSession):
             # Block until some socket has input on it.
             log.debug("Performing select on this inputlist: %s", inputlist)
             try:
-                readyinput, readyoutput, readyspecial = \
-                        select.select(inputlist, [], [], timeout)
+                readyinput, readyoutput, readyspecial = select.select(
+                    inputlist, [], [], timeout
+                )
             except select.error as err:
                 if err[0] == EINTR:
                     # Interrupted system call
@@ -149,8 +155,9 @@ class TftpServer(TftpSession):
                     log.debug("Read %d bytes", len(buffer))
 
                     if self.shutdown_gracefully:
-                        log.warning("Discarding data on main port, "
-                                 "in graceful shutdown mode")
+                        log.warning(
+                            "Discarding data on main port, in graceful shutdown mode"
+                        )
                         continue
 
                     # Forge a session key based on the client's IP and port,
@@ -158,24 +165,30 @@ class TftpServer(TftpSession):
                     key = "%s:%s" % (raddress, rport)
 
                     if not key in self.sessions:
-                        log.debug("Creating new server context for "
-                                     "session key = %s" % key)
-                        self.sessions[key] = TftpContextServer(raddress,
-                                                               rport,
-                                                               timeout,
-                                                               self.root,
-                                                               self.dyn_file_func,
-                                                               self.upload_open,
-                                                               retries=retries)
+                        log.debug(
+                            "Creating new server context for session key = %s" % key
+                        )
+                        self.sessions[key] = TftpContextServer(
+                            raddress,
+                            rport,
+                            timeout,
+                            self.root,
+                            self.dyn_file_func,
+                            self.upload_open,
+                            retries=retries,
+                        )
                         try:
                             self.sessions[key].start(buffer)
                         except TftpException as err:
                             deletion_list.append(key)
-                            log.error("Fatal exception thrown from "
-                                      "session %s: %s" % (key, str(err)))
+                            log.error(
+                                "Fatal exception thrown from session %s: %s"
+                                % (key, str(err))
+                            )
                     else:
-                        log.warning("received traffic on main socket for "
-                                 "existing session??")
+                        log.warning(
+                            "received traffic on main socket for existing session??"
+                        )
                     log.info("Currently handling these sessions:")
                     for session_key, session in list(self.sessions.items()):
                         log.info("    %s" % session)
@@ -184,8 +197,7 @@ class TftpServer(TftpSession):
                     # Must find the owner of this traffic.
                     for key in self.sessions:
                         if readysock == self.sessions[key].sock:
-                            log.debug("Matched input to session key %s"
-                                % key)
+                            log.debug("Matched input to session key %s" % key)
                             try:
                                 self.sessions[key].cycle()
                                 if self.sessions[key].state == None:
@@ -193,15 +205,15 @@ class TftpServer(TftpSession):
                                     deletion_list.append(key)
                             except TftpException as err:
                                 deletion_list.append(key)
-                                log.error("Fatal exception thrown from "
-                                          "session %s: %s"
-                                          % (key, str(err)))
+                                log.error(
+                                    "Fatal exception thrown from session %s: %s"
+                                    % (key, str(err))
+                                )
                             # Break out of for loop since we found the correct
                             # session.
                             break
                     else:
-                        log.error("Can't find the owner for this packet. "
-                                  "Discarding.")
+                        log.error("Can't find the owner for this packet. Discarding.")
 
             log.debug("Looping on all sessions to check for timeouts")
             now = time.time()
@@ -212,8 +224,9 @@ class TftpServer(TftpSession):
                     log.error(str(err))
                     self.sessions[key].retry_count += 1
                     if self.sessions[key].retry_count >= self.sessions[key].retries:
-                        log.debug("hit max retries on %s, giving up" %
-                            self.sessions[key])
+                        log.debug(
+                            "hit max retries on %s, giving up" % self.sessions[key]
+                        )
                         deletion_list.append(key)
                     else:
                         log.debug("resending on session %s" % self.sessions[key])
@@ -221,7 +234,7 @@ class TftpServer(TftpSession):
 
             log.debug("Iterating deletion list.")
             for key in deletion_list:
-                log.info('')
+                log.info("")
                 log.info("Session %s complete" % key)
                 if key in self.sessions:
                     log.debug("Gathering up metrics from session before deleting")
@@ -230,8 +243,10 @@ class TftpServer(TftpSession):
                     if metrics.duration == 0:
                         log.info("Duration too short, rate undetermined")
                     else:
-                        log.info("Transferred %d bytes in %.2f seconds"
-                            % (metrics.bytes, metrics.duration))
+                        log.info(
+                            "Transferred %d bytes in %.2f seconds"
+                            % (metrics.bytes, metrics.duration)
+                        )
                         log.info("Average rate: %.2f kbps" % metrics.kbps)
                     log.info("%.2f bytes in resent data" % metrics.resent_bytes)
                     log.info("%d duplicate packets" % metrics.dupcount)
@@ -239,8 +254,7 @@ class TftpServer(TftpSession):
                     del self.sessions[key]
                     log.debug("Session list is now %s" % self.sessions)
                 else:
-                    log.warning(
-                        "Strange, session %s is not on the deletion list" % key)
+                    log.warning("Strange, session %s is not on the deletion list" % key)
 
         self.is_running.clear()
 
