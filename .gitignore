@@ -4,3 +4,5 @@ tags
 .DS_Store
 test.log
 tftpy.egg-info
+# PyCharm
+.idea/
