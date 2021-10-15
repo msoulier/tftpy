@@ -190,13 +190,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         log.debug("options_list is %s", options_list)
         log.debug("size of struct is %d", struct.calcsize(fmt))
 
-        self.buffer = struct.pack(
-            fmt,
-            self.opcode,
-            filename,
-            mode,
-            *options_list,
-        )
+        self.buffer = struct.pack(fmt, self.opcode, filename, mode, *options_list)
 
         log.debug("buffer is %s", repr(self.buffer))
         return self
