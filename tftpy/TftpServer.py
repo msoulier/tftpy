@@ -155,7 +155,7 @@ class TftpServer(TftpSession):
                     # which should safely work through NAT.
                     key = "%s:%s" % (raddress, rport)
 
-                    if not key in self.sessions:
+                    if key not in self.sessions:
                         log.debug("Creating new server context for session key = %s" % key)
                         self.sessions[key] = TftpContextServer(raddress,
                                                                rport,
