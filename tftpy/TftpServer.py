@@ -5,16 +5,18 @@ instance of the server, and then run the listen() method to listen for client
 requests. Logging is performed via a standard logging object set in
 TftpShared."""
 
-
-import socket, os, time
-import select
-import threading
 import logging
+import os
+import select
+import socket
+import threading
+import time
 from errno import EINTR
-from .TftpShared import *
-from .TftpPacketTypes import *
-from .TftpPacketFactory import TftpPacketFactory
+
 from .TftpContexts import TftpContextServer
+from .TftpPacketFactory import TftpPacketFactory
+from .TftpPacketTypes import *
+from .TftpShared import *
 
 log = logging.getLogger('tftpy.TftpServer')
 
