@@ -121,7 +121,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixing issue #16 on github, server failing to use timeout time in checktimeout() method. ([a43773e](nicodemus.digitaltorque.ca:git/tftpy/commit/a43773e26cb056bc1db6392f2ffa9dedcabd4548) by Michael P. Soulier).
 - Fixing a file descriptor leak. closes issue 22. ([6fd9391](nicodemus.digitaltorque.ca:git/tftpy/commit/6fd9391ad86fe58cf73dabce452d5d14c0d9ac32) by Michael P. Soulier).
 - Fix exceptions propagating out of tftpserver.listen() ([a6cff4f](nicodemus.digitaltorque.ca:git/tftpy/commit/a6cff4f0b23068218849e44718e7255b634a9872) by Kenny Millington).
-- Fixing setnextblock to roll over at 2**16 - 1 instead of 2**16, which was causing problems when uploading large files. ([45185ed](nicodemus.digitaltorque.ca:git/tftpy/commit/45185ed44c53fefc9450a4e307eb66373f30b7a6) by Michael P. Soulier).
+- Fixing setnextblock to roll over at `2**16 - 1` instead of `2**16`, which was causing problems when uploading large files. ([45185ed](nicodemus.digitaltorque.ca:git/tftpy/commit/45185ed44c53fefc9450a4e307eb66373f30b7a6) by Michael P. Soulier).
 
 
 ## [0.5.1]() - 2010-07-14
