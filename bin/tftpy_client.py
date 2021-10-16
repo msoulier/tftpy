@@ -2,8 +2,11 @@
 # vim: ts=4 sw=4 et ai:
 # -*- coding: utf8 -*-
 
-import sys, logging, os
+import logging
+import os
+import sys
 from optparse import OptionParser
+
 import tftpy
 
 log = logging.getLogger('tftpy')
