@@ -116,7 +116,7 @@ class TftpContext(object):
 
     def __del__(self):
         """Simple destructor to try to call housekeeping in the end method if
-        not called explicitely. Leaking file descriptors is not a good
+        not called explicitly. Leaking file descriptors is not a good
         thing."""
         self.end()
 
@@ -132,7 +132,7 @@ class TftpContext(object):
 
     def end(self, close_fileobj=True):
         """Perform session cleanup, since the end method should always be
-        called explicitely by the calling code, this works better than the
+        called explicitly by the calling code, this works better than the
         destructor.
         Set close_fileobj to False so fileobj can be returned open."""
         log.debug("in TftpContext.end - closing socket")
