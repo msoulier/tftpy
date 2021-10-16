@@ -87,7 +87,8 @@ class TftpServer(TftpSession):
 
         # Don't use new 2.5 ternary operator yet
         # listenip = listenip if listenip else '0.0.0.0'
-        if not listenip: listenip = '0.0.0.0'
+        if not listenip:
+            listenip = '0.0.0.0'
         log.info("Server requested on ip %s, port %s" % (listenip, listenport))
         try:
             # FIXME - sockets should be non-blocking
