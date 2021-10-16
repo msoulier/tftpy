@@ -11,11 +11,13 @@ from .TftpShared import *
 
 log = logging.getLogger('tftpy.TftpPacketTypes')
 
+
 class TftpSession(object):
     """This class is the base class for the tftp client and server. Any shared
     code should be in this class."""
     # FIXME: do we need this anymore?
     pass
+
 
 class TftpPacketWithOptions(object):
     """This class exists to permit some TftpPacket subclasses to share code
@@ -94,6 +96,7 @@ class TftpPacketWithOptions(object):
 
         return options
 
+
 class TftpPacket(object):
     """This class is the parent class of all tftp packet classes. It is an
     abstract class, providing an interface, and should not be instantiated
@@ -119,6 +122,7 @@ class TftpPacket(object):
 
         This is an abstract method."""
         raise NotImplementedError("Abstract method")
+
 
 class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
     """This class is a common parent class for the RRQ and WRQ packets, as
@@ -228,6 +232,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         log.debug("options dict is now %s", self.options)
         return self
 
+
 class TftpPacketRRQ(TftpPacketInitial):
     """
 ::
@@ -248,6 +253,7 @@ class TftpPacketRRQ(TftpPacketInitial):
             s += '\n    options = %s' % self.options
         return s
 
+
 class TftpPacketWRQ(TftpPacketInitial):
     """
 ::
@@ -267,6 +273,7 @@ class TftpPacketWRQ(TftpPacketInitial):
         if self.options:
             s += '\n    options = %s' % self.options
         return s
+
 
 class TftpPacketDAT(TftpPacket):
     """
@@ -317,6 +324,7 @@ class TftpPacketDAT(TftpPacket):
         log.debug("found %d bytes of data", len(self.data))
         return self
 
+
 class TftpPacketACK(TftpPacket):
     """
 ::
@@ -349,6 +357,7 @@ class TftpPacketACK(TftpPacket):
         log.debug("decoded ACK packet: opcode = %d, block = %d",
             self.opcode, self.blocknumber)
         return self
+
 
 class TftpPacketERR(TftpPacket):
     """
@@ -408,7 +417,7 @@ class TftpPacketERR(TftpPacket):
         return self
 
     def decode(self):
-        "Decode self.buffer, populating instance variables and return self."
+        """Decode self.buffer, populating instance variables and return self."""
         buflen = len(self.buffer)
         tftpassert(buflen >= 4, "malformed ERR packet, too short")
         log.debug("Decoding ERR packet, length %s bytes", buflen)
@@ -427,6 +436,7 @@ class TftpPacketERR(TftpPacket):
         log.error("ERR packet - errorcode: %d, message: %s"
                      % (self.errorcode, self.errmsg))
         return self
+
 
 class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
     """
