@@ -119,8 +119,7 @@ class TftpServer(TftpSession):
                     break
 
             # Build the inputlist array of sockets to select() on.
-            inputlist = []
-            inputlist.append(self.sock)
+            inputlist = [self.sock]
             for key in self.sessions:
                 inputlist.append(self.sessions[key].sock)
 
