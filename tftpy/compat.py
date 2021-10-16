@@ -11,6 +11,7 @@ def binary_stdin():
         return sys.stdin.buffer
     else:
         if sys.platform == 'win32':
-            import os, msvcrt
+            import os
+            import msvcrt
             msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
         return sys.stdin
