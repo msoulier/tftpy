@@ -19,8 +19,9 @@ default_formatter = logging.Formatter('[%(asctime)s] %(message)s')
 handler.setFormatter(default_formatter)
 log.addHandler(handler)
 
+
 def main():
-    usage=""
+    usage = ""
     parser = OptionParser(usage=usage)
     parser.add_option('-H',
                       '--host',
@@ -134,6 +135,7 @@ def main():
         sys.exit(1)
     except KeyboardInterrupt:
         pass
+
 
 if __name__ == '__main__':
     main()
