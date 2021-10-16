@@ -28,6 +28,7 @@ log = logging.getLogger('tftpy.TftpContext')
 # Utility classes
 ###############################################################################
 
+
 class TftpMetrics(object):
     """A class representing metrics of the transfer."""
     def __init__(self):
@@ -74,10 +75,11 @@ class TftpMetrics(object):
 # Context classes
 ###############################################################################
 
+
 class TftpContext(object):
     """The base class of the contexts."""
 
-    def __init__(self, host, port, timeout, retries=DEF_TIMEOUT_RETRIES, localip = ""):
+    def __init__(self, host, port, timeout, retries=DEF_TIMEOUT_RETRIES, localip=""):
         """Constructor for the base context, setting shared instance
         variables."""
         self.file_to_transfer = None
@@ -142,12 +144,16 @@ class TftpContext(object):
             self.fileobj.close()
 
     def gethost(self):
-        "Simple getter method for use in a property."
+        """
+        Simple getter method for use in a property.
+        """
         return self.__host
 
     def sethost(self, host):
-        """Setter method that also sets the address property as a result
-        of the host that is set."""
+        """
+        Setter method that also sets the address property as a result
+        of the host that is set.
+        """
         self.__host = host
         self.address = socket.gethostbyname(host)
 
@@ -165,8 +171,10 @@ class TftpContext(object):
     next_block = property(getNextBlock, setNextBlock)
 
     def cycle(self):
-        """Here we wait for a response from the server after sending it
-        something, and dispatch appropriate action to that response."""
+        """
+        Here we wait for a response from the server after sending it
+        something, and dispatch appropriate action to that response.
+        """
         try:
             (buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
         except socket.timeout:
@@ -175,7 +183,7 @@ class TftpContext(object):
 
         # Ok, we've received a packet. Log it.
         log.debug("Received %d bytes from %s:%s",
-                        len(buffer), raddress, rport)
+                  len(buffer), raddress, rport)
         # And update our last updated time.
         self.last_update = time.time()
 
@@ -190,8 +198,7 @@ class TftpContext(object):
         if self.tidport and self.tidport != rport:
             log.warning("Received traffic from %s:%s but we're "
                         "connected to %s:%s. Discarding."
-                        % (raddress, rport,
-                        self.host, self.tidport))
+                        % (raddress, rport, self.host, self.tidport))
 
         # If there is a packethook defined, call it. We unconditionally
         # pass all packets, it's up to the client to screen out different
@@ -205,6 +212,7 @@ class TftpContext(object):
         # If we didn't throw any exceptions here, reset the retry_count to
         # zero.
         self.retry_count = 0
+
 
 class TftpContextServer(TftpContext):
     """The context for the server."""
@@ -234,10 +242,12 @@ class TftpContextServer(TftpContext):
         return "%s:%s %s" % (self.host, self.port, self.state)
 
     def start(self, buffer):
-        """Start the state cycle. Note that the server context receives an
+        """
+        Start the state cycle. Note that the server context receives an
         initial packet in its start method. Also note that the server does not
         loop on cycle(), as it expects the TftpServer object to manage
-        that."""
+        that.
+        """
         log.debug("In TftpContextServer.start")
         self.metrics.start_time = time.time()
         log.debug("Set metrics.start_time to %s", self.metrics.start_time)
@@ -260,6 +270,7 @@ class TftpContextServer(TftpContext):
         log.debug("Set metrics.end_time to %s", self.metrics.end_time)
         self.metrics.compute()
 
+
 class TftpContextClientUpload(TftpContext):
     """The upload context for the client during an upload.
     Note: If input is a hyphen, then we will use stdin."""
@@ -272,7 +283,7 @@ class TftpContextClientUpload(TftpContext):
                  packethook,
                  timeout,
                  retries=DEF_TIMEOUT_RETRIES,
-                 localip = ""):
+                 localip=""):
         TftpContext.__init__(self,
                              host,
                              port,
@@ -292,8 +303,7 @@ class TftpContextClientUpload(TftpContext):
             self.fileobj = open(input, "rb")
 
         log.debug("TftpContextClientUpload.__init__()")
-        log.debug("file_to_transfer = %s, options = %s" %
-            (self.file_to_transfer, self.options))
+        log.debug("file_to_transfer = %s, options = %s" % (self.file_to_transfer, self.options))
 
     def __str__(self):
         return "%s:%s %s" % (self.host, self.port, self.state)
@@ -309,7 +319,7 @@ class TftpContextClientUpload(TftpContext):
         # FIXME: put this in a sendWRQ method?
         pkt = TftpPacketWRQ()
         pkt.filename = self.file_to_transfer
-        pkt.mode = "octet" # FIXME - shouldn't hardcode this
+        pkt.mode = "octet"  # FIXME - shouldn't hardcode this
         pkt.options = self.options
         self.sock.sendto(pkt.encode().buffer, (self.host, self.port))
         self.next_block = 1
@@ -353,7 +363,7 @@ class TftpContextClientDownload(TftpContext):
                  packethook,
                  timeout,
                  retries=DEF_TIMEOUT_RETRIES,
-                 localip = ""):
+                 localip=""):
         TftpContext.__init__(self,
                              host,
                              port,
@@ -378,8 +388,7 @@ class TftpContextClientDownload(TftpContext):
             self.fileobj = open(output, "wb")
 
         log.debug("TftpContextClientDownload.__init__()")
-        log.debug("file_to_transfer = %s, options = %s" %
-            (self.file_to_transfer, self.options))
+        log.debug("file_to_transfer = %s, options = %s" % (self.file_to_transfer, self.options))
 
     def __str__(self):
         return "%s:%s %s" % (self.host, self.port, self.state)
@@ -396,7 +405,7 @@ class TftpContextClientDownload(TftpContext):
         # FIXME: put this in a sendRRQ method?
         pkt = TftpPacketRRQ()
         pkt.filename = self.file_to_transfer
-        pkt.mode = "octet" # FIXME - shouldn't hardcode this
+        pkt.mode = "octet"  # FIXME - shouldn't hardcode this
         pkt.options = self.options
         self.sock.sendto(pkt.encode().buffer, (self.host, self.port))
         self.next_block = 1
