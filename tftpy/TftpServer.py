@@ -182,7 +182,7 @@ class TftpServer(TftpSession):
                             log.debug("Matched input to session key %s" % key)
                             try:
                                 self.sessions[key].cycle()
-                                if self.sessions[key].state == None:
+                                if self.sessions[key].state is None:
                                     log.info("Successful transfer.")
                                     deletion_list.append(key)
                             except TftpException as err:
