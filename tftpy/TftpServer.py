@@ -20,6 +20,7 @@ from .TftpShared import *
 
 log = logging.getLogger('tftpy.TftpServer')
 
+
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
     listen for client requests.
