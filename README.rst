@@ -4,12 +4,16 @@ Note: ChangeLog produced with python's git-changelog
 
 About Release 0.8.2:
 ====================
+
 Bugfix release:
+
 - / hardcoded making problems for windows users
 
 About Release 0.8.1:
 ====================
+
 Bugfix release:
+
 - replace deprecated log.warn( with log.warning(
 - fixing a security issue in breaking out of the tftproot
 - setup with setuptools instead of distutils.
