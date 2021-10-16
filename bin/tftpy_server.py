@@ -52,7 +52,7 @@ def main():
         debug_formatter = logging.Formatter('[%(asctime)s%(msecs)03d] %(levelname)s [%(name)s:%(lineno)s] %(message)s')
         handler.setFormatter(debug_formatter)
     elif options.quiet:
-        log.setLevel(logging.WARN)
+        log.setLevel(logging.WARNING)
 
     if not options.root:
         parser.print_help()
