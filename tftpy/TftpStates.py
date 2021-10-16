@@ -95,8 +95,7 @@ class TftpState(object):
         buffer = self.context.fileobj.read(blksize)
         log.debug("Read %d bytes into buffer", len(buffer))
         if len(buffer) < blksize:
-            log.info("Reached EOF on file %s"
-                % self.context.file_to_transfer)
+            log.info("Reached EOF on file %s" % self.context.file_to_transfer)
             finished = True
         dat = TftpPacketDAT()
         dat.data = buffer
@@ -151,9 +150,8 @@ class TftpState(object):
         self.context.last_pkt = pkt
 
     def resendLast(self):
-        "Resend the last sent packet due to a timeout."
-        log.warning("Resending packet %s on sessions %s"
-            % (self.context.last_pkt, self))
+        """Resend the last sent packet due to a timeout."""
+        log.warning("Resending packet %s on sessions %s" % (self.context.last_pkt, self))
         self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
         self.context.metrics.add_dup(self.context.last_pkt)
         sendto_port = self.context.tidport
@@ -246,12 +244,10 @@ class TftpServerState(TftpState):
         # test host/port of client end
         if self.context.host != raddress or self.context.port != rport:
             self.sendError(TftpErrors.UnknownTID)
-            log.error("Expected traffic from %s:%s but received it "
-                            "from %s:%s instead."
-                            % (self.context.host,
-                               self.context.port,
-                               raddress,
-                               rport))
+            log.error("Expected traffic from %s:%s but received it from %s:%s instead." % (self.context.host,
+                                                                                           self.context.port,
+                                                                                           raddress,
+                                                                                           rport))
             # FIXME: increment an error count?
             # Return same state, we're still waiting for valid traffic.
             return self
@@ -384,8 +380,7 @@ class TftpStateServerRecvWRQ(TftpServerState):
             log.info("Opening file %s for writing" % path)
             if os.path.exists(path):
                 # FIXME: correct behavior?
-                log.warning("File %s exists already, overwriting..." % (
-                    self.context.file_to_transfer))
+                log.warning("File %s exists already, overwriting..." % self.context.file_to_transfer)
             # FIXME: I think we should upload to a temp file and not overwrite
             # the existing file until the file is successfully uploaded.
             self.make_subdirs()
@@ -447,18 +442,15 @@ class TftpStateExpectACK(TftpState):
                 else:
                     log.debug("Good ACK, sending next DAT")
                     self.context.next_block += 1
-                    log.debug("Incremented next_block to %d",
-                        self.context.next_block)
+                    log.debug("Incremented next_block to %d", self.context.next_block)
                     self.context.pending_complete = self.sendDAT()
 
             elif pkt.blocknumber < self.context.next_block:
-                log.warning("Received duplicate ACK for block %d"
-                    % pkt.blocknumber)
+                log.warning("Received duplicate ACK for block %d" % pkt.blocknumber)
                 self.context.metrics.add_dup(pkt)
 
             else:
-                log.warning("Oooh, time warp. Received ACK to packet we "
-                         "didn't send yet. Discarding.")
+                log.warning("Oooh, time warp. Received ACK to packet we didn't send yet. Discarding.")
                 self.context.metrics.errors += 1
             return self
         elif isinstance(pkt, TftpPacketERR):
