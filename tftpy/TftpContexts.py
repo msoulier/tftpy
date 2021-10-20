@@ -84,7 +84,13 @@ class TftpContext(object):
         self.fileobj = None
         self.options = None
         self.packethook = None
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Note, setting the host will also set self.address, as it's a property.
+        self.port = port
+        self.host = host
+        # The port associated with the TID
+        self.tidport = None
+        # Socket
+        self.sock = socket.socket(self.family, socket.SOCK_DGRAM)
         if localip != "":
             self.sock.bind((localip, 0))
         self.sock.settimeout(timeout)
@@ -93,11 +99,6 @@ class TftpContext(object):
         self.state = None
         self.next_block = 0
         self.factory = TftpPacketFactory()
-        # Note, setting the host will also set self.address, as it's a property.
-        self.host = host
-        self.port = port
-        # The port associated with the TID
-        self.tidport = None
         # Metrics
         self.metrics = TftpMetrics()
         # Fluag when the transfer is pending completion.
@@ -146,10 +147,17 @@ class TftpContext(object):
         return self.__host
 
     def sethost(self, host):
-        """Setter method that also sets the address property as a result
-        of the host that is set."""
-        self.__host = host
-        self.address = socket.gethostbyname(host)
+        """Setter method that also sets the address and family properties
+        as a result of the host that is set."""
+        try:
+            self.__host = host
+            self.address = socket.gethostbyname(host)
+            self.family = socket.AF_INET
+        except socket.gaierror:
+            (family, type, proto, canonname, sockaddr) = socket.getaddrinfo(host, self.port)[0]
+            self.__host = canonname if canonname else sockaddr[0]
+            self.address = sockaddr[0]
+            self.family = family
 
     host = property(gethost, sethost)
 
@@ -168,7 +176,10 @@ class TftpContext(object):
         """Here we wait for a response from the server after sending it
         something, and dispatch appropriate action to that response."""
         try:
-            (buffer, (raddress, rport)) = self.sock.recvfrom(MAX_BLKSIZE)
+            (buffer, address) = self.sock.recvfrom(MAX_BLKSIZE)
+            # IPv4 and IPv6 sockets return a different number of flags
+            raddress = address[0]
+            rport = address[1]
         except socket.timeout:
             log.warning("Timeout waiting for traffic, retrying...")
             raise TftpTimeout("Timed-out waiting for traffic")
