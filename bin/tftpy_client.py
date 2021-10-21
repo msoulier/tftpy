@@ -2,8 +2,11 @@
 # vim: ts=4 sw=4 et ai:
 # -*- coding: utf8 -*-
 
-import sys, logging, os
+import logging
+import os
+import sys
 from optparse import OptionParser
+
 import tftpy
 
 log = logging.getLogger('tftpy')
@@ -16,8 +19,9 @@ default_formatter = logging.Formatter('[%(asctime)s] %(message)s')
 handler.setFormatter(default_formatter)
 log.addHandler(handler)
 
+
 def main():
-    usage=""
+    usage = ""
     parser = OptionParser(usage=usage)
     parser.add_option('-H',
                       '--host',
@@ -131,6 +135,7 @@ def main():
         sys.exit(1)
     except KeyboardInterrupt:
         pass
+
 
 if __name__ == '__main__':
     main()

@@ -2,8 +2,10 @@
 # vim: ts=4 sw=4 et ai:
 # -*- coding: utf8 -*-
 
-import sys, logging
+import logging
+import sys
 from optparse import OptionParser
+
 import tftpy
 
 log = logging.getLogger('tftpy')
@@ -16,8 +18,9 @@ default_formatter = logging.Formatter('[%(asctime)s] %(message)s')
 handler.setFormatter(default_formatter)
 log.addHandler(handler)
 
+
 def main():
-    usage=""
+    usage = ""
     parser = OptionParser(usage=usage)
     parser.add_option('-i',
                       '--ip',
@@ -52,7 +55,7 @@ def main():
         debug_formatter = logging.Formatter('[%(asctime)s%(msecs)03d] %(levelname)s [%(name)s:%(lineno)s] %(message)s')
         handler.setFormatter(debug_formatter)
     elif options.quiet:
-        log.setLevel(logging.WARN)
+        log.setLevel(logging.WARNING)
 
     if not options.root:
         parser.print_help()
@@ -66,6 +69,7 @@ def main():
         sys.exit(1)
     except KeyboardInterrupt:
         pass
+
 
 if __name__ == '__main__':
     main()
