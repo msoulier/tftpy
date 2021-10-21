@@ -20,3 +20,4 @@ test.log
 tftpy.egg-info
 # PyCharm
 .idea/
+coverage.xml
