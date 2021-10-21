@@ -30,12 +30,11 @@ if __name__ == "__main__":
             "Tracker": "https://github.com/msoulier/tftpy/issues",
         },
         setup_requires=[
-            "setuptools_scm[toml] < 6.0",  # <6.0 for py27 support
+            "setuptools_scm[toml]",
             "setuptools_scm_git_archive >= 1.0",
         ],
-        python_requires=">=2.7",
+        python_requires=">=3.6",
         classifiers=[
-            "Programming Language :: Python :: 2.7",
             "Programming Language :: Python :: 3",
             "Development Status :: 4 - Beta",
             "Environment :: Console",

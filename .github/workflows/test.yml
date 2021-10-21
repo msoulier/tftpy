@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         os: [Ubuntu]
-        python-version: [2.7, 3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8]
 
     steps:
       - uses: actions/checkout@master
@@ -35,15 +35,12 @@ jobs:
 
       - name: Lint with tox
         run: tox -e lint
-        if: ${{ startsWith(matrix.python-version,'3') }}
 
       - name: Test with tox
         run: tox
 
       - name: Run tox pkg
         run: tox -e pkg
-        if: ${{ startsWith(matrix.python-version,'3') }}
 
       - name: Make docs
         run: tox -e docs
-        if: ${{ startsWith(matrix.python-version,'3') }}
