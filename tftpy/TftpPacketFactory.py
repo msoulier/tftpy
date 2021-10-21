@@ -13,6 +13,7 @@ from .TftpShared import *
 log = logging.getLogger("tftpy.TftpPacketFactory")
 
 
+
 class TftpPacketFactory(object):
     """This class generates TftpPacket objects. It is responsible for parsing
     raw buffers off of the wire and returning objects representing them, via

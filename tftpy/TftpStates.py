@@ -138,7 +138,7 @@ class TftpState(object):
         log.debug("In sendError, being asked to send error %d", errorcode)
         errpkt = TftpPacketERR()
         errpkt.errorcode = errorcode
-        if self.context.tidport == None:
+        if self.context.tidport is None:
             log.debug("Error packet received outside session. Discarding")
         else:
             self.context.sock.sendto(
@@ -158,10 +158,8 @@ class TftpState(object):
         self.context.last_pkt = pkt
 
     def resendLast(self):
-        "Resend the last sent packet due to a timeout."
-        log.warning(
-            "Resending packet %s on sessions %s" % (self.context.last_pkt, self)
-        )
+        """Resend the last sent packet due to a timeout."""
+        log.warning("Resending packet %s on sessions %s" % (self.context.last_pkt, self))
         self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
         self.context.metrics.add_dup(self.context.last_pkt)
         sendto_port = self.context.tidport
@@ -259,8 +257,7 @@ class TftpServerState(TftpState):
         if self.context.host != raddress or self.context.port != rport:
             self.sendError(TftpErrors.UnknownTID)
             log.error(
-                "Expected traffic from %s:%s but received it "
-                "from %s:%s instead."
+                "Expected traffic from %s:%s but received it from %s:%s instead."
                 % (self.context.host, self.context.port, raddress, rport)
             )
             # FIXME: increment an error count?
@@ -307,7 +304,7 @@ class TftpStateServerRecvRRQ(TftpServerState):
     received an RRQ packet."""
 
     def handle(self, pkt, raddress, rport):
-        "Handle an initial RRQ packet as a server."
+        """Handle an initial RRQ packet as a server."""
         log.debug("In TftpStateServerRecvRRQ.handle")
         sendoack = self.serverInitial(pkt, raddress, rport)
         path = self.full_path
@@ -383,7 +380,7 @@ class TftpStateServerRecvWRQ(TftpServerState):
                     os.mkdir(current, 0o700)
 
     def handle(self, pkt, raddress, rport):
-        "Handle an initial WRQ packet as a server."
+        """Handle an initial WRQ packet as a server."""
         log.debug("In TftpStateServerRecvWRQ.handle")
         sendoack = self.serverInitial(pkt, raddress, rport)
         path = self.full_path
@@ -452,7 +449,7 @@ class TftpStateExpectACK(TftpState):
     download."""
 
     def handle(self, pkt, raddress, rport):
-        "Handle a packet, hopefully an ACK since we just sent a DAT."
+        """Handle a packet, hopefully an ACK since we just sent a DAT."""
         if isinstance(pkt, TftpPacketACK):
             log.debug("Received ACK for packet %d" % pkt.blocknumber)
             # Is this an ack to the one we just sent?

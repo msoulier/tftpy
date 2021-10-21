@@ -13,6 +13,7 @@ from .TftpShared import *
 log = logging.getLogger("tftpy.TftpPacketTypes")
 
 
+
 class TftpSession(object):
     """This class is the base class for the tftp client and server. Any shared
     code should be in this class."""
@@ -422,7 +423,7 @@ class TftpPacketERR(TftpPacket):
         return self
 
     def decode(self):
-        "Decode self.buffer, populating instance variables and return self."
+        """Decode self.buffer, populating instance variables and return self."""
         buflen = len(self.buffer)
         tftpassert(buflen >= 4, "malformed ERR packet, too short")
         log.debug("Decoding ERR packet, length %s bytes", buflen)

@@ -22,6 +22,7 @@ from .TftpShared import *
 log = logging.getLogger("tftpy.TftpServer")
 
 
+
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
     listen for client requests.
@@ -124,8 +125,7 @@ class TftpServer(TftpSession):
                     break
 
             # Build the inputlist array of sockets to select() on.
-            inputlist = []
-            inputlist.append(self.sock)
+            inputlist = [self.sock]
             for key in self.sessions:
                 inputlist.append(self.sessions[key].sock)
 
@@ -164,19 +164,15 @@ class TftpServer(TftpSession):
                     # which should safely work through NAT.
                     key = "%s:%s" % (raddress, rport)
 
-                    if not key in self.sessions:
-                        log.debug(
-                            "Creating new server context for session key = %s" % key
-                        )
-                        self.sessions[key] = TftpContextServer(
-                            raddress,
-                            rport,
-                            timeout,
-                            self.root,
-                            self.dyn_file_func,
-                            self.upload_open,
-                            retries=retries,
-                        )
+                    if key not in self.sessions:
+                        log.debug("Creating new server context for session key = %s" % key)
+                        self.sessions[key] = TftpContextServer(raddress,
+                                                               rport,
+                                                               timeout,
+                                                               self.root,
+                                                               self.dyn_file_func,
+                                                               self.upload_open,
+                                                               retries=retries)
                         try:
                             self.sessions[key].start(buffer)
                         except TftpException as err:
@@ -200,7 +196,7 @@ class TftpServer(TftpSession):
                             log.debug("Matched input to session key %s" % key)
                             try:
                                 self.sessions[key].cycle()
-                                if self.sessions[key].state == None:
+                                if self.sessions[key].state is None:
                                     log.info("Successful transfer.")
                                     deletion_list.append(key)
                             except TftpException as err:

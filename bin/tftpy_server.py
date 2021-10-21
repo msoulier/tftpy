@@ -67,7 +67,7 @@ def main():
         )
         handler.setFormatter(debug_formatter)
     elif options.quiet:
-        log.setLevel(logging.WARN)
+        log.setLevel(logging.WARNING)
 
     if not options.root:
         parser.print_help()
