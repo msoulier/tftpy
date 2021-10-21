@@ -159,7 +159,9 @@ class TftpState(object):
 
     def resendLast(self):
         """Resend the last sent packet due to a timeout."""
-        log.warning("Resending packet %s on sessions %s" % (self.context.last_pkt, self))
+        log.warning(
+            "Resending packet %s on sessions %s" % (self.context.last_pkt, self)
+        )
         self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
         self.context.metrics.add_dup(self.context.last_pkt)
         sendto_port = self.context.tidport

@@ -22,7 +22,6 @@ from .TftpShared import *
 log = logging.getLogger("tftpy.TftpServer")
 
 
-
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
     listen for client requests.
@@ -165,14 +164,18 @@ class TftpServer(TftpSession):
                     key = "%s:%s" % (raddress, rport)
 
                     if key not in self.sessions:
-                        log.debug("Creating new server context for session key = %s" % key)
-                        self.sessions[key] = TftpContextServer(raddress,
-                                                               rport,
-                                                               timeout,
-                                                               self.root,
-                                                               self.dyn_file_func,
-                                                               self.upload_open,
-                                                               retries=retries)
+                        log.debug(
+                            "Creating new server context for session key = %s" % key
+                        )
+                        self.sessions[key] = TftpContextServer(
+                            raddress,
+                            rport,
+                            timeout,
+                            self.root,
+                            self.dyn_file_func,
+                            self.upload_open,
+                            retries=retries,
+                        )
                         try:
                             self.sessions[key].start(buffer)
                         except TftpException as err:

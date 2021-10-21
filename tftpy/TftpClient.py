@@ -15,7 +15,6 @@ from .TftpShared import *
 log = logging.getLogger("tftpy.TftpClient")
 
 
-
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client. Once instantiated, a
     download can be initiated via the download() method, or an upload via the

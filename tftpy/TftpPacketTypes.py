@@ -13,7 +13,6 @@ from .TftpShared import *
 log = logging.getLogger("tftpy.TftpPacketTypes")
 
 
-
 class TftpSession(object):
     """This class is the base class for the tftp client and server. Any shared
     code should be in this class."""
