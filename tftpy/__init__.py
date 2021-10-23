@@ -13,11 +13,6 @@ import sys
 
 import pkg_resources
 
-# Make sure that this is at least Python 3
-required_version = (3, 0)
-if sys.version_info < required_version:
-    raise ImportError("Requires at least Python 3.0")
-
 from . import TftpContexts, TftpPacketFactory, TftpPacketTypes, TftpStates
 from . import __name__ as pkg_name
 from .TftpClient import TftpClient
@@ -34,3 +29,8 @@ def _get_version():
 
 
 __version__ = _get_version()
+
+# Make sure that this is at least Python 3
+required_version = (3, 0)
+if sys.version_info < required_version:
+    raise ImportError("Requires at least Python 3.0")

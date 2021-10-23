@@ -5,11 +5,23 @@ corresponding encode and decode methods for them."""
 
 import logging
 import struct
-import sys
 
 from .TftpShared import *
 
 log = logging.getLogger("tftpy.TftpPacketTypes")
+
+__all__ = [
+    "TftpSession",
+    "TftpPacketWithOptions",
+    "TftpPacket",
+    "TftpPacketInitial",
+    "TftpPacketRRQ",
+    "TftpPacketWRQ",
+    "TftpPacketDAT",
+    "TftpPacketACK",
+    "TftpPacketERR",
+    "TftpPacketOACK",
+]
 
 
 class TftpSession:

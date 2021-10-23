@@ -5,7 +5,6 @@ performed via a standard logging object set in TftpShared."""
 
 
 import logging
-import types
 
 from .TftpContexts import TftpContextClientDownload, TftpContextClientUpload
 from .TftpPacketTypes import *
