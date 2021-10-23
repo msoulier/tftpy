@@ -49,8 +49,8 @@ class TftpClient(TftpSession):
         form of a TftpPacketDAT object. The timeout parameter may be used to
         override the default SOCK_TIMEOUT setting, which is the amount of time
         that the client will wait for a receive packet to arrive.
-        The retires paramater may be used to override the default DEF_TIMEOUT_RETRIES
-        settings, which is the amount of retransmission attemtpts the client will initiate
+        The retires parameter may be used to override the default DEF_TIMEOUT_RETRIES
+        settings, which is the amount of retransmission attempts the client will initiate
         after encountering a timeout.
 
         Note: If output is a hyphen, stdout is used."""
@@ -107,8 +107,8 @@ class TftpClient(TftpSession):
         TftpPacketDAT object. The timeout parameter may be used to override
         the default SOCK_TIMEOUT setting, which is the amount of time that
         the client will wait for a DAT packet to be ACKd by the server.
-        The retires paramater may be used to override the default DEF_TIMEOUT_RETRIES
-        settings, which is the amount of retransmission attemtpts the client will initiate
+        The retires parameter may be used to override the default DEF_TIMEOUT_RETRIES
+        settings, which is the amount of retransmission attempts the client will initiate
         after encountering a timeout.
 
         Note: If input is a hyphen, stdin is used."""

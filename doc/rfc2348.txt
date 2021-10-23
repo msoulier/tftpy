@@ -5,7 +5,7 @@
 
 
 Network Working Group                                          G. Malkin
-Request for Commments: 2348                                 Bay Networks
+Request for Comments: 2348                                  Bay Networks
 Updates: 1350                                                  A. Harkin
 Obsoletes: 1783                                      Hewlett Packard Co.
 Category: Standards Track                                       May 1998
@@ -95,8 +95,8 @@ RFC 2348                 TFTP Blocksize Option                  May 1998
    The rules for determining the final packet are unchanged from [1].
    The reception of a data packet with a data length less than the
    negotiated blocksize is the final packet.  If the blocksize is
-   greater than the amount of data to be transfered, the first packet is
-   the final packet.  If the amount of data to be transfered is an
+   greater than the amount of data to be transferred, the first packet is
+   the final packet.  If the amount of data to be transferred is an
    integral multiple of the blocksize, an extra data packet containing
    no data is sent to end the transfer.
 
@@ -183,7 +183,7 @@ RFC 2348                 TFTP Blocksize Option                  May 1998
 
    Of course, if the blocksize exceeds the path MTU, IP fragmentation
    and reassembly will begin to add more overhead.  This will be more
-   noticable the greater the number of gateways in the path.
+   noticeable the greater the number of gateways in the path.
 
 Security Considerations
 
