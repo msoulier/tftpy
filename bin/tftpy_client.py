@@ -107,7 +107,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    class Progress(object):
+    class Progress:
         def __init__(self, out):
             self.progress = 0
             self.out = out

@@ -1,5 +1,4 @@
 # vim: ts=4 sw=4 et ai:
-# -*- coding: utf8 -*-
 #
 # TFTPy documentation build configuration file, created by
 # sphinx-quickstart on Sun Jul 11 18:48:32 2010.
@@ -41,8 +40,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"TFTPy"
-copyright = u"2010, Michael P. Soulier"
+project = "TFTPy"
+copyright = "2010, Michael P. Soulier"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -176,7 +175,7 @@ htmlhelp_basename = "TFTPydoc"
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "TFTPy.tex", u"TFTPy Documentation", u"Michael P. Soulier", "manual"),
+    ("index", "TFTPy.tex", "TFTPy Documentation", "Michael P. Soulier", "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

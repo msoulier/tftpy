@@ -267,7 +267,7 @@ class TestTftpyState(unittest.TestCase):
         self.customUploadHelper(lambda p: open(p, "wb"))
 
     def testClientServerUploadCustomOpenForbids(self):
-        with self.assertRaisesRegexp(tftpy.TftpException, "Access violation"):
+        with self.assertRaisesRegex(tftpy.TftpException, "Access violation"):
             self.customUploadHelper(lambda p: None)
 
     def testClientServerUploadTsize(self):

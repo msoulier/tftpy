@@ -1,5 +1,4 @@
 # vim: ts=4 sw=4 et ai:
-# -*- coding: utf8 -*-
 """This module implements the TFTP Client functionality. Instantiate an
 instance of the client, and then use its upload or download method. Logging is
 performed via a standard logging object set in TftpShared."""
@@ -57,9 +56,7 @@ class TftpClient(TftpSession):
         Note: If output is a hyphen, stdout is used."""
         # We're downloading.
         log.debug("Creating download context with the following params:")
-        log.debug(
-            "host = %s, port = %s, filename = %s" % (self.host, self.iport, filename)
-        )
+        log.debug(f"host = {self.host}, port = {self.iport}, filename = {filename}")
         log.debug(
             "options = %s, packethook = %s, timeout = %s"
             % (self.options, packethook, timeout)
