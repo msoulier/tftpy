@@ -17,7 +17,6 @@ import socket
 import sys
 import time
 
-from . import compat
 from .TftpPacketFactory import TftpPacketFactory
 from .TftpPacketTypes import *
 from .TftpShared import *
@@ -298,7 +297,7 @@ class TftpContextClientUpload(TftpContext):
         if hasattr(input, "read"):
             self.fileobj = input
         elif input == "-":
-            self.fileobj = compat.binary_stdin()
+            self.fileobj = sys.stdin.buffer
         else:
             self.fileobj = open(input, "rb")
 
