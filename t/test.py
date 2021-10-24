@@ -13,6 +13,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 import tftpy
+from tftpy.TftpShared import DEF_TIMEOUT_RETRIES
 
 log = logging.getLogger("tftpy")
 log.setLevel(logging.DEBUG)
@@ -184,8 +185,8 @@ class TestTftpyState(unittest.TestCase):
         self,
         options,
         output="/tmp/out",
-        cretries=tftpy.DEF_TIMEOUT_RETRIES,
-        sretries=tftpy.DEF_TIMEOUT_RETRIES,
+        cretries=DEF_TIMEOUT_RETRIES,
+        sretries=DEF_TIMEOUT_RETRIES,
     ):
         """Fire up a client and a server and do a download."""
         root = os.path.dirname(os.path.abspath(__file__))
