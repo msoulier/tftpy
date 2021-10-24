@@ -62,11 +62,12 @@ Front-end Modules
 These modules are the ones that you will need to use directly to implement a
 TFTP client or server.
 
-The :mod:`tftpy` Module
+The `tftpy` Module
 ~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: tftpy
    :members:
    :show-inheritance:
+   :noindex:
 
 The `TftpClient` Module
 ~~~~~~~~~~~~~~~~~~~~~~~
