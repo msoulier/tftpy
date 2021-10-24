@@ -5,9 +5,17 @@ parse() method."""
 
 
 import logging
+import struct
 
-from .TftpPacketTypes import *
-from .TftpShared import *
+from .TftpPacketTypes import (
+    TftpPacketACK,
+    TftpPacketDAT,
+    TftpPacketERR,
+    TftpPacketOACK,
+    TftpPacketRRQ,
+    TftpPacketWRQ,
+)
+from .TftpShared import tftpassert
 
 log = logging.getLogger("tftpy.TftpPacketFactory")
 

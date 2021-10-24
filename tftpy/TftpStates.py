@@ -13,8 +13,23 @@ error, in which case a TftpException is returned instead."""
 import logging
 import os
 
-from .TftpPacketTypes import *
-from .TftpShared import *
+from .TftpPacketTypes import (
+    TftpPacketACK,
+    TftpPacketDAT,
+    TftpPacketERR,
+    TftpPacketOACK,
+    TftpPacketRRQ,
+    TftpPacketWRQ,
+)
+from .TftpShared import (
+    DEF_BLKSIZE,
+    DELAY_BLOCK,
+    MAX_BLKSIZE,
+    MIN_BLKSIZE,
+    TftpErrors,
+    TftpException,
+    TftpFileNotFoundError,
+)
 
 log = logging.getLogger("tftpy.TftpStates")
 

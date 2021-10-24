@@ -6,7 +6,7 @@ corresponding encode and decode methods for them."""
 import logging
 import struct
 
-from .TftpShared import *
+from .TftpShared import MAX_BLKSIZE, MIN_BLKSIZE, TftpException, tftpassert
 
 log = logging.getLogger("tftpy.TftpPacketTypes")
 

@@ -8,7 +8,6 @@ import threading
 import time
 import unittest
 from contextlib import contextmanager
-from errno import EINTR
 from multiprocessing import Queue
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -456,19 +455,19 @@ class TestTftpyState(unittest.TestCase):
         root = os.path.dirname(os.path.abspath(__file__))
         server = tftpy.TftpServer(root)
         client = tftpy.TftpClient("localhost", 20001, {})
+        stopped_early = False
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
             try:
                 # parent - let the server start
-                stopped_early = False
                 time.sleep(1)
 
                 def delay_hook(pkt):
                     time.sleep(0.005)  # 5ms
 
                 client.download("640KBFILE", output, delay_hook)
-            except:
+            except Exception:
                 log.warning("client threw exception as expected")
                 stopped_early = True
 
@@ -476,7 +475,7 @@ class TestTftpyState(unittest.TestCase):
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
 
-            self.assertTrue(stopped_early == True, "Server should not exit early")
+            self.assertTrue(stopped_early, "Server should not exit early")
 
         else:
             import signal
@@ -500,11 +499,11 @@ class TestTftpyState(unittest.TestCase):
         root = os.path.dirname(os.path.abspath(__file__))
         server = tftpy.TftpServer(root)
         client = tftpy.TftpClient("localhost", 20001, {})
+        stopped_early = True
         # Fork a server and run the client in this process.
         child_pid = os.fork()
         if child_pid:
             try:
-                stopped_early = True
                 # parent - let the server start
                 time.sleep(1)
 
@@ -513,14 +512,14 @@ class TestTftpyState(unittest.TestCase):
 
                 client.download("640KBFILE", output, delay_hook)
                 stopped_early = False
-            except:
+            except Exception:
                 log.warning("client threw exception as expected")
 
             finally:
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
 
-            self.assertTrue(stopped_early == False, "Server should not exit early")
+            self.assertFalse(stopped_early, "Server should not exit early")
 
         else:
             import signal

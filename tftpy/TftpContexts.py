@@ -17,9 +17,16 @@ import sys
 import time
 
 from .TftpPacketFactory import TftpPacketFactory
-from .TftpPacketTypes import *
-from .TftpShared import *
-from .TftpStates import *
+from .TftpPacketTypes import TftpPacketRRQ, TftpPacketWRQ
+from .TftpShared import (
+    DEF_TIMEOUT_RETRIES,
+    MAX_BLKSIZE,
+    MAX_DUPS,
+    TftpFileNotFoundError,
+    TftpTimeout,
+    tftpassert,
+)
+from .TftpStates import TftpStateSentRRQ, TftpStateSentWRQ, TftpStateServerStart
 
 log = logging.getLogger("tftpy.TftpContext")
 
@@ -428,7 +435,7 @@ class TftpContextClientDownload(TftpContext):
                 else:
                     log.warning("resending last packet")
                     self.state.resendLast()
-            except TftpFileNotFoundError as err:
+            except TftpFileNotFoundError:
                 # If we received file not found, then we should not save the open
                 # output file or we'll be left with a size zero file. Delete it,
                 # if it exists.

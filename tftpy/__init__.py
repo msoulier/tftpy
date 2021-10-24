@@ -17,7 +17,20 @@ from . import TftpContexts, TftpPacketFactory, TftpPacketTypes, TftpStates
 from . import __name__ as pkg_name
 from .TftpClient import TftpClient
 from .TftpServer import TftpServer
-from .TftpShared import *
+from .TftpShared import TftpErrors, TftpException, TftpFileNotFoundError, TftpTimeout
+
+__all__ = [
+    "TftpClient",
+    "TftpServer",
+    "TftpContexts",
+    "TftpPacketFactory",
+    "TftpPacketTypes",
+    "TftpStates",
+    "TftpException",
+    "TftpErrors",
+    "TftpTimeout",
+    "TftpFileNotFoundError",
+]
 
 
 def _get_version():

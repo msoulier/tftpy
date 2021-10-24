@@ -7,8 +7,15 @@ performed via a standard logging object set in TftpShared."""
 import logging
 
 from .TftpContexts import TftpContextClientDownload, TftpContextClientUpload
-from .TftpPacketTypes import *
-from .TftpShared import *
+from .TftpPacketTypes import TftpSession
+from .TftpShared import (
+    DEF_TIMEOUT_RETRIES,
+    MAX_BLKSIZE,
+    MIN_BLKSIZE,
+    SOCK_TIMEOUT,
+    TftpException,
+    tftpassert,
+)
 
 log = logging.getLogger("tftpy.TftpClient")
 
@@ -49,8 +56,8 @@ class TftpClient(TftpSession):
         override the default SOCK_TIMEOUT setting, which is the amount of time
         that the client will wait for a receive packet to arrive.
         The retires parameter may be used to override the default DEF_TIMEOUT_RETRIES
-        settings, which is the amount of retransmission attempts the client will initiate
-        after encountering a timeout.
+        settings, which is the amount of retransmission attempts the client
+        will initiate after encountering a timeout.
 
         Note: If output is a hyphen, stdout is used."""
         # We're downloading.
@@ -107,8 +114,8 @@ class TftpClient(TftpSession):
         the default SOCK_TIMEOUT setting, which is the amount of time that
         the client will wait for a DAT packet to be ACKd by the server.
         The retires parameter may be used to override the default DEF_TIMEOUT_RETRIES
-        settings, which is the amount of retransmission attempts the client will initiate
-        after encountering a timeout.
+        settings, which is the amount of retransmission attempts the client
+        will initiate after encountering a timeout.
 
         Note: If input is a hyphen, stdin is used."""
         self.context = TftpContextClientUpload(

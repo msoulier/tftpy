@@ -15,8 +15,15 @@ from errno import EINTR
 
 from .TftpContexts import TftpContextServer
 from .TftpPacketFactory import TftpPacketFactory
-from .TftpPacketTypes import *
-from .TftpShared import *
+from .TftpPacketTypes import TftpSession
+from .TftpShared import (
+    DEF_TFTP_PORT,
+    DEF_TIMEOUT_RETRIES,
+    MAX_BLKSIZE,
+    SOCK_TIMEOUT,
+    TftpException,
+    TftpTimeout,
+)
 
 log = logging.getLogger("tftpy.TftpServer")
 
@@ -86,7 +93,7 @@ class TftpServer(TftpSession):
         """Start a server listening on the supplied interface and port. This
         defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
         supply a different socket timeout value, if desired."""
-        tftp_factory = TftpPacketFactory()
+        _ = TftpPacketFactory()
 
         # Don't use new 2.5 ternary operator yet
         # listenip = listenip if listenip else '0.0.0.0'
