@@ -5,7 +5,7 @@
 
 
 Network Working Group                                          G. Malkin
-Request for Commments: 2347                                 Bay Networks
+Request for Comments: 2347                                  Bay Networks
 Updates: 1350                                                  A. Harkin
 Obsoletes: 1782                                      Hewlett Packard Co.
 Category: Standards Track                                       May 1998

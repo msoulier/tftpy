@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <small>[Compare with 0.8.0]()</small>
 
 ### Added
-- Add retires paramater to client and server sessions ([08cf590](nicodemus.digitaltorque.ca:git/tftpy/commit/08cf5909b0497ca18c218a7131f77d5761700cf1) by israelv).
+- Add retires parameter to client and server sessions ([08cf590](nicodemus.digitaltorque.ca:git/tftpy/commit/08cf5909b0497ca18c218a7131f77d5761700cf1) by israelv).
 - Add retires to context initializers ([f8d033c](nicodemus.digitaltorque.ca:git/tftpy/commit/f8d033c5e4fb83a856c720424c5863d8d7601c73) by israelv).
 
 ### Fixed

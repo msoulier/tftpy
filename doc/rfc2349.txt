@@ -5,7 +5,7 @@
 
 
 Network Working Group                                          G. Malkin
-Request for Commments: 2349                                 Bay Networks
+Request for Comments: 2349                                  Bay Networks
 Updates: 1350                                                  A. Harkin
 Obsoletes: 1784                                      Hewlett Packard Co.
 Category: Standards Track                                       May 1998
@@ -125,7 +125,7 @@ RFC 2349    TFTP Timeout Interval and Transfer Size Options     May 1998
          a NULL-terminated field.
 
       size
-         The size of the file to be transfered.  This is a NULL-
+         The size of the file to be transferred.  This is a NULL-
          terminated field.
 
    For example:

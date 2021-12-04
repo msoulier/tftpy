@@ -67,7 +67,7 @@ Thanks to Kuba Kończyk for the patch.
 
 About Release 0.4.5:
 ====================
-Bugfix release for compatability issues on Win32, among other small issues.
+Bugfix release for compatibility issues on Win32, among other small issues.
 
 About Release 0.4.4:
 ====================
