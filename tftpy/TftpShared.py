@@ -1,5 +1,4 @@
 # vim: ts=4 sw=4 et ai:
-# -*- coding: utf8 -*-
 """This module holds all objects shared by all other modules in tftpy."""
 
 
@@ -24,7 +23,7 @@ def tftpassert(condition, msg):
         raise TftpException(msg)
 
 
-class TftpErrors(object):
+class TftpErrors:
     """This class is a convenience for defining the common tftp error codes,
     and making them more readable in the code."""
 

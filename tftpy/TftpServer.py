@@ -1,5 +1,4 @@
 # vim: ts=4 sw=4 et ai:
-# -*- coding: utf8 -*-
 """This module implements the TFTP Server functionality. Instantiate an
 instance of the server, and then run the listen() method to listen for client
 requests. Logging is performed via a standard logging object set in
@@ -59,7 +58,7 @@ class TftpServer(TftpSession):
         for name in "dyn_file_func", "upload_open":
             attr = getattr(self, name)
             if attr and not callable(attr):
-                raise TftpException("{} supplied, but it is not callable.".format(name))
+                raise TftpException(f"{name} supplied, but it is not callable.")
         if os.path.exists(self.root):
             log.debug("tftproot %s does exist", self.root)
             if not os.path.isdir(self.root):
@@ -93,13 +92,13 @@ class TftpServer(TftpSession):
         # listenip = listenip if listenip else '0.0.0.0'
         if not listenip:
             listenip = "0.0.0.0"
-        log.info("Server requested on ip %s, port %s" % (listenip, listenport))
+        log.info(f"Server requested on ip {listenip}, port {listenport}")
         try:
             # FIXME - sockets should be non-blocking
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sock.bind((listenip, listenport))
             _, self.listenport = self.sock.getsockname()
-        except socket.error as err:
+        except OSError as err:
             # Reraise it for now.
             raise err
 
@@ -134,7 +133,7 @@ class TftpServer(TftpSession):
                 readyinput, readyoutput, readyspecial = select.select(
                     inputlist, [], [], timeout
                 )
-            except select.error as err:
+            except OSError as err:
                 if err[0] == EINTR:
                     # Interrupted system call
                     log.debug("Interrupted syscall, retrying")
@@ -161,7 +160,7 @@ class TftpServer(TftpSession):
 
                     # Forge a session key based on the client's IP and port,
                     # which should safely work through NAT.
-                    key = "%s:%s" % (raddress, rport)
+                    key = f"{raddress}:{rport}"
 
                     if key not in self.sessions:
                         log.debug(

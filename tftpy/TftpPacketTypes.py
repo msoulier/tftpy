@@ -1,5 +1,4 @@
 # vim: ts=4 sw=4 et ai:
-# -*- coding: utf8 -*-
 """This module implements the packet types of TFTP itself, and the
 corresponding encode and decode methods for them."""
 
@@ -13,7 +12,7 @@ from .TftpShared import *
 log = logging.getLogger("tftpy.TftpPacketTypes")
 
 
-class TftpSession(object):
+class TftpSession:
     """This class is the base class for the tftp client and server. Any shared
     code should be in this class."""
 
@@ -21,7 +20,7 @@ class TftpSession(object):
     pass
 
 
-class TftpPacketWithOptions(object):
+class TftpPacketWithOptions:
     """This class exists to permit some TftpPacket subclasses to share code
     regarding options handling. It does not inherit from TftpPacket, as the
     goal is just to share code here, and not cause diamond inheritance."""
@@ -100,7 +99,7 @@ class TftpPacketWithOptions(object):
         return options
 
 
-class TftpPacket(object):
+class TftpPacket:
     """This class is the parent class of all tftp packet classes. It is an
     abstract class, providing an interface, and should not be instantiated
     directly."""
@@ -318,7 +317,7 @@ class TftpPacketDAT(TftpPacket):
         easy method chaining."""
         # We know the first 2 bytes are the opcode. The second two are the
         # block number.
-        (self.blocknumber,) = struct.unpack(str("!H"), self.buffer[2:4])
+        (self.blocknumber,) = struct.unpack("!H", self.buffer[2:4])
         log.debug("decoding DAT packet, block number %d", self.blocknumber)
         log.debug("should be %d bytes in the packet total", len(self.buffer))
         # Everything else is data.
@@ -349,7 +348,7 @@ class TftpPacketACK(TftpPacket):
         log.debug(
             "encoding ACK: opcode = %d, block = %d", self.opcode, self.blocknumber
         )
-        self.buffer = struct.pack(str("!HH"), self.opcode, self.blocknumber)
+        self.buffer = struct.pack("!HH", self.opcode, self.blocknumber)
         return self
 
     def decode(self):
@@ -357,7 +356,7 @@ class TftpPacketACK(TftpPacket):
             log.debug("detected TFTP ACK but request is too large, will truncate")
             log.debug("buffer was: %s", repr(self.buffer))
             self.buffer = self.buffer[0:4]
-        self.opcode, self.blocknumber = struct.unpack(str("!HH"), self.buffer)
+        self.opcode, self.blocknumber = struct.unpack("!HH", self.buffer)
         log.debug(
             "decoded ACK packet: opcode = %d, block = %d", self.opcode, self.blocknumber
         )
