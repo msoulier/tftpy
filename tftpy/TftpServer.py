@@ -119,16 +119,16 @@ class TftpServer(TftpSession):
                 log.info("Shutting down now. Session count: %d" % len(self.sessions))
                 self.sock.close()
                 for key in self.sessions:
-                    log.warning("Forcefully closed session with %s" %
-                        self.sessions[key].host)
+                    log.warning(
+                        "Forcefully closed session with %s" % self.sessions[key].host
+                    )
                     self.sessions[key].end()
                 self.sessions = []
                 break
 
             elif self.shutdown_gracefully:
                 if not self.sessions:
-                    log.info("In graceful shutdown mode and all "
-                             "sessions complete.")
+                    log.info("In graceful shutdown mode and all sessions complete.")
                     self.sock.close()
                     break
 
