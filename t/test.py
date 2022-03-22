@@ -316,6 +316,57 @@ class TestTftpyState(unittest.TestCase):
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue(finalstate is None)
 
+    def testServerTimeoutExpectACK(self):
+        raddress = "127.0.0.2"
+        rport = 10000
+        timeout = 5
+        root = os.path.dirname(os.path.abspath(__file__))
+        # Testing without the dyn_func_file set.
+        serverstate = tftpy.TftpContexts.TftpContextServer(
+            raddress, rport, timeout, root
+        )
+
+        self.assertTrue(isinstance(serverstate, tftpy.TftpContexts.TftpContextServer))
+
+        rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
+        rrq.filename = "640KBFILE"
+        rrq.mode = "octet"
+        rrq.options = {}
+
+        # Start the download.
+        serverstate.start(rrq.encode().buffer)
+
+        ack = tftpy.TftpPacketTypes.TftpPacketACK()
+        ack.blocknumber = 1
+
+        # Server expects ACK at the beginning of transmission
+        self.assertTrue(
+            isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+        )
+
+        # Receive first ACK for block 1, next block expected is 2
+        serverstate.state = serverstate.state.handle(ack, raddress, rport)
+        self.assertTrue(
+            isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+        )
+        self.assertEqual(serverstate.state.context.next_block, 2)
+
+        # Receive duplicate ACK for block 1, next block expected is still 2
+        serverstate.state = serverstate.state.handle(ack, raddress, rport)
+        self.assertTrue(
+            isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+        )
+        self.assertEqual(serverstate.state.context.next_block, 2)
+
+        # Receive duplicate ACK for block 1 after timeout for resending block 2
+        serverstate.state.context.metrics.last_dat_time -= 10  # Simulate 10 seconds time warp
+        self.assertRaises(
+            tftpy.TftpTimeoutExpectACK, serverstate.state.handle, ack, raddress, rport
+        )
+        self.assertTrue(
+            isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+        )
+
     def testServerNoOptionsSubdir(self):
         raddress = "127.0.0.2"
         rport = 10000

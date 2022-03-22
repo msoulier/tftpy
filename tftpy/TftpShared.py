@@ -52,6 +52,13 @@ class TftpTimeout(TftpException):
     pass
 
 
+class TftpTimeoutExpectACK(TftpTimeout):
+    """This class represents a timeout error when waiting for ACK of the current block
+    and receiving duplicate ACK for previous block from the other end."""
+
+    pass
+
+
 class TftpFileNotFoundError(TftpException):
     """This class represents an error condition where we received a file
     not found error."""

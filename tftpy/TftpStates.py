@@ -12,6 +12,7 @@ error, in which case a TftpException is returned instead."""
 
 import logging
 import os
+import time
 
 from .TftpPacketTypes import *
 from .TftpShared import *
@@ -92,8 +93,6 @@ class TftpState:
         blocknumber = self.context.next_block
         # Test hook
         if DELAY_BLOCK and DELAY_BLOCK == blocknumber:
-            import time
-
             log.debug("Deliberately delaying 10 seconds...")
             time.sleep(10)
         dat = None
@@ -111,6 +110,7 @@ class TftpState:
         self.context.sock.sendto(
             dat.encode().buffer, (self.context.host, self.context.tidport)
         )
+        self.context.metrics.last_dat_time = time.time()
         if self.context.packethook:
             self.context.packethook(dat)
         self.context.last_pkt = dat
@@ -465,6 +465,9 @@ class TftpStateExpectACK(TftpState):
             elif pkt.blocknumber < self.context.next_block:
                 log.warning("Received duplicate ACK for block %d" % pkt.blocknumber)
                 self.context.metrics.add_dup(pkt)
+                if self.context.metrics.last_dat_time > 0:
+                    if time.time() - self.context.metrics.last_dat_time > self.context.timeout:
+                        raise TftpTimeoutExpectACK("Timeout waiting for ACK for block %d" % self.context.next_block)
 
             else:
                 log.warning(
