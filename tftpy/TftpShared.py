@@ -12,6 +12,11 @@ DEF_TFTP_PORT = 69
 
 # A hook for deliberately introducing delay in testing.
 DELAY_BLOCK = 0
+# A hook to simulate a bad network
+NETWORK_UNRELIABILITY = 0
+# 0 is disabled, anything positive is the inverse of the percentage of
+# dropped traffic. For example, 1000 would cause 0.1% of DAT packets to
+# be skipped to simulate lost packets.
 
 
 def tftpassert(condition, msg):

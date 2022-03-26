@@ -280,6 +280,11 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerDownloadOptions({})
         tftpy.TftpStates.DELAY_BLOCK = 0
 
+    def testClientServerNoOptionsUnreliable(self):
+        tftpy.TftpStates.NETWORK_UNRELIABILITY = 1000
+        self.clientServerDownloadOptions({})
+        tftpy.TftpStates.NETWORK_UNRELIABILITY = 0
+
     def testServerNoOptions(self):
         raddress = "127.0.0.2"
         rport = 10000

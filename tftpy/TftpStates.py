@@ -12,6 +12,7 @@ error, in which case a TftpException is returned instead."""
 
 import logging
 import os
+import random
 
 from .TftpPacketTypes import *
 from .TftpShared import *
@@ -93,7 +94,6 @@ class TftpState:
         # Test hook
         if DELAY_BLOCK and DELAY_BLOCK == blocknumber:
             import time
-
             log.debug("Deliberately delaying 10 seconds...")
             time.sleep(10)
         dat = None
@@ -107,10 +107,14 @@ class TftpState:
         dat.data = buffer
         dat.blocknumber = blocknumber
         self.context.metrics.bytes += len(dat.data)
-        log.debug("Sending DAT packet %d", dat.blocknumber)
-        self.context.sock.sendto(
-            dat.encode().buffer, (self.context.host, self.context.tidport)
-        )
+        # Testing hook
+        if NETWORK_UNRELIABILITY > 0 and random.randrange(NETWORK_UNRELIABILITY) == 0:
+            log.warning("Skipping DAT packet %d for testing", dat.blocknumber)
+        else:
+            log.debug("Sending DAT packet %d", dat.blocknumber)
+            self.context.sock.sendto(
+                dat.encode().buffer, (self.context.host, self.context.tidport)
+            )
         if self.context.packethook:
             self.context.packethook(dat)
         self.context.last_pkt = dat
@@ -126,9 +130,13 @@ class TftpState:
         log.info("Sending ack to block %d" % blocknumber)
         ackpkt = TftpPacketACK()
         ackpkt.blocknumber = blocknumber
-        self.context.sock.sendto(
-            ackpkt.encode().buffer, (self.context.host, self.context.tidport)
-        )
+        # Testing hook
+        if NETWORK_UNRELIABILITY > 0 and random.randrange(NETWORK_UNRELIABILITY) == 0:
+            log.warning("Skipping ACK packet %d for testing", ackpkt.blocknumber)
+        else:
+            self.context.sock.sendto(
+                ackpkt.encode().buffer, (self.context.host, self.context.tidport)
+            )
         self.context.last_pkt = ackpkt
 
     def sendError(self, errorcode):
@@ -158,6 +166,7 @@ class TftpState:
 
     def resendLast(self):
         """Resend the last sent packet due to a timeout."""
+        assert( self.context.last_pkt is not None )
         log.warning(f"Resending packet {self.context.last_pkt} on sessions {self}")
         self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
         self.context.metrics.add_dup(self.context.last_pkt)
