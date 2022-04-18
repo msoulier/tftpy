@@ -316,9 +316,7 @@ class TestTftpyState(unittest.TestCase):
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue(finalstate is None)
 
-    def testServerNoOptionsUnreliable(self):
-        log.debug("===> Running testcase testClientServerNoOptionsUnreliable")
-        tftpy.TftpStates.NETWORK_UNRELIABILITY = 1000
+    def testServerTimeoutExpectACK(self):
         raddress = "127.0.0.2"
         rport = 10000
         timeout = 5
@@ -337,23 +335,37 @@ class TestTftpyState(unittest.TestCase):
 
         # Start the download.
         serverstate.start(rrq.encode().buffer)
-        # At a 512 byte blocksize, this should be 1280 packets exactly.
-        for block in range(1, 1281):
-            # Should be in expectack state.
-            self.assertTrue(
-                isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
-            )
-            ack = tftpy.TftpPacketTypes.TftpPacketACK()
-            ack.blocknumber = block % 65536
-            serverstate.state = serverstate.state.handle(ack, raddress, rport)
 
-        # The last DAT packet should be empty, indicating a completed
-        # transfer.
         ack = tftpy.TftpPacketTypes.TftpPacketACK()
-        ack.blocknumber = 1281 % 65536
-        finalstate = serverstate.state.handle(ack, raddress, rport)
-        self.assertTrue(finalstate is None)
-        tftpy.TftpStates.NETWORK_UNRELIABILITY = 0
+        ack.blocknumber = 1
+
+        # Server expects ACK at the beginning of transmission
+        self.assertTrue(
+            isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+        )
+
+        # Receive first ACK for block 1, next block expected is 2
+        serverstate.state = serverstate.state.handle(ack, raddress, rport)
+        self.assertTrue(
+            isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+        )
+        self.assertEqual(serverstate.state.context.next_block, 2)
+
+        # Receive duplicate ACK for block 1, next block expected is still 2
+        serverstate.state = serverstate.state.handle(ack, raddress, rport)
+        self.assertTrue(
+            isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+        )
+        self.assertEqual(serverstate.state.context.next_block, 2)
+
+        # Receive duplicate ACK for block 1 after timeout for resending block 2
+        serverstate.state.context.metrics.last_dat_time -= 10  # Simulate 10 seconds time warp
+        self.assertRaises(
+            tftpy.TftpTimeoutExpectACK, serverstate.state.handle, ack, raddress, rport
+        )
+        self.assertTrue(
+            isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+        )
 
     def testServerNoOptionsSubdir(self):
         raddress = "127.0.0.2"

@@ -180,6 +180,8 @@ class TftpServer(TftpSession):
                         )
                         try:
                             self.sessions[key].start(buffer)
+                        except TftpTimeoutExpectACK:
+                            self.sessions[key].timeout_expectACK = True
                         except TftpException as err:
                             deletion_list.append(key)
                             log.error(
@@ -199,11 +201,14 @@ class TftpServer(TftpSession):
                     for key in self.sessions:
                         if readysock == self.sessions[key].sock:
                             log.debug("Matched input to session key %s" % key)
+                            self.sessions[key].timeout_expectACK = False
                             try:
                                 self.sessions[key].cycle()
                                 if self.sessions[key].state is None:
                                     log.info("Successful transfer.")
                                     deletion_list.append(key)
+                            except TftpTimeoutExpectACK:
+                                self.sessions[key].timeout_expectACK = True
                             except TftpException as err:
                                 deletion_list.append(key)
                                 log.error(

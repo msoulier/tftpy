@@ -43,6 +43,7 @@ class TftpMetrics:
         self.start_time = 0
         self.end_time = 0
         self.duration = 0
+        self.last_dat_time = 0
         # Rates
         self.bps = 0
         self.kbps = 0
@@ -112,6 +113,9 @@ class TftpContext:
         self.last_pkt = None
         # Count the number of retry attempts.
         self.retry_count = 0
+        # Flag to signal timeout error when waiting for ACK of the current block
+        # and at the same time receiving duplicate ACK of previous block
+        self.timeout_expectACK = False
 
     def getBlocksize(self):
         """Fetch the current blocksize for this session."""
@@ -127,6 +131,8 @@ class TftpContext:
         """Compare current time with last_update time, and raise an exception
         if we're over the timeout time."""
         log.debug("checking for timeout on session %s", self)
+        if self.timeout_expectACK:
+            raise TftpTimeout("Timeout waiting for traffic")
         if now - self.last_update > self.timeout:
             raise TftpTimeout("Timeout waiting for traffic")
 
