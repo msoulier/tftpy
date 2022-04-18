@@ -562,7 +562,6 @@ class TftpStateSentWRQ(TftpState):
                 return self
 
         elif isinstance(pkt, TftpPacketERR):
-            self.sendError(TftpErrors.IllegalTftpOp)
             raise TftpException("Received ERR from server: %s" % pkt)
 
         elif isinstance(pkt, TftpPacketRRQ):
@@ -627,7 +626,6 @@ class TftpStateSentRRQ(TftpState):
             raise TftpException("Received WRQ from server while in download")
 
         elif isinstance(pkt, TftpPacketERR):
-            self.sendError(TftpErrors.IllegalTftpOp)
             log.debug("Received ERR packet: %s", pkt)
             if pkt.errorcode == TftpErrors.FileNotFound:
                 raise TftpFileNotFoundError("File not found")
