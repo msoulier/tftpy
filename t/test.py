@@ -280,11 +280,6 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerDownloadOptions({})
         tftpy.TftpStates.DELAY_BLOCK = 0
 
-    def testClientServerNoOptionsUnreliable(self):
-        tftpy.TftpStates.NETWORK_UNRELIABILITY = 1000
-        self.clientServerDownloadOptions({})
-        tftpy.TftpStates.NETWORK_UNRELIABILITY = 0
-
     def testServerNoOptions(self):
         raddress = "127.0.0.2"
         rport = 10000
@@ -320,6 +315,45 @@ class TestTftpyState(unittest.TestCase):
         ack.blocknumber = 1281 % 65536
         finalstate = serverstate.state.handle(ack, raddress, rport)
         self.assertTrue(finalstate is None)
+
+    def testServerNoOptionsUnreliable(self):
+        log.debug("===> Running testcase testClientServerNoOptionsUnreliable")
+        tftpy.TftpStates.NETWORK_UNRELIABILITY = 1000
+        raddress = "127.0.0.2"
+        rport = 10000
+        timeout = 5
+        root = os.path.dirname(os.path.abspath(__file__))
+        # Testing without the dyn_func_file set.
+        serverstate = tftpy.TftpContexts.TftpContextServer(
+            raddress, rport, timeout, root
+        )
+
+        self.assertTrue(isinstance(serverstate, tftpy.TftpContexts.TftpContextServer))
+
+        rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
+        rrq.filename = "640KBFILE"
+        rrq.mode = "octet"
+        rrq.options = {}
+
+        # Start the download.
+        serverstate.start(rrq.encode().buffer)
+        # At a 512 byte blocksize, this should be 1280 packets exactly.
+        for block in range(1, 1281):
+            # Should be in expectack state.
+            self.assertTrue(
+                isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+            )
+            ack = tftpy.TftpPacketTypes.TftpPacketACK()
+            ack.blocknumber = block % 65536
+            serverstate.state = serverstate.state.handle(ack, raddress, rport)
+
+        # The last DAT packet should be empty, indicating a completed
+        # transfer.
+        ack = tftpy.TftpPacketTypes.TftpPacketACK()
+        ack.blocknumber = 1281 % 65536
+        finalstate = serverstate.state.handle(ack, raddress, rport)
+        self.assertTrue(finalstate is None)
+        tftpy.TftpStates.NETWORK_UNRELIABILITY = 0
 
     def testServerNoOptionsSubdir(self):
         raddress = "127.0.0.2"

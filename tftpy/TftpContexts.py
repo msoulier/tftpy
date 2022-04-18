@@ -268,6 +268,7 @@ class TftpContextServer(TftpContext):
         TftpContext.end(self)
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s", self.metrics.end_time)
+        log.debug("Detected dups in transfer: %d", self.metrics.dupcount)
         self.metrics.compute()
 
 
