@@ -17,14 +17,14 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: [Ubuntu]
+        os: [Debian]
         python-version: [3.6, 3.7, 3.8]
 
     steps:
       - uses: actions/checkout@master
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python
         with:
           python-version: ${{ matrix.python-version }}
 
