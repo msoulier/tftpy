@@ -209,7 +209,7 @@ class TestTftpyState(unittest.TestCase):
     @contextmanager
     def dummyServerDir(self):
         tmpdir = mkdtemp()
-        for dirname in ("foo", "foo-private", "other"):
+        for dirname in ("foo", "foo-private", "other", "with spaces"):
             os.mkdir(os.path.join(tmpdir, dirname))
             with open(os.path.join(tmpdir, dirname, "bar"), "w") as w:
                 w.write("baz")
@@ -608,6 +608,31 @@ class TestTftpyState(unittest.TestCase):
             server.stop(now=False)
             server_thread.join()
 
+class TestTftpyMisc(unittest.TestCase):
+    def testDirectoriesWithSpaces(self):
+        """Handle the evil directory names."""
+        root = "/tmp/bad dirname"
+        if not os.path.exists(root):
+            os.mkdir(root)
+        home = os.path.dirname(os.path.abspath(__file__))
+        filename = "640KBFILE"
+        input_path = os.path.join(home, filename)
+        print("input_path is", input_path)
+        server = tftpy.TftpServer(root)
+        client = tftpy.TftpClient("localhost", 20001)
+        # Fork a server and run the client in this process.
+        child_pid = os.fork()
+        if child_pid:
+            # parent - let the server start
+            try:
+                time.sleep(1)
+                client.upload("640KBFILE", input_path)
+            finally:
+                os.kill(child_pid, 15)
+                os.waitpid(child_pid, 0)
+
+        else:
+            server.listen("localhost", 20001)
 
 if __name__ == "__main__":
     unittest.main()
