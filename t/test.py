@@ -437,9 +437,8 @@ class TestTftpyState(unittest.TestCase):
             rrq.options = {}
 
             # Start the download.
-            self.assertRaises(
-                tftpy.TftpException, serverstate.start, rrq.encode().buffer
-            )
+            with self.assertRaisesRegex(tftpy.TftpException, 'bad file path'):
+                serverstate.start(rrq.encode().buffer)
 
     def testServerInsecurePathRootSibling(self):
         raddress = "127.0.0.2"
@@ -456,9 +455,8 @@ class TestTftpyState(unittest.TestCase):
             rrq.options = {}
 
             # Start the download.
-            self.assertRaises(
-                tftpy.TftpException, serverstate.start, rrq.encode().buffer
-            )
+            with self.assertRaisesRegex(tftpy.TftpException, 'bad file path'):
+                serverstate.start(rrq.encode().buffer)
 
     def testServerSecurePathAbsolute(self):
         raddress = "127.0.0.2"
@@ -492,6 +490,27 @@ class TestTftpyState(unittest.TestCase):
             )
             rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
             rrq.filename = "bar"
+            rrq.mode = "octet"
+            rrq.options = {}
+
+            # Start the download.
+            serverstate.start(rrq.encode().buffer)
+            # Should be in expectack state.
+            self.assertTrue(
+                isinstance(serverstate.state, tftpy.TftpStates.TftpStateExpectACK)
+            )
+
+    def testServerPathRoot(self):
+        raddress = "127.0.0.2"
+        rport = 10000
+        timeout = 5
+        with self.dummyServerDir() as d:
+            root = '/'
+            serverstate = tftpy.TftpContexts.TftpContextServer(
+                raddress, rport, timeout, root
+            )
+            rrq = tftpy.TftpPacketTypes.TftpPacketRRQ()
+            rrq.filename = os.path.join(os.path.abspath(d), "foo", "bar")
             rrq.mode = "octet"
             rrq.options = {}
 
