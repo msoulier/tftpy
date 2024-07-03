@@ -295,8 +295,11 @@ class TftpServerState(TftpState):
         # (e.g. '..') and ensure that is still within the server's
         # root directory
         self.full_path = os.path.abspath(full_path)
-        log.debug("full_path is %s", full_path)
-        if self.full_path.startswith(os.path.normpath(self.context.root) + os.sep):
+        # Determine root path, replace double slashes with single
+        # // => /
+        root_path = (os.path.normpath(self.context.root) + os.sep).replace('//', '/')
+        log.debug("full_path is %s, server root is %s" % (self.full_path, root_path))
+        if self.full_path.startswith(root_path):
             log.info("requested file is in the server root - good")
         else:
             log.warning("requested file is not within the server root - bad")
