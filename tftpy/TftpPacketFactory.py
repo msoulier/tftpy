@@ -31,6 +31,7 @@ class TftpPacketFactory:
         """This method is used to parse an existing datagram into its
         corresponding TftpPacket object. The buffer is the raw bytes off of
         the network."""
+        tftpassert(len(buffer) > 2, 'Invalid packet size')
         log.debug("parsing a %d byte packet" % len(buffer))
         (opcode,) = struct.unpack("!H", buffer[:2])
         log.debug("opcode is %d" % opcode)

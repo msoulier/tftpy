@@ -149,6 +149,10 @@ class TestTftpyClasses(unittest.TestCase):
                 isinstance(factory._TftpPacketFactory__create(opcode), classes[opcode]),
                 "opcode %d returns the correct class" % opcode,
             )
+        packet = factory.parse(b'\x00\x04\x00\x00')
+        self.assertEqual(packet.opcode, 4)
+        with self.assertRaisesRegex(tftpy.TftpShared.TftpException, 'Invalid packet size'):
+            factory.parse(b'\x00\x04')
 
 
 class TestTftpyState(unittest.TestCase):
