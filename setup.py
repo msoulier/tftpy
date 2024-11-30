@@ -30,7 +30,7 @@ if __name__ == "__main__":
         },
         setup_requires=[
             "setuptools_scm[toml]",
-            "setuptools_scm_git_archive >= 1.0",
+            "importlib_resources;python_version<'3.8'",
         ],
         python_requires=">=3.6",
         classifiers=[

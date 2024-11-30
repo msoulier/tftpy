@@ -4,8 +4,69 @@ build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-v -rxX --tb=long --color=yes --junitxml=build/results.xml --cov-report=xml --cov"
+log_cli =  false
+doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
+addopts = "--strict-markers -rxX --tb=long --color=yes"
+markers = "subscript"
 testpaths = [
     "t/",
-    "t/test.py",
 ]
+
+[tool.coverage.run]
+branch = true
+source = [
+    "tftpy/",
+    ".tox/py*/lib/python*/site-packages/",
+]
+omit = [
+    "t/*",
+    ".tox",
+]
+
+[tool.coverage.paths]
+source = ["tftpy"]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "raise AssertionError",
+    "if typing.TYPE_CHECKING:",
+    "if TYPE_CHECKING:",
+]
+omit = [
+    "t/*",
+]
+
+[tool.black]
+line-length = 90
+skip-string-normalization = true
+include = '\.py$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | docs
+  | dist
+  | t
+)/
+'''
+
+[tool.pycln]
+all = true
+
+[tool.isort]
+line_length = 72
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
