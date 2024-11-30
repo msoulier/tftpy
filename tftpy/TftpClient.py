@@ -29,7 +29,7 @@ class TftpClient(TftpSession):
         self.localip = localip
         if "blksize" in self.options:
             size = self.options["blksize"]
-            tftpassert(int == type(size), "blksize must be an int")
+            tftpassert(isinstance(size, int), "blksize must be an int")
             if size < MIN_BLKSIZE or size > MAX_BLKSIZE:
                 raise TftpException("Invalid blksize: %d" % size)
 

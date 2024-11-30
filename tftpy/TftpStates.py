@@ -108,7 +108,8 @@ class TftpState:
         dat.blocknumber = blocknumber
         self.context.metrics.bytes += len(dat.data)
         # Testing hook
-        if NETWORK_UNRELIABILITY > 0 and random.randrange(NETWORK_UNRELIABILITY) == 0:
+        if NETWORK_UNRELIABILITY > 0 and random.randrange(
+                NETWORK_UNRELIABILITY) == 0:
             log.warning("Skipping DAT packet %d for testing", dat.blocknumber)
         else:
             log.debug("Sending DAT packet %d", dat.blocknumber)
@@ -132,7 +133,8 @@ class TftpState:
         ackpkt = TftpPacketACK()
         ackpkt.blocknumber = blocknumber
         # Testing hook
-        if NETWORK_UNRELIABILITY > 0 and random.randrange(NETWORK_UNRELIABILITY) == 0:
+        if NETWORK_UNRELIABILITY > 0 and random.randrange(
+                NETWORK_UNRELIABILITY) == 0:
             log.warning("Skipping ACK packet %d for testing",
                         ackpkt.blocknumber)
         else:
@@ -300,7 +302,8 @@ class TftpServerState(TftpState):
         # root directory
         self.full_path = os.path.abspath(full_path)
         log.debug("full_path is %s", full_path)
-        if self.full_path.startswith(os.path.normpath(self.context.root) + os.sep):
+        if self.full_path.startswith(
+                os.path.normpath(self.context.root) + os.sep):
             log.info("requested file is in the server root - good")
         else:
             log.warning("requested file is not within the server root - bad")
@@ -447,10 +450,12 @@ class TftpStateServerStart(TftpState):
         log.debug("In TftpStateServerStart.handle")
         if isinstance(pkt, TftpPacketRRQ):
             log.debug("Handling an RRQ packet")
-            return TftpStateServerRecvRRQ(self.context).handle(pkt, raddress, rport)
+            return TftpStateServerRecvRRQ(
+                self.context).handle(pkt, raddress, rport)
         elif isinstance(pkt, TftpPacketWRQ):
             log.debug("Handling a WRQ packet")
-            return TftpStateServerRecvWRQ(self.context).handle(pkt, raddress, rport)
+            return TftpStateServerRecvWRQ(
+                self.context).handle(pkt, raddress, rport)
         else:
             self.sendError(TftpErrors.IllegalTftpOp)
             raise TftpException(

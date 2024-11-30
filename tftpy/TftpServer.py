@@ -37,7 +37,8 @@ class TftpServer(TftpSession):
     requested destination path and server context. It must either return a
     file-like object ready for writing or None if the path is invalid."""
 
-    def __init__(self, tftproot="/tftpboot", dyn_file_func=None, upload_open=None):
+    def __init__(self, tftproot="/tftpboot",
+                 dyn_file_func=None, upload_open=None):
         self.listenip = None
         self.listenport = None
         self.sock = None
