@@ -42,7 +42,8 @@ class TftpPacketWithOptions:
             if isinstance(newval, bytes):
                 newval = newval.decode("ascii")
             myoptions[newkey] = newval
-            log.debug("populated myoptions with %s = %s", newkey, myoptions[newkey])
+            log.debug("populated myoptions with %s = %s",
+                      newkey, myoptions[newkey])
 
         log.debug("setting options hash to: %s", myoptions)
         self._options = myoptions
@@ -73,7 +74,7 @@ class TftpPacketWithOptions:
         log.debug("about to iterate options buffer counting nulls")
         length = 0
         for i in range(len(buffer)):
-            if ord(buffer[i : i + 1]) == 0:
+            if ord(buffer[i: i + 1]) == 0:
                 log.debug("found a null at length %d", length)
                 if length > 0:
                     fmt += b"%dsx" % length
@@ -154,7 +155,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
             ptype = "RRQ"
         else:
             ptype = "WRQ"
-        log.debug("Encoding %s packet, filename = %s, mode = %s", ptype, filename, mode)
+        log.debug("Encoding %s packet, filename = %s, mode = %s",
+                  ptype, filename, mode)
         for key in self.options:
             log.debug("    Option %s = %s", key, self.options[key])
 
@@ -189,7 +191,8 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         log.debug("options_list is %s", options_list)
         log.debug("size of struct is %d", struct.calcsize(fmt))
 
-        self.buffer = struct.pack(fmt, self.opcode, filename, mode, *options_list)
+        self.buffer = struct.pack(
+            fmt, self.opcode, filename, mode, *options_list)
 
         log.debug("buffer is %s", repr(self.buffer))
         return self
@@ -204,9 +207,10 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         log.debug("in decode: about to iterate buffer counting nulls")
         subbuf = self.buffer[2:]
         for i in range(len(subbuf)):
-            if ord(subbuf[i : i + 1]) == 0:
+            if ord(subbuf[i: i + 1]) == 0:
                 nulls += 1
-                log.debug("found a null at length %d, now have %d", length, nulls)
+                log.debug("found a null at length %d, now have %d",
+                          length, nulls)
                 fmt += b"%dsx" % length
                 length = -1
                 # At 2 nulls, we want to mark that position for decoding.
@@ -229,7 +233,7 @@ class TftpPacketInitial(TftpPacket, TftpPacketWithOptions):
         log.debug("set filename to %s", self.filename)
         log.debug("set mode to %s", self.mode)
 
-        self.options = self.decode_options(subbuf[tlength + 1 :])
+        self.options = self.decode_options(subbuf[tlength + 1:])
         log.debug("options dict is now %s", self.options)
         return self
 
@@ -434,9 +438,11 @@ class TftpPacketERR(TftpPacket):
             log.debug("Good ERR packet > 4 bytes")
             fmt = b"!HH%dsx" % (len(self.buffer) - 5)
             log.debug("Decoding ERR packet with fmt: %s", fmt)
-            self.opcode, self.errorcode, self.errmsg = struct.unpack(fmt, self.buffer)
+            self.opcode, self.errorcode, self.errmsg = struct.unpack(
+                fmt, self.buffer)
         log.error(
-            "ERR packet - errorcode: %d, message: %s" % (self.errorcode, self.errmsg)
+            "ERR packet - errorcode: %d, message: %s" % (
+                self.errorcode, self.errmsg)
         )
         return self
 
@@ -504,7 +510,8 @@ class TftpPacketOACK(TftpPacket, TftpPacketWithOptions):
                 elif name == "tsize":
                     size = int(self.options[name])
                     if size < 0:
-                        raise TftpException("Negative file sizes not supported")
+                        raise TftpException(
+                            "Negative file sizes not supported")
                 else:
                     raise TftpException("Unsupported option: %s" % name)
         return True

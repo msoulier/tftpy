@@ -9,6 +9,11 @@ As a client of tftpy, this is the only module that you should need to import
 directly. The TftpClient and TftpServer classes can be reached through it.
 """
 
+from .TftpShared import *
+from .TftpServer import TftpServer
+from .TftpClient import TftpClient
+from . import __name__ as pkg_name
+from . import TftpContexts, TftpPacketFactory, TftpPacketTypes, TftpStates
 import sys
 
 import pkg_resources
@@ -17,12 +22,6 @@ import pkg_resources
 required_version = (3, 0)
 if sys.version_info < required_version:
     raise ImportError("Requires at least Python 3.0")
-
-from . import TftpContexts, TftpPacketFactory, TftpPacketTypes, TftpStates
-from . import __name__ as pkg_name
-from .TftpClient import TftpClient
-from .TftpServer import TftpServer
-from .TftpShared import *
 
 
 def _get_version():

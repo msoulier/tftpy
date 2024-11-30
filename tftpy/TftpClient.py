@@ -29,7 +29,7 @@ class TftpClient(TftpSession):
         self.localip = localip
         if "blksize" in self.options:
             size = self.options["blksize"]
-            tftpassert(int == type(size), "blksize must be an int")
+            tftpassert(isinstance(size, int), "blksize must be an int")
             if size < MIN_BLKSIZE or size > MAX_BLKSIZE:
                 raise TftpException("Invalid blksize: %d" % size)
 
@@ -56,7 +56,8 @@ class TftpClient(TftpSession):
         Note: If output is a hyphen, stdout is used."""
         # We're downloading.
         log.debug("Creating download context with the following params:")
-        log.debug(f"host = {self.host}, port = {self.iport}, filename = {filename}")
+        log.debug(
+            f"host = {self.host}, port = {self.iport}, filename = {filename}")
         log.debug(
             "options = %s, packethook = %s, timeout = %s"
             % (self.options, packethook, timeout)
@@ -135,7 +136,8 @@ class TftpClient(TftpSession):
             log.info("Duration too short, rate undetermined")
         else:
             log.info(
-                "Uploaded %d bytes in %.2f seconds" % (metrics.bytes, metrics.duration)
+                "Uploaded %d bytes in %.2f seconds" % (
+                    metrics.bytes, metrics.duration)
             )
             log.info("Average rate: %.2f kbps" % metrics.kbps)
         log.info("%.2f bytes in resent data" % metrics.resent_bytes)

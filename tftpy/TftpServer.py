@@ -37,7 +37,8 @@ class TftpServer(TftpSession):
     requested destination path and server context. It must either return a
     file-like object ready for writing or None if the path is invalid."""
 
-    def __init__(self, tftproot="/tftpboot", dyn_file_func=None, upload_open=None):
+    def __init__(self, tftproot="/tftpboot",
+                 dyn_file_func=None, upload_open=None):
         self.listenip = None
         self.listenport = None
         self.sock = None
@@ -58,7 +59,8 @@ class TftpServer(TftpSession):
         for name in "dyn_file_func", "upload_open":
             attr = getattr(self, name)
             if attr and not callable(attr):
-                raise TftpException(f"{name} supplied, but it is not callable.")
+                raise TftpException(
+                    f"{name} supplied, but it is not callable.")
         if os.path.exists(self.root):
             log.debug("tftproot %s does exist", self.root)
             if not os.path.isdir(self.root):
@@ -109,11 +111,12 @@ class TftpServer(TftpSession):
             log.debug("shutdown_immediately is %s" % self.shutdown_immediately)
             log.debug("shutdown_gracefully is %s" % self.shutdown_gracefully)
             if self.shutdown_immediately:
-                log.info("Shutting down now. Session count: %d" % len(self.sessions))
+                log.info("Shutting down now. Session count: %d" %
+                         len(self.sessions))
                 self.sock.close()
                 for key in self.sessions:
                     log.warning("Forcefully closed session with %s" %
-                        self.sessions[key].host)
+                                self.sessions[key].host)
                     self.sessions[key].end()
                 self.sessions = []
                 break
@@ -219,7 +222,8 @@ class TftpServer(TftpSession):
                             # session.
                             break
                     else:
-                        log.error("Can't find the owner for this packet. Discarding.")
+                        log.error(
+                            "Can't find the owner for this packet. Discarding.")
 
             log.debug("Looping on all sessions to check for timeouts")
             now = time.time()
@@ -235,7 +239,8 @@ class TftpServer(TftpSession):
                         )
                         deletion_list.append(key)
                     else:
-                        log.debug("resending on session %s" % self.sessions[key])
+                        log.debug("resending on session %s" %
+                                  self.sessions[key])
                         self.sessions[key].state.resendLast()
 
             log.debug("Iterating deletion list.")
@@ -243,7 +248,8 @@ class TftpServer(TftpSession):
                 log.info("")
                 log.info("Session %s complete" % key)
                 if key in self.sessions:
-                    log.debug("Gathering up metrics from session before deleting")
+                    log.debug(
+                        "Gathering up metrics from session before deleting")
                     self.sessions[key].end()
                     metrics = self.sessions[key].metrics
                     if metrics.duration == 0:
@@ -254,13 +260,15 @@ class TftpServer(TftpSession):
                             % (metrics.bytes, metrics.duration)
                         )
                         log.info("Average rate: %.2f kbps" % metrics.kbps)
-                    log.info("%.2f bytes in resent data" % metrics.resent_bytes)
+                    log.info("%.2f bytes in resent data" %
+                             metrics.resent_bytes)
                     log.info("%d duplicate packets" % metrics.dupcount)
                     log.debug("Deleting session %s" % key)
                     del self.sessions[key]
                     log.debug("Session list is now %s" % self.sessions)
                 else:
-                    log.warning("Strange, session %s is not on the deletion list" % key)
+                    log.warning(
+                        "Strange, session %s is not on the deletion list" % key)
 
         self.is_running.clear()
 

@@ -81,7 +81,8 @@ class TftpMetrics:
 class TftpContext:
     """The base class of the contexts."""
 
-    def __init__(self, host, port, timeout, retries=DEF_TIMEOUT_RETRIES, localip=""):
+    def __init__(self, host, port, timeout,
+                 retries=DEF_TIMEOUT_RETRIES, localip=""):
         """Constructor for the base context, setting shared instance
         variables."""
         self.file_to_transfer = None
@@ -97,7 +98,8 @@ class TftpContext:
         self.state = None
         self.next_block = 0
         self.factory = TftpPacketFactory()
-        # Note, setting the host will also set self.address, as it's a property.
+        # Note, setting the host will also set self.address, as it's a
+        # property.
         self.host = host
         self.port = port
         # The port associated with the TID
@@ -442,7 +444,8 @@ class TftpContextClientDownload(TftpContext):
                 log.error("Received File not found error")
                 if self.fileobj is not None and not self.filelike_fileobj:
                     if os.path.exists(self.fileobj.name):
-                        log.debug("unlinking output file of %s", self.fileobj.name)
+                        log.debug("unlinking output file of %s",
+                                  self.fileobj.name)
                         os.unlink(self.fileobj.name)
 
                 raise
