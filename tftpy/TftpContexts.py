@@ -442,7 +442,8 @@ class TftpContextClientDownload(TftpContext):
                 log.error("Received File not found error")
                 if self.fileobj is not None and not self.filelike_fileobj:
                     if os.path.exists(self.fileobj.name):
-                        log.debug("unlinking output file of %s", self.fileobj.name)
+                        log.debug("unlinking output file of %s",
+                                  self.fileobj.name)
                         os.unlink(self.fileobj.name)
 
                 raise

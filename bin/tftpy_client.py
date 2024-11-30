@@ -98,12 +98,14 @@ def main():
     if options.filename:
         options.download = options.filename
     if not options.host or (not options.download and not options.upload):
-        sys.stderr.write("Both the --host and --filename options are required.\n")
+        sys.stderr.write(
+            "Both the --host and --filename options are required.\n")
         parser.print_help()
         sys.exit(1)
 
     if options.debug and options.quiet:
-        sys.stderr.write("The --debug and --quiet options are mutually exclusive.\n")
+        sys.stderr.write(
+            "The --debug and --quiet options are mutually exclusive.\n")
         parser.print_help()
         sys.exit(1)
 

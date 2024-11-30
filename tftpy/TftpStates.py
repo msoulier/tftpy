@@ -133,7 +133,8 @@ class TftpState:
         ackpkt.blocknumber = blocknumber
         # Testing hook
         if NETWORK_UNRELIABILITY > 0 and random.randrange(NETWORK_UNRELIABILITY) == 0:
-            log.warning("Skipping ACK packet %d for testing", ackpkt.blocknumber)
+            log.warning("Skipping ACK packet %d for testing",
+                        ackpkt.blocknumber)
         else:
             self.context.sock.sendto(
                 ackpkt.encode().buffer, (self.context.host, self.context.tidport)
@@ -167,8 +168,9 @@ class TftpState:
 
     def resendLast(self):
         """Resend the last sent packet due to a timeout."""
-        assert( self.context.last_pkt is not None )
-        log.warning(f"Resending packet {self.context.last_pkt} on sessions {self}")
+        assert (self.context.last_pkt is not None)
+        log.warning(
+            f"Resending packet {self.context.last_pkt} on sessions {self}")
         self.context.metrics.resent_bytes += len(self.context.last_pkt.buffer)
         self.context.metrics.add_dup(self.context.last_pkt)
         sendto_port = self.context.tidport
@@ -260,7 +262,8 @@ class TftpServerState(TftpState):
         if pkt.mode != "octet":
             # self.sendError(TftpErrors.IllegalTftpOp)
             # raise TftpException("Only octet transfers are supported at this time.")
-            log.warning("Received non-octet mode request. I'll reply with binary data.")
+            log.warning(
+                "Received non-octet mode request. I'll reply with binary data.")
 
         # test host/port of client end
         if self.context.host != raddress or self.context.port != rport:
@@ -289,7 +292,8 @@ class TftpServerState(TftpState):
         if pkt.filename.startswith(self.context.root):
             full_path = pkt.filename
         else:
-            full_path = os.path.join(self.context.root, pkt.filename.lstrip("/"))
+            full_path = os.path.join(
+                self.context.root, pkt.filename.lstrip("/"))
 
         # Use abspath to eliminate any remaining relative elements
         # (e.g. '..') and ensure that is still within the server's
@@ -329,7 +333,8 @@ class TftpStateServerRecvRRQ(TftpServerState):
             )
 
             if self.context.fileobj is None:
-                log.debug("dyn_file_func returned 'None', treating as " "FileNotFound")
+                log.debug(
+                    "dyn_file_func returned 'None', treating as " "FileNotFound")
                 self.sendError(TftpErrors.FileNotFound)
                 raise TftpException("File not found: %s" % path)
         else:
@@ -373,7 +378,7 @@ class TftpStateServerRecvWRQ(TftpServerState):
         """The purpose of this method is to, if necessary, create all of the
         subdirectories leading up to the file to the written."""
         # Pull off everything below the root.
-        subpath = self.full_path[len(self.context.root) :]
+        subpath = self.full_path[len(self.context.root):]
         log.debug("make_subdirs: subpath is %s", subpath)
         # Split on directory separators, but drop the last one, as it should
         # be the filename.
@@ -448,7 +453,8 @@ class TftpStateServerStart(TftpState):
             return TftpStateServerRecvWRQ(self.context).handle(pkt, raddress, rport)
         else:
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("Invalid packet to begin up/download: %s" % pkt)
+            raise TftpException(
+                "Invalid packet to begin up/download: %s" % pkt)
 
 
 class TftpStateExpectACK(TftpState):
@@ -469,15 +475,18 @@ class TftpStateExpectACK(TftpState):
                 else:
                     log.debug("Good ACK, sending next DAT")
                     self.context.next_block += 1
-                    log.debug("Incremented next_block to %d", self.context.next_block)
+                    log.debug("Incremented next_block to %d",
+                              self.context.next_block)
                     self.context.pending_complete = self.sendDAT()
 
             elif pkt.blocknumber < self.context.next_block:
-                log.warning("Received duplicate ACK for block %d" % pkt.blocknumber)
+                log.warning("Received duplicate ACK for block %d" %
+                            pkt.blocknumber)
                 self.context.metrics.add_dup(pkt)
                 if self.context.metrics.last_dat_time > 0:
                     if time.time() - self.context.metrics.last_dat_time > self.context.timeout:
-                        raise TftpTimeoutExpectACK("Timeout waiting for ACK for block %d" % self.context.next_block)
+                        raise TftpTimeoutExpectACK(
+                            "Timeout waiting for ACK for block %d" % self.context.next_block)
 
             else:
                 log.warning(
@@ -518,7 +527,8 @@ class TftpStateExpectDAT(TftpState):
 
         else:
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("Received unknown packet type from peer: " + str(pkt))
+            raise TftpException(
+                "Received unknown packet type from peer: " + str(pkt))
 
 
 class TftpStateSentWRQ(TftpState):
@@ -574,7 +584,8 @@ class TftpStateSentWRQ(TftpState):
 
         else:
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("Received unknown packet type from server: %s" % pkt)
+            raise TftpException(
+                "Received unknown packet type from server: %s" % pkt)
 
         # By default, no state change.
         return self
@@ -634,7 +645,8 @@ class TftpStateSentRRQ(TftpState):
 
         else:
             self.sendError(TftpErrors.IllegalTftpOp)
-            raise TftpException("Received unknown packet type from server: %s" % pkt)
+            raise TftpException(
+                "Received unknown packet type from server: %s" % pkt)
 
         # By default, no state change.
         return self
