@@ -1,11 +1,22 @@
 [build-system]
-requires = ["setuptools", "wheel", "setuptools_scm[toml]"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-v -rxX --tb=long --color=yes --junitxml=build/results.xml --cov-report=xml --cov"
-testpaths = [
-    "t/",
-    "t/test.py",
+[project]
+name = "tftpy"
+version = "0.8.3"
+authors = [
+  { name="Michael Soulier", email="msoulier@digitaltorque.ca" },
 ]
+description = "A TFTP protocol library for Python"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = { text = "MIT" }
+
+[project.urls]
+Homepage = "https://github.com/msoulier/tftpy"
+Issues = "https://github.com/msoulier/tftpy/issues"

@@ -4,27 +4,29 @@ PYTHONIOENCODING=UTF-8
 PGPID=5BC8BE08
 TESTCASE=
 
-.PHONY: help all pypi sdist test clean flakes
+.PHONY: help all upload dist test clean flakes
 
 help:
 	@echo "Targets:"
 	@echo "    all"
 	@echo "    test"
-	@echo "    sdist"
+	@echo "    dist"
 	@echo "    lint"
 	@echo "    clean"
 
-all: test sdist
+all: test dist
 
-pypi: sdist
-	twine upload dist/*
+upload:
+	twine upload --repository tftpy dist/*
 
-sdist:
-	PYTHONPATH=$(PYTHONPATH) $(PY) setup.py sdist
+dist:
+	rm -rf dist
+	mkdir dist
+	python3 -m build
 
 test:
 	rm -rf /tmp/foo
-	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) t/test.py $(TESTCASE) 2>&1 | tee test.log
+	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) tests/test.py $(TESTCASE) 2>&1 | tee test.log
 
 clean:
 	rm -rf dist src tftpy-doc* MANIFEST
