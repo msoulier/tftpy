@@ -4,6 +4,16 @@ PYTHONIOENCODING=UTF-8
 PGPID=5BC8BE08
 TESTCASE=
 
+.PHONY: help all pypi sdist test clean flakes
+
+help:
+	@echo "Targets:"
+	@echo "    all"
+	@echo "    test"
+	@echo "    sdist"
+	@echo "    flakes"
+	@echo "    clean"
+
 all: test sdist
 
 pypi: sdist
