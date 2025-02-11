@@ -11,7 +11,7 @@ help:
 	@echo "    all"
 	@echo "    test"
 	@echo "    sdist"
-	@echo "    flakes"
+	@echo "    lint"
 	@echo "    clean"
 
 all: test sdist
@@ -29,5 +29,5 @@ test:
 clean:
 	rm -rf dist src tftpy-doc* MANIFEST
 
-flakes:
-	pyflakes bin/*.py tftpy/*.py
+lint:
+	PYTHONPATH=$(PYTHONPATH) pylint --rcfile=.pylintrc bin/*.py tftpy/*.py 2>&1 | tee lint.log
