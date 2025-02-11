@@ -1,6 +1,9 @@
 Copyright, Michael P. Soulier, 2010+
 
 # About Release 0.8.3:
+
+Bugfix release:
+
 - Setting the server socket to non-blocking. Closes issue #6, I hope.
 - Ran through autopep8 --aggressive
 - Add packet size check
