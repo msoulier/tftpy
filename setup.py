@@ -16,7 +16,7 @@ if __name__ == "__main__":
         name="tftpy",
         use_scm_version=True,
         description="Python TFTP library",
-        long_description=read_file("README.rst"),
+        long_description=read_file("README.md"),
         long_description_content_type="text/x-rst; charset=UTF-8",
         author="Michael P. Soulier",
         author_email="msoulier@digitaltorque.ca",
