@@ -11,6 +11,11 @@ emailing me directly or opening an issue on github.
 msoulier@digitaltorque.ca
 https://github.com/msoulier/tftpy
 
+# About Release 0.8.5:
+
+- it didn't fix it :) but this should, thanks to
+  https://github.com/maurerle
+
 # About Release 0.8.4:
 
 Bugfix release:

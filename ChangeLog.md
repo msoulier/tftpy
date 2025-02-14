@@ -1,3 +1,14 @@
+2025-02-14  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* tftpy/__init__.py: Removing pkg_resources requirement. Closes
+	#145.
+
+2025-02-14  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* ChangeLog.md, Makefile, README.md, bin/git2cl, notes/sfshell.txt,
+	pyproject.toml, setup.py: Fixing some packaging issues with
+	setuptools. I hope.
+
 2025-02-11  Michael P. Soulier <msoulier@digitaltorque.ca>
 
 	* README.md: Tweaking README
