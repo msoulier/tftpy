@@ -1,5 +1,22 @@
 Copyright, Michael P. Soulier, 2010+
 
+# Installation
+While the module should just be in pypi, so you should be able to just do
+pip install tftpy, if you have the source distribution you can also install
+that with pip install <tarball>. 
+
+I am new to setuptools, so if something isn't working, speak up, either
+emailing me directly or opening an issue on github.
+
+msoulier@digitaltorque.ca
+https://github.com/msoulier/tftpy
+
+# About Release 0.8.4:
+
+Bugfix release:
+
+- transition to setuptools broke some things, hopefully this fixes it
+
 # About Release 0.8.3:
 
 Bugfix release:

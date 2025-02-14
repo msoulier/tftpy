@@ -4,9 +4,3 @@
     - push to site
         - rsync -vr --delete ~/work/tftpy/html/ \
             msoulier,tftpy@web.sourceforge.net:/home/groups/t/tf/tftpy/htdocs
-
-- pushing to pypi
-    - If there is no $HOME/.pypirc
-        - run python setup.py register
-        - then upload
-            - python setup.py sdist upload --sign --identity 5BC8BE08

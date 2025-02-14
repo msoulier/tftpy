@@ -20,6 +20,7 @@ upload:
 	twine upload --repository tftpy dist/*
 
 dist:
+	bin/git2cl > ChangeLog.md
 	rm -rf dist
 	mkdir dist
 	python3 -m build
