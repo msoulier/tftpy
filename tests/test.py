@@ -191,10 +191,11 @@ class TestTftpyState(unittest.TestCase):
         output="/tmp/out",
         cretries=tftpy.DEF_TIMEOUT_RETRIES,
         sretries=tftpy.DEF_TIMEOUT_RETRIES,
+        flock=True
     ):
         """Fire up a client and a server and do a download."""
         root = os.path.dirname(os.path.abspath(__file__))
-        server = tftpy.TftpServer(root)
+        server = tftpy.TftpServer(root, flock=flock)
         client = tftpy.TftpClient("localhost", 20001, options)
         # Fork a server and run the client in this process.
         child_pid = os.fork()
@@ -202,7 +203,7 @@ class TestTftpyState(unittest.TestCase):
             # parent - let the server start
             try:
                 time.sleep(1)
-                client.download("640KBFILE", output, retries=cretries)
+                client.download("640KBFILE", output, retries=cretries, flock=flock)
             finally:
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)
@@ -225,6 +226,9 @@ class TestTftpyState(unittest.TestCase):
 
     def testClientServerNoOptions(self):
         self.clientServerDownloadOptions({})
+
+    def testClientServerNoOptionsNoFlock(self):
+        self.clientServerDownloadOptions({}, flock=False)
 
     def testClientServerNoOptionsRetries(self):
         self.clientServerDownloadOptions({}, cretries=5, sretries=5)

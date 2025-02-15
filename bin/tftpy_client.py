@@ -5,7 +5,7 @@
 import logging
 import os
 import sys
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 import tftpy
 
@@ -22,70 +22,70 @@ log.addHandler(handler)
 
 def main():
     usage = ""
-    parser = OptionParser(usage=usage)
-    parser.add_option(
+    parser = ArgumentParser(usage=usage)
+    parser.add_argument(
         "-H",
         "--host",
         help="remote host or ip address",
     )
-    parser.add_option(
+    parser.add_argument(
         "-p",
         "--port",
         help="remote port to use (default: 69)",
         default=69,
     )
-    parser.add_option(
+    parser.add_argument(
         "-f",
         "--filename",
         help="filename to fetch (deprecated, use download)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-D",
         "--download",
         help="filename to download",
     )
-    parser.add_option(
+    parser.add_argument(
         "-u",
         "--upload",
         help="filename to upload",
     )
-    parser.add_option(
+    parser.add_argument(
         "-b",
         "--blksize",
         help="udp packet size to use (default: 512)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-o",
         "--output",
         help="output file, - for stdout (default: same as download)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-i",
         "--input",
         help="input file, - for stdin (default: same as upload)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-d",
         "--debug",
         action="store_true",
         default=False,
         help="upgrade logging from info to debug",
     )
-    parser.add_option(
+    parser.add_argument(
         "-q",
         "--quiet",
         action="store_true",
         default=False,
         help="downgrade logging from info to warning",
     )
-    parser.add_option(
+    parser.add_argument(
         "-t",
         "--tsize",
         action="store_true",
         default=False,
         help="ask client to send tsize option in download",
     )
-    parser.add_option(
+    parser.add_argument(
         "-l",
         "--localip",
         action="store",
@@ -93,7 +93,15 @@ def main():
         default="",
         help="local IP for client to bind to (ie. interface)",
     )
-    options, args = parser.parse_args()
+    parser.add_argument(
+        "-n",
+        "--no-lock",
+        action="store_false",
+        dest="flock",
+        default=True,
+        help="run without advisory locking on files"
+    )
+    options = parser.parse_args()
     # Handle legacy --filename argument.
     if options.filename:
         options.download = options.filename
@@ -144,6 +152,7 @@ def main():
         int(options.port),
         tftp_options,
         options.localip,
+        flock=options.flock
     )
     try:
         if options.download:

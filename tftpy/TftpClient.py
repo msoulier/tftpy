@@ -16,9 +16,16 @@ log = logging.getLogger("tftpy.TftpClient")
 class TftpClient(TftpSession):
     """This class is an implementation of a tftp client. Once instantiated, a
     download can be initiated via the download() method, or an upload via the
-    upload() method."""
+    upload() method.
 
-    def __init__(self, host, port=69, options={}, localip=""):
+    The host and port options should be obvious. The options dict is tftp options.
+    The localip is optional, but if provided, the client will bind to it for
+    the transfer. The flock boolean is also optional, defaulting to True. If
+    True, then any files read or written in the upload/download will be locked
+    using advisory locking.
+    """
+
+    def __init__(self, host, port=69, options={}, localip="", flock=True):
         TftpSession.__init__(self)
         self.context = None
         self.host = host
@@ -26,6 +33,7 @@ class TftpClient(TftpSession):
         self.filename = None
         self.options = options
         self.localip = localip
+        self.flock = flock
         if "blksize" in self.options:
             size = self.options["blksize"]
             tftpassert(isinstance(size, int), "blksize must be an int")
@@ -38,7 +46,7 @@ class TftpClient(TftpSession):
         output,
         packethook=None,
         timeout=SOCK_TIMEOUT,
-        retries=DEF_TIMEOUT_RETRIES,
+        retries=DEF_TIMEOUT_RETRIES
     ):
         """This method initiates a tftp download from the configured remote
         host, requesting the filename passed. It writes the file to output,
@@ -55,10 +63,8 @@ class TftpClient(TftpSession):
         Note: If output is a hyphen, stdout is used."""
         # We're downloading.
         log.debug("Creating download context with the following params:")
-        log.debug(
-            f"host = {self.host}, port = {self.iport}, filename = {filename}")
-        log.debug(
-            "options = %s, packethook = %s, timeout = %s"
+        log.debug(f"host = {self.host}, port = {self.iport}, filename = {filename}")
+        log.debug("options = %s, packethook = %s, timeout = %s"
             % (self.options, packethook, timeout)
         )
         self.context = TftpContextClientDownload(
@@ -71,10 +77,12 @@ class TftpClient(TftpSession):
             timeout,
             retries=retries,
             localip=self.localip,
+            flock=self.flock
         )
-        self.context.start()
-        # Download happens here
-        self.context.end()
+        with self.context as c:
+            c.start()
+            # Download happens here
+            #self.context.end() - don't have to call end, it's called when we leave the context.
 
         metrics = self.context.metrics
 
@@ -123,9 +131,10 @@ class TftpClient(TftpSession):
             retries=retries,
             localip=self.localip,
         )
-        self.context.start()
-        # Upload happens here
-        self.context.end()
+        with self.context as c:
+            c.start()
+            # Upload happens here
+            #self.context.end() - don't need to call this, done in context manager
 
         metrics = self.context.metrics
 

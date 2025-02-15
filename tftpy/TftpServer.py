@@ -35,10 +35,13 @@ class TftpServer(TftpSession):
 
     upload_open is a callable that is triggered on every upload with the
     requested destination path and server context. It must either return a
-    file-like object ready for writing or None if the path is invalid."""
+    file-like object ready for writing or None if the path is invalid.
+
+    flock is a boolean to tell the server whether to use advisory locking
+    on any real files being read or written in the upload/download."""
 
     def __init__(self, tftproot="/tftpboot",
-                 dyn_file_func=None, upload_open=None):
+                 dyn_file_func=None, upload_open=None, flock=True):
         self.listenip = None
         self.listenport = None
         self.sock = None
@@ -170,9 +173,7 @@ class TftpServer(TftpSession):
                     key = f"{raddress}:{rport}"
 
                     if key not in self.sessions:
-                        log.debug(
-                            "Creating new server context for session key = %s" % key
-                        )
+                        log.debug("Creating new server context for session key = %s" % key)
                         self.sessions[key] = TftpContextServer(
                             raddress,
                             rport,

@@ -4,7 +4,7 @@
 
 import logging
 import sys
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 import tftpy
 
@@ -21,43 +21,51 @@ log.addHandler(handler)
 
 def main():
     usage = ""
-    parser = OptionParser(usage=usage)
-    parser.add_option(
+    parser = ArgumentParser(usage=usage)
+    parser.add_argument(
         "-i",
         "--ip",
         type="string",
         help="ip address to bind to (default: INADDR_ANY)",
         default="",
     )
-    parser.add_option(
+    parser.add_argument(
         "-p",
         "--port",
         type="int",
         help="local port to use (default: 69)",
         default=69,
     )
-    parser.add_option(
+    parser.add_argument(
         "-r",
         "--root",
         type="string",
         help="path to serve from",
         default=None,
     )
-    parser.add_option(
+    parser.add_argument(
         "-q",
         "--quiet",
         action="store_true",
         default=False,
         help="Do not log unless it is critical",
     )
-    parser.add_option(
+    parser.add_argument(
         "-d",
         "--debug",
         action="store_true",
         default=False,
         help="upgrade logging from info to debug",
     )
-    options, args = parser.parse_args()
+    parser.add_argument(
+        "-n",
+        "--no-lock",
+        action="store_false",
+        dest="flock",
+        default=True,
+        help="disable advisory locking on files"
+    )
+    options = parser.parse_args()
 
     if options.debug:
         log.setLevel(logging.DEBUG)
@@ -73,7 +81,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    server = tftpy.TftpServer(options.root)
+    server = tftpy.TftpServer(options.root, flock=options.flock)
     try:
         server.listen(options.ip, options.port)
     except tftpy.TftpException as err:

@@ -15,6 +15,7 @@ import os
 import socket
 import sys
 import time
+import fcntl
 
 from .TftpPacketFactory import TftpPacketFactory
 from .TftpPacketTypes import *
@@ -32,6 +33,7 @@ class TftpMetrics:
     """A class representing metrics of the transfer."""
 
     def __init__(self):
+        log.debug("TftpMetrics.__init__")
         # Bytes transferred
         self.bytes = 0
         # Bytes re-sent
@@ -49,6 +51,9 @@ class TftpMetrics:
         self.kbps = 0
         # Generic errors
         self.errors = 0
+
+    def __del__(self):
+        log.debug("TftpMetrics.__del__")
 
     def compute(self):
         # Compute transfer time
@@ -82,9 +87,10 @@ class TftpContext:
     """The base class of the contexts."""
 
     def __init__(self, host, port, timeout,
-                 retries=DEF_TIMEOUT_RETRIES, localip=""):
+                 retries=DEF_TIMEOUT_RETRIES, localip="", flock=True):
         """Constructor for the base context, setting shared instance
         variables."""
+        log.debug("TftpContext.__init__")
         self.file_to_transfer = None
         self.fileobj = None
         self.options = None
@@ -95,6 +101,7 @@ class TftpContext:
         self.sock.settimeout(timeout)
         self.timeout = timeout
         self.retries = retries
+        self.flock = flock
         self.state = None
         self.next_block = 0
         self.factory = TftpPacketFactory()
@@ -119,15 +126,23 @@ class TftpContext:
         # and at the same time receiving duplicate ACK of previous block
         self.timeout_expectACK = False
 
-    def getBlocksize(self):
-        """Fetch the current blocksize for this session."""
-        return int(self.options.get("blksize", 512))
-
     def __del__(self):
         """Simple destructor to try to call housekeeping in the end method if
         not called explicitly. Leaking file descriptors is not a good
         thing."""
+        log.debug("TftpContext.__del__")
+
+    def __enter__(self):
+        log.debug("__enter__ on TftpContext")
+        return self
+        
+    def __exit__(self, type, value, traceback):
+        log.debug("__exit__ on TftpContext")
         self.end()
+
+    def getBlocksize(self):
+        """Fetch the current blocksize for this session."""
+        return int(self.options.get("blksize", 512))
 
     def checkTimeout(self, now):
         """Compare current time with last_update time, and raise an exception
@@ -150,6 +165,8 @@ class TftpContext:
         self.sock.close()
         if close_fileobj and self.fileobj is not None and not self.fileobj.closed:
             log.debug("self.fileobj is open - closing")
+            if self.flock:
+                fcntl.flock(self.fileobj, fcntl.LOCK_UN)
             self.fileobj.close()
 
     def gethost(self):
@@ -238,8 +255,10 @@ class TftpContextServer(TftpContext):
         dyn_file_func=None,
         upload_open=None,
         retries=DEF_TIMEOUT_RETRIES,
+        flock=True
     ):
-        TftpContext.__init__(self, host, port, timeout, retries)
+        log.debug("TftpContextServer.__init__")
+        super().__init__(host, port, timeout, retries, flock=flock)
         # At this point we have no idea if this is a download or an upload. We
         # need to let the start state determine that.
         self.state = TftpStateServerStart(self)
@@ -247,6 +266,10 @@ class TftpContextServer(TftpContext):
         self.root = root
         self.dyn_file_func = dyn_file_func
         self.upload_open = upload_open
+
+    def __del__(self):
+        log.debug("TftpContextServer.__del__")
+        super().__del__()
 
     def __str__(self):
         return f"{self.host}:{self.port} {self.state}"
@@ -273,7 +296,7 @@ class TftpContextServer(TftpContext):
 
     def end(self):
         """Finish up the context."""
-        TftpContext.end(self)
+        super().end()
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s", self.metrics.end_time)
         log.debug("Detected dups in transfer: %d", self.metrics.dupcount)
@@ -295,8 +318,10 @@ class TftpContextClientUpload(TftpContext):
         timeout,
         retries=DEF_TIMEOUT_RETRIES,
         localip="",
+        flock=True
     ):
-        TftpContext.__init__(self, host, port, timeout, retries, localip)
+        log.debug("TftpContextClientUpload.__init__")
+        super().__init__(host, port, timeout, retries, localip=localip, flock=flock)
         self.file_to_transfer = filename
         self.options = options
         self.packethook = packethook
@@ -308,13 +333,21 @@ class TftpContextClientUpload(TftpContext):
             self.fileobj = sys.stdin.buffer
         else:
             self.fileobj = open(input, "rb")
+            if self.flock:
+                log.debug("locking input file %s", input)
+                try:
+                    fcntl.flock(self.fileobj, fcntl.LOCK_SH | fcntl.LOCK_NB)
+                except OSError as err:
+                    log.error("Failed to acquire read lock on file %s", input)
+                    raise
 
-        log.debug("TftpContextClientUpload.__init__()")
-        log.debug(
-            "file_to_transfer = %s, options = %s"
-            % (self.file_to_transfer, self.options)
-        )
+        log.debug("file_to_transfer = %s, options = %s"
+            % (self.file_to_transfer, self.options))
 
+    def __del__(self):
+        log.debug("TftpContextClientUpload.__del__")
+        super().__del__()
+        
     def __str__(self):
         return f"{self.host}:{self.port} {self.state}"
 
@@ -355,7 +388,7 @@ class TftpContextClientUpload(TftpContext):
 
     def end(self):
         """Finish up the context."""
-        TftpContext.end(self)
+        super().end()
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
         self.metrics.compute()
@@ -376,8 +409,10 @@ class TftpContextClientDownload(TftpContext):
         timeout,
         retries=DEF_TIMEOUT_RETRIES,
         localip="",
+        flock=True
     ):
-        TftpContext.__init__(self, host, port, timeout, retries, localip)
+        log.debug("TftpContextClientDownload.__init__")
+        super().__init__(host, port, timeout, retries, localip=localip, flock=flock)
         # FIXME: should we refactor setting of these params?
         self.file_to_transfer = filename
         self.options = options
@@ -394,12 +429,21 @@ class TftpContextClientDownload(TftpContext):
             self.filelike_fileobj = True
         else:
             self.fileobj = open(output, "wb")
+            if self.flock:
+                log.debug("locking file for writing: %s", output)
+                try:
+                    fcntl.flock(self.fileobj, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except OSError as err:
+                    log.error("Failed to acquire write lock on output file %s: %s", output, err)
+                    raise
 
         log.debug("TftpContextClientDownload.__init__()")
-        log.debug(
-            "file_to_transfer = %s, options = %s"
-            % (self.file_to_transfer, self.options)
-        )
+        log.debug("file_to_transfer = %s, options = %s"
+            % (self.file_to_transfer, self.options))
+
+    def __del__(self):
+        log.debug("TftpContextClientDownload.__del__")
+        super().__del__()
 
     def __str__(self):
         return f"{self.host}:{self.port} {self.state}"
@@ -452,7 +496,7 @@ class TftpContextClientDownload(TftpContext):
 
     def end(self):
         """Finish up the context."""
-        TftpContext.end(self, not self.filelike_fileobj)
+        super().end(not self.filelike_fileobj)
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
         self.metrics.compute()

@@ -1,5 +1,9 @@
 2025-02-14  Michael P. Soulier <msoulier@digitaltorque.ca>
 
+	* ChangeLog.md, README.md, pyproject.toml: Building 0.8.5
+
+2025-02-14  Michael P. Soulier <msoulier@digitaltorque.ca>
+
 	* tftpy/__init__.py: Removing pkg_resources requirement. Closes
 	#145.
 
