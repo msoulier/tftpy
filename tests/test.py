@@ -244,7 +244,7 @@ class TestTftpyState(unittest.TestCase):
         self.clientServerUploadOptions({})
 
     def testClientServerUploadFileObj(self):
-        fileobj = open("t/640KBFILE", "rb")
+        fileobj = open("tests/640KBFILE", "rb")
         self.clientServerUploadOptions({}, input=fileobj)
 
     def testClientServerUploadWithSubdirs(self):
