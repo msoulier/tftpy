@@ -425,7 +425,7 @@ class TftpContextClientDownload(TftpContext):
             self.filelike_fileobj = True
         # If the output filename is -, then use stdout
         elif output == "-":
-            self.fileobj = sys.stdout
+            self.fileobj = sys.stdout.buffer
             self.filelike_fileobj = True
         else:
             self.fileobj = open(output, "wb")

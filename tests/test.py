@@ -203,7 +203,7 @@ class TestTftpyState(unittest.TestCase):
             # parent - let the server start
             try:
                 time.sleep(1)
-                client.download("640KBFILE", output, retries=cretries, flock=flock)
+                client.download("640KBFILE", output, retries=cretries)
             finally:
                 os.kill(child_pid, 15)
                 os.waitpid(child_pid, 0)

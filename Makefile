@@ -28,6 +28,7 @@ dist:
 test:
 	rm -rf /tmp/foo
 	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) tests/test.py $(TESTCASE) 2>&1 | tee test.log
+	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) tests/stdout.py > /tmp/out
 
 clean:
 	rm -rf dist src tftpy-doc* MANIFEST
