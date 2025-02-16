@@ -25,10 +25,15 @@ dist:
 	mkdir dist
 	python3 -m build
 
-test:
+test: stdout stdin
 	rm -rf /tmp/foo
 	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) tests/test.py $(TESTCASE) 2>&1 | tee test.log
+
+stdout:
 	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) tests/stdout.py > /tmp/out
+
+stdin:
+	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) cat tests/640KBFILE | $(PY) tests/stdin.py
 
 clean:
 	rm -rf dist src tftpy-doc* MANIFEST
