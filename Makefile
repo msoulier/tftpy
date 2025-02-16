@@ -9,7 +9,9 @@ TESTCASE=
 help:
 	@echo "Targets:"
 	@echo "    all"
-	@echo "    test"
+	@echo "    test - run all tests"
+	@echo "    stdout - run stdout test"
+	@echo "    stdin - run stdin test"
 	@echo "    dist"
 	@echo "    lint"
 	@echo "    clean"

@@ -29,6 +29,6 @@ def clientServerUploadOptions(options, filename, input, transmitname=None, serve
         server.listen("localhost", 20001)
 
 def main():
-    clientServerUploadOptions({}, "stdin", input=sys.stdin.buffer)
+    clientServerUploadOptions({}, filename="stdin_upload", input="-")
 
 main()
