@@ -37,6 +37,10 @@ stdout:
 stdin:
 	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) cat tests/640KBFILE | $(PY) tests/stdin.py
 
+runserver:
+	PYTHONPATH=$(PYTHONPATH) $(PY) bin/tftpy_server.py --ip=127.0.0.1 --port=6669 --root=/tmp
+	# test 1 byte packet with "echo 'A' | nc -u 127.0.0.1 6669
+
 clean:
 	rm -rf dist src tftpy-doc* MANIFEST
 

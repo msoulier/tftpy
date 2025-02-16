@@ -25,21 +25,21 @@ def main():
     parser.add_argument(
         "-i",
         "--ip",
-        type="string",
+        type=str,
         help="ip address to bind to (default: INADDR_ANY)",
         default="",
     )
     parser.add_argument(
         "-p",
         "--port",
-        type="int",
+        type=int,
         help="local port to use (default: 69)",
         default=69,
     )
     parser.add_argument(
         "-r",
         "--root",
-        type="string",
+        type=str,
         help="path to serve from",
         default=None,
     )
