@@ -21,7 +21,7 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
-      - uses: actions/checkout@master
+      - uses: msoulier/tftpy@master
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python
