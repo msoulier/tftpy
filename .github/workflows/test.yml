@@ -44,3 +44,7 @@ jobs:
 
       - name: Make docs
         run: tox -e docs
+
+      - name: Run tests
+        run: |
+        make test stdout stdin
