@@ -27,15 +27,9 @@ dist:
 	mkdir dist
 	python3 -m build
 
-test: stdout stdin
+test:
 	rm -rf /tmp/foo
 	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) tests/test.py $(TESTCASE) 2>&1 | tee test.log
-
-stdout:
-	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) $(PY) tests/stdout.py > /tmp/out
-
-stdin:
-	PYTHONIOENCODING=$(PYTHONIOENCODING) PYTHONPATH=$(PYTHONPATH) cat tests/640KBFILE | $(PY) tests/stdin.py
 
 runserver:
 	PYTHONPATH=$(PYTHONPATH) $(PY) bin/tftpy_server.py --ip=127.0.0.1 --port=6669 --root=/tmp

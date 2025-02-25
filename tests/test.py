@@ -12,6 +12,7 @@ from errno import EINTR
 from multiprocessing import Queue
 from shutil import rmtree
 from tempfile import mkdtemp
+import subprocess
 
 import tftpy
 
@@ -641,6 +642,20 @@ class TestTftpyMisc(unittest.TestCase):
 
         else:
             server.listen("localhost", 20001)
+
+    def testStdin(self):
+        cdir = os.path.dirname(os.path.abspath(__file__))
+        script = os.path.join(cdir, "stdin.py")
+        command = f"cat tests/640KBFILE | {script}"
+        rv = subprocess.call(command, shell=True)
+        self.assertTrue( rv == 0 )
+
+    def testStdout(self):
+        cdir = os.path.dirname(os.path.abspath(__file__))
+        script = os.path.join(cdir, "stdout.py")
+        command = f"{script} > /tmp/out"
+        rv = subprocess.call(command, shell=True)
+        self.assertTrue( rv == 0 )
 
 if __name__ == "__main__":
     unittest.main()

@@ -19,8 +19,8 @@ import sys
 from importlib.metadata import version
 
 # Make sure that this is at least Python 3
-required_version = (3, 0)
+required_version = (3, 8)
 if sys.version_info < required_version:
-    raise ImportError("Requires at least Python 3.0")
+    raise ImportError("Requires at least Python 3.8")
 
 __version__ = version("tftpy")

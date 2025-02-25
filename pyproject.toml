@@ -14,7 +14,7 @@ authors = [
 ]
 description = "A TFTP protocol library for Python"
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
