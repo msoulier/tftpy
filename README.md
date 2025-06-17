@@ -11,6 +11,9 @@ emailing me directly or opening an issue on github.
 msoulier@digitaltorque.ca
 https://github.com/msoulier/tftpy
 
+# About Release 0.8.6:
+- respin to pick up scripts in bin, hopefully
+
 # About Release 0.8.5:
 
 - it didn't fix it :) but this should, thanks to

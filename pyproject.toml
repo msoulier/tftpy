@@ -8,7 +8,7 @@ include = ["tftpy"]
 
 [project]
 name = "tftpy"
-version = "0.8.5"
+version = "0.8.6"
 authors = [
   { name="Michael Soulier", email="msoulier@digitaltorque.ca" },
 ]

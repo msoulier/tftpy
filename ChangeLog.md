@@ -1,3 +1,82 @@
+2025-06-17  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* pyproject.toml: Trying to include existing scripts. WTF is this so
+	hard, and deprecated?
+
+2025-02-25  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* : commit dbd3dc490069ac7e05f52a0b23714e2753cba0a0 Author: Michael
+	P. Soulier <msoulier@digitaltorque.ca> Date:   Tue Feb 25 07:24:10
+	2025 -0500
+
+2025-02-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/python-app.yml: Update python-app.yml
+
+2025-02-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/python-app.yml: Update python-app.yml - set
+	PYTHONPATH
+
+2025-02-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/test.yml: Removing test.yml
+
+2025-02-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/python-app.yml: Test python-app.yml
+
+2025-02-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/pylint.yml: Create pylint.yml
+
+2025-02-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/test.yml: And again
+
+2025-02-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/test.yml: Adjusting workflow
+
+2025-02-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* tftpy/py.typed: Not typed yet
+
+2025-02-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/test.yml, tftpy/py.typed: Proving that I know
+	nothing about github workflows
+
+2025-02-16  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* Makefile, bin/tftpy_server.py: Added testcase for short packet.
+	Closes #144.
+
+2025-02-16  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* Makefile, tests/stdin.py: Corrected the stdin testcase.
+
+2025-02-16  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* Makefile, tests/stdin.py: Added a stdin testcase
+
+2025-02-15  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* Makefile, tests/nologs.py, tests/stdout.py, tests/test.py,
+	tftpy/TftpContexts.py: Fixed improper handling of stdout in python3.
+	Closes #113.
+
+2025-02-15  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* ChangeLog.md, bin/tftpy_client.py, bin/tftpy_server.py,
+	tests/test.py, tftpy/TftpClient.py, tftpy/TftpContexts.py,
+	tftpy/TftpServer.py: Added flock on client and server. Closes #14.
+
+2025-02-15  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* tests/test.py: Fixing a test case that I broke renaming the tests
+	directory.
+
 2025-02-14  Michael P. Soulier <msoulier@digitaltorque.ca>
 
 	* ChangeLog.md, README.md, pyproject.toml: Building 0.8.5
