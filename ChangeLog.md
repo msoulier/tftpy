@@ -1,5 +1,9 @@
 2025-06-17  Michael P. Soulier <msoulier@digitaltorque.ca>
 
+	* ChangeLog.md, README.md, pyproject.toml: Spinning new build.
+
+2025-06-17  Michael P. Soulier <msoulier@digitaltorque.ca>
+
 	* pyproject.toml: Trying to include existing scripts. WTF is this so
 	hard, and deprecated?
 
