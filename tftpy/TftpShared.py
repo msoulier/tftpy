@@ -21,6 +21,10 @@ MAX_DUPS = 20
 DEF_TIMEOUT_RETRIES = 3
 DEF_TFTP_PORT = 69
 
+import logging
+
+log = logging.getLogger("tftpy.TftpShared")
+
 # A hook for deliberately introducing delay in testing.
 DELAY_BLOCK = 0
 # A hook to simulate a bad network
@@ -32,6 +36,8 @@ NETWORK_UNRELIABILITY = 0
 def lockfile(fobj, shared=True, blocking=True, unlock=False):
     """Take appropriate action to advisory lock the file with the descriptor provided,
     depending on the platform. fobj must be a file object."""
+    log.debug("lockfile on %s, shared %s, blocking %s, unlock %s",
+              fobj.name, shared, blocking, unlock)
     if locking_method == "fcntl":
         mode = fcntl.LOCK_UN if unlock else fcntl.LOCK_SH if shared else fcntl.LOCK_EX
         if not unlock and not blocking:
@@ -43,9 +49,13 @@ def lockfile(fobj, shared=True, blocking=True, unlock=False):
             mode = msvcrt.LK_NBLCK if not shared else msvcrt.LK_NBRLCK
         # Want to lock the whole file.
         pos = fobj.tell()
+        log.debug("position is %s", pos)
         fobj.seek(0, os.SEEK_END)
         nbytes = fobj.tell()
-        fobj.seek(0, pos)
+        log.debug("nbytes is %s", nbytes)
+        # Odd, I get permission denied on the unlock
+        if unlock:
+            return
         msvcrt.locking(fobj.fileno(), mode, nbytes)
 
 def tftpassert(condition, msg):
