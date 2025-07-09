@@ -9,7 +9,6 @@
 .eggs/
 dist/
 build/
-html/
 .tox/
 *.swp
 .vscode
