@@ -71,8 +71,8 @@ devserver-global:
 
 publish:
 	"$(PELICAN)" "$(INPUTDIR)" -o "$(OUTPUTDIR)" -s "$(PUBLISHCONF)" $(PELICANOPTS)
-	rm -rf ../doc && mkdir ../doc
-	cp -R output/* ../doc
+	rm -rf ../docs && mkdir ../docs
+	cp -R output/* ../docs
 
 github: publish
 	ghp-import -m "$(GITHUB_PAGES_COMMIT_MESSAGE)" -b $(GITHUB_PAGES_BRANCH) "$(OUTPUTDIR)" --no-jekyll
