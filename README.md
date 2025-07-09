@@ -146,7 +146,7 @@ easy inclusion in a UI for populating progress indicators. It supports RFCs
 1350, 2347, 2348 and the tsize option from RFC 2349.
 
 ## Dependencies:
-Python 3.6+, hopefully. Let me know if it fails to work.
+Python 3.8+, hopefully. Let me know if it fails to work.
 
 ## Trifles:
 Home page: http://tftpy.sf.net/
