@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>TFTPy</title><link href="https://msoulier.github.io/tftpy/" rel="alternate"></link><link href="https://msoulier.github.io/tftpy/feeds/all.atom.xml" rel="self"></link><id>https://msoulier.github.io/tftpy/</id><updated>2025-07-08T21:24:00-04:00</updated><entry><title>Hosted on GitHub now</title><link href="https://msoulier.github.io/tftpy/hosted-on-github-now.html" rel="alternate"></link><published>2025-07-08T21:24:00-04:00</published><updated>2025-07-08T21:24:00-04:00</updated><author><name>Michael Soulier</name></author><id>tag:msoulier.github.io,2025-07-08:/tftpy/hosted-on-github-now.html</id><content type="html">&lt;p&gt;So, the TFTPy website with its documentation has been on
+&lt;a href="http://tftpy.sf.net"&gt;SourceForge&lt;/a&gt; for years now, mainly because I haven't
+bothered to put it anywhere else.&lt;/p&gt;
+&lt;p&gt;Well, the GitHub pages feature makes it relatively simple to host it all on
+GitHUb, so here we are, docs and all.&lt;/p&gt;</content><category term="Project"></category></entry></feed>
