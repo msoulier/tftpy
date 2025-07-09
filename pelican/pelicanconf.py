@@ -1,6 +1,6 @@
 AUTHOR = 'Michael Soulier'
 SITENAME = 'TFTPy'
-SITEURL = ""
+SITEURL = "http://msoulier.github.io/tftpy"
 
 PATH = "content"
 
@@ -24,8 +24,9 @@ LINKS = (
 
 # Social widget
 SOCIAL = (
-    ("You can add links in your config file", "#"),
-    ("Another social link", "#"),
+    ("Github", "https://github.com/msoulier/tftpy"),
+#    ("You can add links in your config file", "#"),
+#    ("Another social link", "#"),
 )
 
 DEFAULT_PAGINATION = 10

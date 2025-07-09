@@ -4,3 +4,9 @@
     - push to site
         - rsync -vr --delete ~/work/tftpy/html/ \
             msoulier,tftpy@web.sourceforge.net:/home/groups/t/tf/tftpy/htdocs
+
+    - rsync to desktop:
+        rsync -vr msoulier,tftpy@web.sourceforge.net:htdocs .
+
+    - edit and push back:
+        rsync -vr --delete htdocs msoulier,tftpy@web.sourceforge.net:

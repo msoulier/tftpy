@@ -149,8 +149,8 @@ easy inclusion in a UI for populating progress indicators. It supports RFCs
 Python 3.8+, hopefully. Let me know if it fails to work.
 
 ## Trifles:
-Home page: http://tftpy.sf.net/
-Project page: http://sourceforge.net/projects/tftpy/
+Home page: http://msoulier.github.io/tftpy
+Project page: http://github.com/msoulier/tftpy
 
 License is the MIT License
 

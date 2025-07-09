@@ -5,7 +5,7 @@ Packager: Michael P. Soulier <michael_soulier@mitel.com>
 Summary: A pure python TFTP library.
 License: BSD
 Group: Libraries/Net
-URL: http://tftpy.sf.net/
+URL: http://github.com/msoulier/tftpy
 Source0: tftpy-%{version}.tar.gz
 BuildRequires: python-devel
 Requires: python
