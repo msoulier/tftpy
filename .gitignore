@@ -9,6 +9,8 @@
 .eggs/
 dist/
 build/
+_build/
+output/
 .tox/
 *.swp
 .vscode

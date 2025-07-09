@@ -17,8 +17,8 @@ TFTPy is a pure python TFTP implementation.
 
 Requirements
 ============
-Python 2.3+, I think. I haven't tested in Python 2.3 in a while but it should
-still work. Let me know if it doesn't.
+Python 3.8+, I think. I am not testing in all intermediate Python versions, so let me know if you find
+any problems.
 
 Installation
 ============

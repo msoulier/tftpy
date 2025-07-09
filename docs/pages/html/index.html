@@ -7,30 +7,31 @@
 
     <title>TFTPy &#8212; TFTPy 0.8.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=2bf1fcf8" />
-    
+    <link rel="stylesheet" type="text/css" href="_static/agogo.css?v=08520df9" />
     <script src="_static/documentation_options.js?v=279f42e0"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    
+    <link rel="canonical" href="http://msoulier.github.io/tftpy/docs/pages/html/index.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="#">TFTPy 0.8.6 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
           <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">TFTPy 0.8.6 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">TFTPy</a></li> 
-      </ul>
-    </div>  
+             >modules</a> |
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
 
-    <div class="document">
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -48,8 +49,8 @@
 </section>
 <section id="requirements">
 <h1>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h1>
-<p>Python 2.3+, I think. I haven’t tested in Python 2.3 in a while but it should
-still work. Let me know if it doesn’t.</p>
+<p>Python 3.8+, I think. I am not testing in all intermediate Python versions, so let me know if you find
+any problems.</p>
 </section>
 <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
@@ -877,218 +878,50 @@ will commit to one of them once we interpret the initial packet.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="#">Table of Contents</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">TFTPy</a></li>
-<li><a class="reference internal" href="#requirements">Requirements</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#examples">Examples</a></li>
-<li><a class="reference internal" href="#api-documentation">API Documentation</a><ul>
-<li><a class="reference internal" href="#front-end-modules">Front-end Modules</a><ul>
-<li><a class="reference internal" href="#module-tftpy">The <code class="xref py py-mod docutils literal notranslate"><span class="pre">tftpy</span></code> Module</a></li>
-<li><a class="reference internal" href="#module-tftpy.TftpClient">The <cite>TftpClient</cite> Module</a><ul>
-<li><a class="reference internal" href="#tftpy.TftpClient.TftpClient"><code class="docutils literal notranslate"><span class="pre">TftpClient</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpClient.TftpClient.download"><code class="docutils literal notranslate"><span class="pre">TftpClient.download()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpClient.TftpClient.upload"><code class="docutils literal notranslate"><span class="pre">TftpClient.upload()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-tftpy.TftpServer">The <cite>TftpServer</cite> Module</a><ul>
-<li><a class="reference internal" href="#tftpy.TftpServer.TftpServer"><code class="docutils literal notranslate"><span class="pre">TftpServer</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpServer.TftpServer.listen"><code class="docutils literal notranslate"><span class="pre">TftpServer.listen()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpServer.TftpServer.stop"><code class="docutils literal notranslate"><span class="pre">TftpServer.stop()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#back-end-modules">Back-end Modules</a><ul>
-<li><a class="reference internal" href="#module-tftpy.TftpPacketFactory">The <cite>TftpPacketFactory</cite> Module</a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketFactory.TftpPacketFactory"><code class="docutils literal notranslate"><span class="pre">TftpPacketFactory</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketFactory.TftpPacketFactory.parse"><code class="docutils literal notranslate"><span class="pre">TftpPacketFactory.parse()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-tftpy.TftpPacketTypes">The <cite>TftpPacketTypes</cite> Module</a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacket"><code class="docutils literal notranslate"><span class="pre">TftpPacket</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacket.decode"><code class="docutils literal notranslate"><span class="pre">TftpPacket.decode()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacket.encode"><code class="docutils literal notranslate"><span class="pre">TftpPacket.encode()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketACK"><code class="docutils literal notranslate"><span class="pre">TftpPacketACK</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketACK.decode"><code class="docutils literal notranslate"><span class="pre">TftpPacketACK.decode()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketACK.encode"><code class="docutils literal notranslate"><span class="pre">TftpPacketACK.encode()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketDAT"><code class="docutils literal notranslate"><span class="pre">TftpPacketDAT</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketDAT.decode"><code class="docutils literal notranslate"><span class="pre">TftpPacketDAT.decode()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketDAT.encode"><code class="docutils literal notranslate"><span class="pre">TftpPacketDAT.encode()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketERR"><code class="docutils literal notranslate"><span class="pre">TftpPacketERR</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketERR.decode"><code class="docutils literal notranslate"><span class="pre">TftpPacketERR.decode()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketERR.encode"><code class="docutils literal notranslate"><span class="pre">TftpPacketERR.encode()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketInitial"><code class="docutils literal notranslate"><span class="pre">TftpPacketInitial</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketInitial.decode"><code class="docutils literal notranslate"><span class="pre">TftpPacketInitial.decode()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketInitial.encode"><code class="docutils literal notranslate"><span class="pre">TftpPacketInitial.encode()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketOACK"><code class="docutils literal notranslate"><span class="pre">TftpPacketOACK</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketOACK.decode"><code class="docutils literal notranslate"><span class="pre">TftpPacketOACK.decode()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketOACK.encode"><code class="docutils literal notranslate"><span class="pre">TftpPacketOACK.encode()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketOACK.match_options"><code class="docutils literal notranslate"><span class="pre">TftpPacketOACK.match_options()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketRRQ"><code class="docutils literal notranslate"><span class="pre">TftpPacketRRQ</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketWRQ"><code class="docutils literal notranslate"><span class="pre">TftpPacketWRQ</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketWithOptions"><code class="docutils literal notranslate"><span class="pre">TftpPacketWithOptions</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpPacketWithOptions.decode_options"><code class="docutils literal notranslate"><span class="pre">TftpPacketWithOptions.decode_options()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpPacketTypes.TftpSession"><code class="docutils literal notranslate"><span class="pre">TftpSession</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-tftpy.TftpShared">The <cite>TftpShared</cite> Module</a><ul>
-<li><a class="reference internal" href="#tftpy.TftpShared.TftpErrors"><code class="docutils literal notranslate"><span class="pre">TftpErrors</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpShared.TftpException"><code class="docutils literal notranslate"><span class="pre">TftpException</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpShared.TftpFileNotFoundError"><code class="docutils literal notranslate"><span class="pre">TftpFileNotFoundError</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpShared.TftpTimeout"><code class="docutils literal notranslate"><span class="pre">TftpTimeout</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpShared.TftpTimeoutExpectACK"><code class="docutils literal notranslate"><span class="pre">TftpTimeoutExpectACK</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpShared.lockfile"><code class="docutils literal notranslate"><span class="pre">lockfile()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpShared.tftpassert"><code class="docutils literal notranslate"><span class="pre">tftpassert()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-tftpy.TftpContexts">The <cite>TftpContexts</cite> Module</a><ul>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContext"><code class="docutils literal notranslate"><span class="pre">TftpContext</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContext.checkTimeout"><code class="docutils literal notranslate"><span class="pre">TftpContext.checkTimeout()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContext.cycle"><code class="docutils literal notranslate"><span class="pre">TftpContext.cycle()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContext.end"><code class="docutils literal notranslate"><span class="pre">TftpContext.end()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContext.getBlocksize"><code class="docutils literal notranslate"><span class="pre">TftpContext.getBlocksize()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContext.gethost"><code class="docutils literal notranslate"><span class="pre">TftpContext.gethost()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContext.host"><code class="docutils literal notranslate"><span class="pre">TftpContext.host</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContext.sethost"><code class="docutils literal notranslate"><span class="pre">TftpContext.sethost()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContextClientDownload"><code class="docutils literal notranslate"><span class="pre">TftpContextClientDownload</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContextClientDownload.end"><code class="docutils literal notranslate"><span class="pre">TftpContextClientDownload.end()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContextClientDownload.start"><code class="docutils literal notranslate"><span class="pre">TftpContextClientDownload.start()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContextClientUpload"><code class="docutils literal notranslate"><span class="pre">TftpContextClientUpload</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContextClientUpload.end"><code class="docutils literal notranslate"><span class="pre">TftpContextClientUpload.end()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContextServer"><code class="docutils literal notranslate"><span class="pre">TftpContextServer</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContextServer.end"><code class="docutils literal notranslate"><span class="pre">TftpContextServer.end()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpContextServer.start"><code class="docutils literal notranslate"><span class="pre">TftpContextServer.start()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpMetrics"><code class="docutils literal notranslate"><span class="pre">TftpMetrics</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpContexts.TftpMetrics.add_dup"><code class="docutils literal notranslate"><span class="pre">TftpMetrics.add_dup()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-tftpy.TftpStates">The <cite>TftpStates</cite> Module</a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpServerState"><code class="docutils literal notranslate"><span class="pre">TftpServerState</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpServerState.serverInitial"><code class="docutils literal notranslate"><span class="pre">TftpServerState.serverInitial()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState"><code class="docutils literal notranslate"><span class="pre">TftpState</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState.handle"><code class="docutils literal notranslate"><span class="pre">TftpState.handle()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState.handleDat"><code class="docutils literal notranslate"><span class="pre">TftpState.handleDat()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState.handleOACK"><code class="docutils literal notranslate"><span class="pre">TftpState.handleOACK()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState.resendLast"><code class="docutils literal notranslate"><span class="pre">TftpState.resendLast()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState.returnSupportedOptions"><code class="docutils literal notranslate"><span class="pre">TftpState.returnSupportedOptions()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState.sendACK"><code class="docutils literal notranslate"><span class="pre">TftpState.sendACK()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState.sendDAT"><code class="docutils literal notranslate"><span class="pre">TftpState.sendDAT()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState.sendError"><code class="docutils literal notranslate"><span class="pre">TftpState.sendError()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpState.sendOACK"><code class="docutils literal notranslate"><span class="pre">TftpState.sendOACK()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateExpectACK"><code class="docutils literal notranslate"><span class="pre">TftpStateExpectACK</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateExpectACK.handle"><code class="docutils literal notranslate"><span class="pre">TftpStateExpectACK.handle()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateExpectDAT"><code class="docutils literal notranslate"><span class="pre">TftpStateExpectDAT</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateExpectDAT.handle"><code class="docutils literal notranslate"><span class="pre">TftpStateExpectDAT.handle()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateSentRRQ"><code class="docutils literal notranslate"><span class="pre">TftpStateSentRRQ</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateSentRRQ.handle"><code class="docutils literal notranslate"><span class="pre">TftpStateSentRRQ.handle()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateSentWRQ"><code class="docutils literal notranslate"><span class="pre">TftpStateSentWRQ</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateSentWRQ.handle"><code class="docutils literal notranslate"><span class="pre">TftpStateSentWRQ.handle()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateServerRecvRRQ"><code class="docutils literal notranslate"><span class="pre">TftpStateServerRecvRRQ</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateServerRecvRRQ.handle"><code class="docutils literal notranslate"><span class="pre">TftpStateServerRecvRRQ.handle()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateServerRecvWRQ"><code class="docutils literal notranslate"><span class="pre">TftpStateServerRecvWRQ</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateServerRecvWRQ.handle"><code class="docutils literal notranslate"><span class="pre">TftpStateServerRecvWRQ.handle()</span></code></a></li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateServerRecvWRQ.make_subdirs"><code class="docutils literal notranslate"><span class="pre">TftpStateServerRecvWRQ.make_subdirs()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateServerStart"><code class="docutils literal notranslate"><span class="pre">TftpStateServerStart</span></code></a><ul>
-<li><a class="reference internal" href="#tftpy.TftpStates.TftpStateServerStart.handle"><code class="docutils literal notranslate"><span class="pre">TftpStateServerStart.handle()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
       </div>
-      <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">TFTPy 0.8.6 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">TFTPy</a></li> 
-      </ul>
-    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="_sources/index.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
     <div class="footer" role="contentinfo">
     &#169; Copyright 2010, Michael P. Soulier.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
   </body>
 </html>
