@@ -26,6 +26,7 @@ help:
 	@echo "  changes   to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck to check all external links for integrity"
 	@echo "  doctest   to run all doctests embedded in the documentation (if enabled)"
+	@echo "  install   to copy built html output to the github pages directory"
 
 clean:
 	-rm -rf $(BUILDDIR)/*
@@ -34,6 +35,10 @@ html:
 	PYTHONPATH=.. $(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+install: html
+	rm -rf ../docs/pages/html
+	cp -R _build/html ../docs/pages
 
 install-html: html
 	rm -rf ../html/sphinx
