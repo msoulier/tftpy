@@ -7,4 +7,4 @@ So, the TFTPy website with its documentation has been on
 bothered to put it anywhere else.
 
 Well, the GitHub pages feature makes it relatively simple to host it all on
-GitHUb, so here we are, docs and all.
+GitHub, so here we are, docs and all.
