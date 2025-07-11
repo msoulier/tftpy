@@ -130,6 +130,7 @@ class TftpClient(TftpSession):
             timeout,
             retries=retries,
             localip=self.localip,
+            flock=self.flock
         )
         with self.context as c:
             c.start()
