@@ -15,6 +15,7 @@ import os
 import socket
 import sys
 import time
+from .CPFilelock import FileLock
 
 from .TftpPacketFactory import TftpPacketFactory
 from .TftpPacketTypes import *
@@ -134,7 +135,7 @@ class TftpContext:
     def __enter__(self):
         log.debug("__enter__ on TftpContext")
         return self
-
+        
     def __exit__(self, type, value, traceback):
         log.debug("__exit__ on TftpContext")
         self.end()
@@ -165,7 +166,8 @@ class TftpContext:
         if close_fileobj and self.fileobj is not None and not self.fileobj.closed:
             log.debug("self.fileobj is open - closing")
             if self.flock:
-                lockfile(self.fileobj, unlock=True)
+                if self.flock and hasattr(self, "filelock"):
+                    self.filelock.release()
             self.fileobj.close()
 
     def gethost(self):
@@ -335,7 +337,12 @@ class TftpContextClientUpload(TftpContext):
             if self.flock:
                 log.debug("locking input file %s", input)
                 try:
-                    lockfile(self.fileobj, shared=True, blocking=False)
+                    self.filelock = FileLock(self.fileobj)
+                    try:
+                        self.filelock.acquire_shared()
+                    except OSError as err:
+                        log.error("Failed to acquire read lock on file %s", input)
+                        raise
                 except OSError as err:
                     log.error("Failed to acquire read lock on file %s", input)
                     raise
@@ -346,7 +353,7 @@ class TftpContextClientUpload(TftpContext):
     def __del__(self):
         log.debug("TftpContextClientUpload.__del__")
         super().__del__()
-
+        
     def __str__(self):
         return f"{self.host}:{self.port} {self.state}"
 
@@ -431,7 +438,12 @@ class TftpContextClientDownload(TftpContext):
             if self.flock:
                 log.debug("locking file for writing: %s", output)
                 try:
-                    lockfile(self.fileobj, shared=False, blocking=False)
+                    self.filelock = FileLock(self.fileobj)
+                    try:
+                        self.filelock.acquire_exclusive()
+                    except OSError as err:
+                        log.error("Failed to acquire write lock on output file %s: %s", output, err)
+                        raise
                 except OSError as err:
                     log.error("Failed to acquire write lock on output file %s: %s", output, err)
                     raise
