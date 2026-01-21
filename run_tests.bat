@@ -1,4 +1,4 @@
 cd %~dp0
 set PYTHONPATH=.
-python "t\test.py"
+python "tests\test.py"
 pause
