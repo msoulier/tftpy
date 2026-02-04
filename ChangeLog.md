@@ -1,3 +1,185 @@
+2026-01-21  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* run_tests.bat: Fixing path to tests
+
+2025-09-15  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* tests/test.py: Testing a change for windows
+
+2025-09-15  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* tests/test.py: Re-working tests to be more portable. Not all
+	working yet.
+
+2025-09-01  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* tftpy/TftpServer.py: Closes #154
+
+2025-07-11  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* tftpy/TftpClient.py: Adding missing flock boolean propagation into
+	upload context by client. Closes #150.
+
+2025-07-10  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* docs/pages/html/index.html: Experimenting with broken CSS paths
+
+2025-07-10  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* docs/author/michael-soulier.html, docs/category/project.html,
+	docs/feeds/all.atom.xml, docs/feeds/project.atom.xml,
+	docs/hosted-on-github-now.html, docs/index.html: Site update
+
+2025-07-10  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* pelican/content/hosted-on-github.md: Fixing a typo
+
+2025-07-09  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* README.md, docs/archives.html, docs/author/michael-soulier.html,
+	docs/authors.html, docs/categories.html,
+	docs/category/project.html, docs/hosted-on-github-now.html,
+	docs/index.html, docs/pages/documentation.html,
+	docs/pages/html/searchindex.js, docs/tags.html, notes/sfshell.txt,
+	pelican/Makefile, pelican/pelicanconf.py, pelican/publishconf.py,
+	rpm/python-tftpy.spec: Updated SF site to point to Github
+
+2025-07-09  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .gitignore, doc/conf.py, doc/index.rst,
+	docs/pages/html/.buildinfo, docs/pages/html/_sources/index.rst.txt,
+	docs/pages/html/_static/agogo.css,
+	docs/pages/html/_static/basic.css,
+	docs/pages/html/_static/css/fonts.css,
+	docs/pages/html/_static/css/main.css,
+	docs/pages/html/_static/css/pygment.css,
+	docs/pages/html/_static/css/reset.css,
+	docs/pages/html/_static/css/typogrify.css,
+	docs/pages/html/_static/css/wide.css,
+	docs/pages/html/_static/fonts/Yanone_Kaffeesatz_400.svg,
+	docs/pages/html/_static/fonts/Yanone_Kaffeesatz_LICENSE.txt,
+	docs/pages/html/_static/fonts/font.css,
+	docs/pages/html/_static/print.css,
+	docs/pages/html/_static/scrolls.css,
+	docs/pages/html/_static/sphinxdoc.css,
+	docs/pages/html/_static/theme_extras.js,
+	docs/pages/html/genindex.html, docs/pages/html/index.html,
+	docs/pages/html/py-modindex.html, docs/pages/html/search.html,
+	docs/pages/html/searchindex.js: Playing with sphinx styles
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .gitignore, docs/pages/html/.buildinfo,
+	docs/pages/html/_sources/index.rst.txt,
+	docs/pages/html/_static/basic.css,
+	docs/pages/html/_static/classic.css,
+	docs/pages/html/_static/default.css,
+	docs/pages/html/_static/doctools.js,
+	docs/pages/html/_static/documentation_options.js,
+	docs/pages/html/_static/language_data.js,
+	docs/pages/html/_static/pygments.css,
+	docs/pages/html/_static/searchtools.js,
+	docs/pages/html/_static/sidebar.js,
+	docs/pages/html/_static/sphinx_highlight.js,
+	docs/pages/html/genindex.html, docs/pages/html/index.html,
+	docs/pages/html/py-modindex.html, docs/pages/html/search.html,
+	docs/pages/html/searchindex.js: Fixed .gitignore
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* doc/Makefile, docs/archives.html,
+	docs/author/michael-soulier.html, docs/authors.html,
+	docs/categories.html, docs/category/project.html,
+	docs/hosted-on-github-now.html, docs/index.html,
+	docs/pages/documentation.html, docs/tags.html,
+	pelican/content/pages/docs.md, pelican/pelicanconf.py: Site rebuild
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* {docs => doc}/Makefile, {docs => doc}/conf.py, {docs =>
+	doc}/index.rst, {docs => doc}/rfc1350.txt, {docs =>
+	doc}/rfc2347.txt, {docs => doc}/rfc2348.txt, {docs =>
+	doc}/rfc2349.txt, {doc => docs}/archives.html, {doc =>
+	docs}/author/michael-soulier.html, {doc => docs}/authors.html, {doc
+	=> docs}/categories.html, {doc => docs}/category/project.html, {doc
+	=> docs}/feeds/all.atom.xml, {doc => docs}/feeds/project.atom.xml,
+	{doc => docs}/hosted-on-github-now.html, {doc => docs}/index.html,
+	{doc => docs}/pages/documentation.html, {doc => docs}/tags.html,
+	{doc => docs}/theme/css/fonts.css, {doc =>
+	docs}/theme/css/main.css, {doc => docs}/theme/css/pygment.css, {doc
+	=> docs}/theme/css/reset.css, {doc =>
+	docs}/theme/css/typogrify.css, {doc => docs}/theme/css/wide.css,
+	{doc => docs}/theme/fonts/Yanone_Kaffeesatz_400.svg, {doc =>
+	docs}/theme/fonts/Yanone_Kaffeesatz_LICENSE.txt, {doc =>
+	docs}/theme/fonts/font.css, pelican/Makefile: Fixing directory names
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* doc/archives.html, doc/author/michael-soulier.html,
+	doc/authors.html, doc/categories.html, doc/category/project.html,
+	doc/feeds/all.atom.xml, doc/feeds/project.atom.xml,
+	doc/hosted-on-github-now.html, doc/index.html,
+	doc/pages/documentation.html, doc/tags.html,
+	doc/theme/css/fonts.css, doc/theme/css/main.css,
+	doc/theme/css/pygment.css, doc/theme/css/reset.css,
+	doc/theme/css/typogrify.css, doc/theme/css/wide.css,
+	doc/theme/fonts/Yanone_Kaffeesatz_400.svg,
+	doc/theme/fonts/Yanone_Kaffeesatz_LICENSE.txt,
+	doc/theme/fonts/font.css, index.html, pelican/Makefile,
+	pelican/content/hosted-on-github.md, pelican/content/pages/docs.md,
+	pelican/pelicanconf.py, pelican/publishconf.py, pelican/tasks.py: 
+	Set up pelican for github site
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* README.md, docs/Makefile: Removing submodule
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/pylint.yml, .github/workflows/python-app.yml: 
+	Removing unneeded workflows
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .github/workflows/static.yml: Create static.yml
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* .pre-commit-config.yaml: Removing workflow config for now
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* {doc => docs}/Makefile, {doc => docs}/conf.py, {doc =>
+	docs}/index.rst, {doc => docs}/rfc1350.txt, {doc =>
+	docs}/rfc2347.txt, {doc => docs}/rfc2348.txt, {doc =>
+	docs}/rfc2349.txt: Moving doc to docs
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* web/index.html => index.html: Reverting index.html to root as
+	github refuses to recognize my web subdirectory.
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* index.html => web/index.html: Organizing the website
+
+2025-07-08  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* index.html: Create index.html
+
+2025-07-07  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* tftpy/TftpShared.py: Running a basic download on windows
+
+2025-07-07  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* tftpy/__init__.py: Making use of importlib more tolerant
+
+2025-07-03  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* ChangeLog.md, tftpy/TftpContexts.py, tftpy/TftpShared.py: Initial
+	wrapper for flock, need to test on windows.
+
 2025-06-17  Michael P. Soulier <msoulier@digitaltorque.ca>
 
 	* ChangeLog.md, README.md, pyproject.toml: Spinning new build.
@@ -257,95 +439,95 @@
 
 	* README.rst: Fix README bullet list syntax
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* bin/tftpy_client.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* bin/tftpy_client.py: Optimize imports
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpStates.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpStates.py: is None
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpStates.py: 120 is good (80 -> 120 line length)
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpShared.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpServer.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpServer.py: is None
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpServer.py: Improve natural english language readability
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpServer.py: No inline if
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpServer.py: Create list directly
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpServer.py: 120 is good (80 -> 120 line length)
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpServer.py: Optimize imports
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpPacketTypes.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpPacketFactory.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpContexts.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpContexts.py: Fix typos
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/TftpClient.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/compat.py: Optimize import
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* tftpy/compat.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* bin/tftpy_server.py: Enhance PEP8
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* bin/tftpy_server.py: Optimize imports
 
-2021-10-15  Richard Vézina <ml.richard.vezina@gmail.com>
+2021-10-15  Richard VÃ©zina <ml.richard.vezina@gmail.com>
 
 	* bin/tftpy_server.py: Forgo WARN -> WARNING
 
@@ -483,22 +665,22 @@
 	* Makefile, tftpy/TftpStates.py: Fixed testClientServerUploadOptions
 	testcase
 
-2018-09-10  ¨Andreas <¨andreas.dachsberger@gmail.com¨>
+2018-09-10  Â¨Andreas <Â¨andreas.dachsberger@gmail.comÂ¨>
 
 	* tftpy/TftpPacketTypes.py: Compatibility tested Tested compatibility with easy test client and test server. So far,
 	no errors anymore. (In Both python2 and python3) Just tested basic
 	functionality!
 
-2018-09-10  ¨Andreas <¨andreas.dachsberger@gmail.com¨>
+2018-09-10  Â¨Andreas <Â¨andreas.dachsberger@gmail.comÂ¨>
 
 	* tftpy/TftpPacketTypes.py: Made parts concerning test program
 	compatible Not complete code is compatible, just my use case for the moment.
 
-2018-09-10  ¨Andreas <¨andreas.dachsberger@gmail.com¨>
+2018-09-10  Â¨Andreas <Â¨andreas.dachsberger@gmail.comÂ¨>
 
 	* tftpy/TftpPacketTypes.py: Solved some 2 to 3 issues
 
-2018-09-10  ¨Andreas <¨andreas.dachsberger@gmail.com¨>
+2018-09-10  Â¨Andreas <Â¨andreas.dachsberger@gmail.comÂ¨>
 
 	* tftpy/TftpClient.py, tftpy/TftpContexts.py,
 	tftpy/TftpPacketFactory.py, tftpy/TftpPacketTypes.py,
