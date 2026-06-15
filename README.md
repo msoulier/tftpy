@@ -11,6 +11,10 @@ emailing me directly or opening an issue on github.
 msoulier@digitaltorque.ca
 https://github.com/msoulier/tftpy
 
+# About Release 0.8.7:
+- various test enhancements and an flock portability patch to make tftpy
+  work properly on windows
+
 # About Release 0.8.6:
 - respin to pick up scripts in bin, hopefully
 

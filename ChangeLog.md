@@ -1,3 +1,7 @@
+2026-02-04  Michael P. Soulier <msoulier@digitaltorque.ca>
+
+	* ChangeLog.md, pyproject.toml: Rolling version
+
 2026-01-21  Michael P. Soulier <msoulier@digitaltorque.ca>
 
 	* run_tests.bat: Fixing path to tests
