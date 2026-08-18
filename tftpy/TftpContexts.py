@@ -326,10 +326,13 @@ class TftpContextClientUpload(TftpContext):
         self.packethook = packethook
         # If the input object has a read() function,
         # assume it is file-like.
+        self.filelike_fileobj = False
         if hasattr(input, "read"):
             self.fileobj = input
+            self.filelike_fileobj = True
         elif input == "-":
             self.fileobj = sys.stdin.buffer
+            self.filelike_fileobj = True
         else:
             self.fileobj = open(input, "rb")
             if self.flock:
@@ -387,7 +390,7 @@ class TftpContextClientUpload(TftpContext):
 
     def end(self):
         """Finish up the context."""
-        super().end()
+        super().end(not self.filelike_fileobj)
         self.metrics.end_time = time.time()
         log.debug("Set metrics.end_time to %s" % self.metrics.end_time)
         self.metrics.compute()

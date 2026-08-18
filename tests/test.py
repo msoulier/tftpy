@@ -5,10 +5,15 @@ import tempfile
 import unittest
 import logging
 import tftpy
+from io import BytesIO
 from multiprocessing import Queue
+from pathlib import Path
 import subprocess
 from contextlib import contextmanager
 from shutil import rmtree
+from unittest.mock import call, patch
+
+from tftpy.TftpContexts import TftpContextClientUpload
 
 log = logging.getLogger("tftpy")
 log.setLevel(logging.DEBUG)
@@ -157,6 +162,60 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(packet.opcode, 4)
         with self.assertRaisesRegex(tftpy.TftpShared.TftpException, 'Invalid packet size'):
             factory.parse(b'\x00\x04')
+
+
+class TftpContextClientUploadCleanupTest(unittest.TestCase):
+    """Verify that an upload context only closes resources it owns."""
+
+    def make_context(self, input_obj):
+        """Create a context without starting a network transfer."""
+        return TftpContextClientUpload(
+            host="127.0.0.1",
+            port=69,
+            filename="remote.bin",
+            input=input_obj,
+            options={},
+            packethook=None,
+            timeout=1,
+        )
+
+    def test_file_like_input_remains_open(self):
+        input_obj = BytesIO(b"upload contents")
+        self.addCleanup(input_obj.close)
+
+        context = self.make_context(input_obj)
+        # Leaving the context must close the socket, but the caller retains
+        # ownership of a supplied file-like object.
+        with context:
+            pass
+
+        self.assertFalse(input_obj.closed)
+        self.assertEqual(input_obj.getvalue(), b"upload contents")
+        self.assertEqual(context.sock.fileno(), -1)
+
+    def test_path_input_is_unlocked_and_closed(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            input_path = Path(tempdir) / "input.bin"
+            input_path.write_bytes(b"upload contents")
+
+            # A path is opened by TftpContextClientUpload, so the context must
+            # pair its initial lock with an unlock and close the opened file.
+            with patch("tftpy.TftpContexts.lockfile") as lockfile:
+                context = self.make_context(input_path)
+                opened_file = context.fileobj
+
+                with context:
+                    pass
+
+            self.assertTrue(opened_file.closed)
+            self.assertEqual(context.sock.fileno(), -1)
+            self.assertEqual(
+                lockfile.call_args_list,
+                [
+                    call(opened_file, shared=True, blocking=False),
+                    call(opened_file, unlock=True),
+                ],
+            )
 
 class TftpyTestCase(unittest.TestCase):
     """Better approaches to defining the server function"""
