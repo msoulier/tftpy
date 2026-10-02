@@ -9,6 +9,8 @@ import logging
 import os
 import select
 import socket
+import struct
+import sys
 import threading
 import time
 from errno import EINTR
@@ -19,6 +21,18 @@ from .TftpPacketTypes import *
 from .TftpShared import *
 
 log = logging.getLogger("tftpy.TftpServer")
+
+# The socket module only exports IP_PKTINFO from Python 3.12, on every
+# platform, so fall back to the kernel's value before that. Whether the
+# option really works is decided by setsockopt succeeding.
+if hasattr(socket, "IP_PKTINFO"):
+    IP_PKTINFO = socket.IP_PKTINFO
+elif sys.platform.startswith("linux"):
+    IP_PKTINFO = 8
+elif sys.platform == "darwin":
+    IP_PKTINFO = 26
+else:
+    IP_PKTINFO = None
 
 
 class TftpServer(TftpSession):
@@ -45,6 +59,12 @@ class TftpServer(TftpSession):
         self.listenip = None
         self.listenport = None
         self.sock = None
+        # The address replies are sent from when the destination of a request
+        # cannot be learned: the bound address, or "" for a wildcard bind.
+        self.replyip = ""
+        # A callable receiving (buffer, raddress, rport, localip) when the
+        # platform can report each request's destination address, else None.
+        self._recv_pktinfo = None
         # FIXME: What about multiple roots?
         self.root = os.path.abspath(tftproot)
         self.dyn_file_func = dyn_file_func
@@ -90,7 +110,14 @@ class TftpServer(TftpSession):
     ):
         """Start a server listening on the supplied interface and port. This
         defaults to INADDR_ANY (all interfaces) and UDP port 69. You can also
-        supply a different socket timeout value, if desired."""
+        supply a different socket timeout value, if desired.
+
+        Replies are sent from the address the client's request was sent to,
+        so a host with several addresses (eg. VIPs) answers from the right
+        one. With a specific listenip that is listenip itself; with the
+        wildcard address it is learned per request via IP_PKTINFO where the
+        platform supports it (recvmsg, or WSARecvMsg on Windows), and left
+        to the kernel's routing otherwise."""
         tftp_factory = TftpPacketFactory()
 
         # Don't use new 2.5 ternary operator yet
@@ -103,10 +130,22 @@ class TftpServer(TftpSession):
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sock.bind((listenip, listenport))
             self.sock.setblocking(0)
-            _, self.listenport = self.sock.getsockname()
+            boundip, self.listenport = self.sock.getsockname()
         except OSError as err:
             # Reraise it for now.
             raise err
+        self.listenip = listenip
+
+        self._recv_pktinfo = None
+        if boundip == "0.0.0.0":
+            self.replyip = ""
+            self._recv_pktinfo = self._enable_pktinfo()
+            if self._recv_pktinfo is None:
+                log.info("Cannot learn the destination address of requests "
+                         "on this platform; replies may come from a different "
+                         "local address than the one the client used")
+        else:
+            self.replyip = boundip
 
         self.is_running.set()
 
@@ -158,9 +197,10 @@ class TftpServer(TftpSession):
                 # Is the traffic on the main server socket? ie. new session?
                 if readysock == self.sock:
                     log.debug("Data ready on our main socket")
-                    buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
+                    buffer, raddress, rport, localip = self._recv_request()
 
-                    log.debug("Read %d bytes", len(buffer))
+                    log.debug("Read %d bytes sent to %s", len(buffer),
+                              localip or "an unknown local address")
 
                     if self.shutdown_gracefully:
                         log.warning(
@@ -174,15 +214,18 @@ class TftpServer(TftpSession):
 
                     if key not in self.sessions:
                         log.debug("Creating new server context for session key = %s" % key)
-                        self.sessions[key] = TftpContextServer(
-                            raddress,
-                            rport,
-                            timeout,
-                            self.root,
-                            self.dyn_file_func,
-                            self.upload_open,
-                            retries=retries,
-                        )
+                        try:
+                            self.sessions[key] = self._new_context(
+                                raddress, rport, timeout, retries, localip)
+                        except OSError as err:
+                            # Windows reports the destination of a broadcast
+                            # request rather than the interface address, and
+                            # that cannot be bound. Reply as before then.
+                            log.warning("Cannot reply from %s (%s), leaving "
+                                        "the source address to the kernel",
+                                        localip, err)
+                            self.sessions[key] = self._new_context(
+                                raddress, rport, timeout, retries, "")
                         try:
                             self.sessions[key].start(buffer)
                         except TftpTimeoutExpectACK:
@@ -276,6 +319,68 @@ class TftpServer(TftpSession):
 
         log.debug("server returning from while loop")
         self.shutdown_gracefully = self.shutdown_immediately = False
+
+    def _new_context(self, raddress, rport, timeout, retries, localip):
+        """Create the server context for a new session, replying from
+        localip, or from the kernel's choice if it is ""."""
+        return TftpContextServer(
+            raddress,
+            rport,
+            timeout,
+            self.root,
+            self.dyn_file_func,
+            self.upload_open,
+            retries=retries,
+            localip=localip,
+        )
+
+    def _enable_pktinfo(self):
+        """Ask the kernel to report the destination address of each datagram
+        on the main socket. Returns a callable that receives one datagram as
+        (buffer, raddress, rport, localip), or None if that is unsupported."""
+        if sys.platform == "win32":
+            # No socket.recvmsg on Windows; use WSARecvMsg instead.
+            try:
+                from . import _winsock
+                return _winsock.make_pktinfo_receiver(self.sock)
+            except (ImportError, AttributeError, OSError) as err:
+                log.debug("Could not enable IP_PKTINFO: %s", err)
+                return None
+        if not hasattr(self.sock, "recvmsg") or IP_PKTINFO is None:
+            return None
+        try:
+            self.sock.setsockopt(socket.IPPROTO_IP, IP_PKTINFO, 1)
+        except OSError as err:
+            log.debug("Could not enable IP_PKTINFO: %s", err)
+            return None
+        return self._recvmsg_pktinfo
+
+    def _recvmsg_pktinfo(self, bufsize):
+        """Receive one datagram with recvmsg and read its destination address
+        from the IP_PKTINFO ancillary data."""
+        # struct in_pktinfo { int ipi_ifindex; struct in_addr ipi_spec_dst;
+        # struct in_addr ipi_addr; }. ipi_spec_dst is the local address the
+        # datagram was received on; unlike ipi_addr it is never a broadcast
+        # address, so a reply socket can always be bound to it.
+        buffer, ancdata, _, (raddress, rport) = self.sock.recvmsg(
+            bufsize, socket.CMSG_SPACE(12))
+        localip = ""
+        for level, ctype, data in ancdata:
+            if (level == socket.IPPROTO_IP and ctype == IP_PKTINFO
+                    and len(data) >= 12):
+                _, spec_dst, _ = struct.unpack("i4s4s", data[:12])
+                localip = socket.inet_ntoa(spec_dst)
+        return buffer, raddress, rport, localip
+
+    def _recv_request(self):
+        """Receive one datagram on the main socket. Returns (buffer, raddress,
+        rport, localip), where localip is the address to reply from, or ""
+        to leave that to the kernel."""
+        if self._recv_pktinfo is not None:
+            buffer, raddress, rport, localip = self._recv_pktinfo(MAX_BLKSIZE)
+            return buffer, raddress, rport, localip or self.replyip
+        buffer, (raddress, rport) = self.sock.recvfrom(MAX_BLKSIZE)
+        return buffer, raddress, rport, self.replyip
 
     def stop(self, now=False):
         """Stop the server gracefully. Do not take any new transfers,
