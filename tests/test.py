@@ -4,7 +4,9 @@ import os
 import tempfile
 import unittest
 import logging
+import select
 import socket
+import sys
 import threading
 import tftpy
 from io import BytesIO
@@ -287,13 +289,63 @@ class TftpServerReplyAddressTest(unittest.TestCase):
         self.assertEqual(replyip, SECONDARY_IP)
 
     @unittest.skipUnless(
-        hasattr(socket.socket, "recvmsg") and hasattr(socket, "IP_PKTINFO"),
+        sys.platform == "win32" or (
+            hasattr(socket.socket, "recvmsg") and hasattr(socket, "IP_PKTINFO")),
         "this platform cannot report the destination address of a request")
     def test_reply_from_request_destination_with_wildcard_listen(self):
         server = self.start_server("0.0.0.0")
         replyip, reply = self.request_reply_address(server)
         self.assertIsInstance(reply, TftpPacketDAT)
         self.assertEqual(replyip, SECONDARY_IP)
+
+    def test_unbindable_reply_address_falls_back_to_kernel_choice(self):
+        # A destination address that cannot be bound, as Windows reports for
+        # a broadcast request, must not lose the request.
+        original = tftpy.TftpServer._recv_request
+
+        def recv_request(server):
+            buffer, raddress, rport, _ = original(server)
+            return buffer, raddress, rport, "192.0.2.1"
+
+        with patch.object(tftpy.TftpServer, "_recv_request", recv_request):
+            server = self.start_server("0.0.0.0")
+            replyip, reply = self.request_reply_address(server)
+        self.assertIsInstance(reply, TftpPacketDAT)
+        self.assertEqual(replyip, "127.0.0.1")
+
+
+@unittest.skipUnless(sys.platform == "win32", "Windows only")
+@unittest.skipUnless(can_bind(SECONDARY_IP),
+                     f"{SECONDARY_IP} is not a usable local address here")
+class TftpWinsockTest(unittest.TestCase):
+    """Verify the WSARecvMsg-based receiver used on Windows."""
+
+    def make_receiver(self):
+        from tftpy import _winsock
+
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.addCleanup(sock.close)
+        sock.bind(("0.0.0.0", 0))
+        sock.setblocking(False)
+        return sock, _winsock.make_pktinfo_receiver(sock)
+
+    def test_reports_destination_address(self):
+        sock, receive = self.make_receiver()
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.addCleanup(client.close)
+        client.bind(("127.0.0.1", 0))
+        client.sendto(b"hello", (SECONDARY_IP, sock.getsockname()[1]))
+
+        select.select([sock], [], [], 5)
+        buffer, raddress, rport, localip = receive(tftpy.MAX_BLKSIZE)
+        self.assertEqual(buffer, b"hello")
+        self.assertEqual((raddress, rport), client.getsockname())
+        self.assertEqual(localip, SECONDARY_IP)
+
+    def test_empty_nonblocking_socket_raises_like_recvfrom(self):
+        _, receive = self.make_receiver()
+        with self.assertRaises(BlockingIOError):
+            receive(tftpy.MAX_BLKSIZE)
 
 
 class TftpyTestCase(unittest.TestCase):

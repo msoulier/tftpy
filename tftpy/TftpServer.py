@@ -10,6 +10,7 @@ import os
 import select
 import socket
 import struct
+import sys
 import threading
 import time
 from errno import EINTR
@@ -103,7 +104,8 @@ class TftpServer(TftpSession):
         so a host with several addresses (eg. VIPs) answers from the right
         one. With a specific listenip that is listenip itself; with the
         wildcard address it is learned per request via IP_PKTINFO where the
-        platform supports it, and left to the kernel's routing otherwise."""
+        platform supports it (recvmsg, or WSARecvMsg on Windows), and left
+        to the kernel's routing otherwise."""
         tftp_factory = TftpPacketFactory()
 
         # Don't use new 2.5 ternary operator yet
@@ -200,16 +202,18 @@ class TftpServer(TftpSession):
 
                     if key not in self.sessions:
                         log.debug("Creating new server context for session key = %s" % key)
-                        self.sessions[key] = TftpContextServer(
-                            raddress,
-                            rport,
-                            timeout,
-                            self.root,
-                            self.dyn_file_func,
-                            self.upload_open,
-                            retries=retries,
-                            localip=localip,
-                        )
+                        try:
+                            self.sessions[key] = self._new_context(
+                                raddress, rport, timeout, retries, localip)
+                        except OSError as err:
+                            # Windows reports the destination of a broadcast
+                            # request rather than the interface address, and
+                            # that cannot be bound. Reply as before then.
+                            log.warning("Cannot reply from %s (%s), leaving "
+                                        "the source address to the kernel",
+                                        localip, err)
+                            self.sessions[key] = self._new_context(
+                                raddress, rport, timeout, retries, "")
                         try:
                             self.sessions[key].start(buffer)
                         except TftpTimeoutExpectACK:
@@ -304,10 +308,32 @@ class TftpServer(TftpSession):
         log.debug("server returning from while loop")
         self.shutdown_gracefully = self.shutdown_immediately = False
 
+    def _new_context(self, raddress, rport, timeout, retries, localip):
+        """Create the server context for a new session, replying from
+        localip, or from the kernel's choice if it is ""."""
+        return TftpContextServer(
+            raddress,
+            rport,
+            timeout,
+            self.root,
+            self.dyn_file_func,
+            self.upload_open,
+            retries=retries,
+            localip=localip,
+        )
+
     def _enable_pktinfo(self):
         """Ask the kernel to report the destination address of each datagram
         on the main socket. Returns a callable that receives one datagram as
         (buffer, raddress, rport, localip), or None if that is unsupported."""
+        if sys.platform == "win32":
+            # No socket.recvmsg on Windows; use WSARecvMsg instead.
+            try:
+                from . import _winsock
+                return _winsock.make_pktinfo_receiver(self.sock)
+            except (ImportError, AttributeError, OSError) as err:
+                log.debug("Could not enable IP_PKTINFO: %s", err)
+                return None
         if not hasattr(self.sock, "recvmsg") or not hasattr(socket, "IP_PKTINFO"):
             return None
         try:
