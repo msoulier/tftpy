@@ -95,6 +95,10 @@ class TftpContext:
         self.options = None
         self.packethook = None
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # The local address this context sends from, or "" to let the kernel
+        # choose. A server sets it to the address the request was sent to, so
+        # that replies come from the same IP on a multi-address host.
+        self.localip = localip
         if localip != "":
             self.sock.bind((localip, 0))
         self.sock.settimeout(timeout)
@@ -254,10 +258,12 @@ class TftpContextServer(TftpContext):
         dyn_file_func=None,
         upload_open=None,
         retries=DEF_TIMEOUT_RETRIES,
-        flock=True
+        flock=True,
+        localip=""
     ):
         log.debug("TftpContextServer.__init__")
-        super().__init__(host, port, timeout, retries, flock=flock)
+        super().__init__(host, port, timeout, retries, localip=localip,
+                         flock=flock)
         # At this point we have no idea if this is a download or an upload. We
         # need to let the start state determine that.
         self.state = TftpStateServerStart(self)

@@ -4,6 +4,8 @@ import os
 import tempfile
 import unittest
 import logging
+import socket
+import threading
 import tftpy
 from io import BytesIO
 from multiprocessing import Queue
@@ -14,6 +16,8 @@ from shutil import rmtree
 from unittest.mock import call, patch
 
 from tftpy.TftpContexts import TftpContextClientUpload
+from tftpy.TftpPacketFactory import TftpPacketFactory
+from tftpy.TftpPacketTypes import TftpPacketDAT, TftpPacketRRQ
 
 log = logging.getLogger("tftpy")
 log.setLevel(logging.DEBUG)
@@ -216,6 +220,81 @@ class TftpContextClientUploadCleanupTest(unittest.TestCase):
                     call(opened_file, unlock=True),
                 ],
             )
+
+
+def can_bind(address):
+    """Whether a UDP socket can be bound to address on this host."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        sock.bind((address, 0))
+        return True
+    except OSError:
+        return False
+    finally:
+        sock.close()
+
+
+# 127.0.0.2 stands in for a VIP or secondary address: it is local, but the
+# kernel routes replies to 127.0.0.1 from 127.0.0.1 unless told otherwise.
+SECONDARY_IP = "127.0.0.2"
+
+
+@unittest.skipUnless(can_bind(SECONDARY_IP),
+                     f"{SECONDARY_IP} is not a usable local address here")
+class TftpServerReplyAddressTest(unittest.TestCase):
+    """Verify that the server replies from the address a request was sent to,
+    which clients and firewalls on multi-address hosts depend on."""
+
+    def start_server(self, listenip):
+        """Run a server on listenip and an ephemeral port in a thread."""
+        root = tempfile.mkdtemp()
+        self.addCleanup(rmtree, root, ignore_errors=True)
+        Path(root, "hello.bin").write_bytes(b"hello")
+
+        server = tftpy.TftpServer(root)
+        thread = threading.Thread(
+            target=server.listen,
+            kwargs={"listenip": listenip, "listenport": 0, "timeout": 1},
+            daemon=True,
+        )
+        thread.start()
+        self.assertTrue(server.is_running.wait(5), "server did not start")
+        # Cleanups run last-in first-out: stop the server, then join it.
+        self.addCleanup(thread.join, 5)
+        self.addCleanup(server.stop, now=True)
+        return server
+
+    def request_reply_address(self, server):
+        """Send an RRQ to SECONDARY_IP from 127.0.0.1, and return the address
+        the reply came from along with the parsed reply."""
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.addCleanup(client.close)
+        client.bind(("127.0.0.1", 0))
+        client.settimeout(5)
+
+        rrq = TftpPacketRRQ()
+        rrq.filename = "hello.bin"
+        rrq.mode = "octet"
+        rrq.options = {}
+        client.sendto(rrq.encode().buffer, (SECONDARY_IP, server.listenport))
+        buffer, (replyip, _) = client.recvfrom(tftpy.MAX_BLKSIZE)
+        return replyip, TftpPacketFactory().parse(buffer)
+
+    def test_reply_from_listen_address(self):
+        server = self.start_server(SECONDARY_IP)
+        replyip, reply = self.request_reply_address(server)
+        self.assertIsInstance(reply, TftpPacketDAT)
+        self.assertEqual(replyip, SECONDARY_IP)
+
+    @unittest.skipUnless(
+        hasattr(socket.socket, "recvmsg") and hasattr(socket, "IP_PKTINFO"),
+        "this platform cannot report the destination address of a request")
+    def test_reply_from_request_destination_with_wildcard_listen(self):
+        server = self.start_server("0.0.0.0")
+        replyip, reply = self.request_reply_address(server)
+        self.assertIsInstance(reply, TftpPacketDAT)
+        self.assertEqual(replyip, SECONDARY_IP)
+
 
 class TftpyTestCase(unittest.TestCase):
     """Better approaches to defining the server function"""
