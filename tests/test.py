@@ -288,9 +288,10 @@ class TftpServerReplyAddressTest(unittest.TestCase):
         self.assertIsInstance(reply, TftpPacketDAT)
         self.assertEqual(replyip, SECONDARY_IP)
 
+    # Decided by platform, not by asking the socket module: it lacks
+    # IP_PKTINFO before Python 3.12 even where the kernel supports it.
     @unittest.skipUnless(
-        sys.platform == "win32" or (
-            hasattr(socket.socket, "recvmsg") and hasattr(socket, "IP_PKTINFO")),
+        sys.platform in ("win32", "darwin") or sys.platform.startswith("linux"),
         "this platform cannot report the destination address of a request")
     def test_reply_from_request_destination_with_wildcard_listen(self):
         server = self.start_server("0.0.0.0")

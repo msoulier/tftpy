@@ -163,7 +163,10 @@ def make_pktinfo_receiver(sock):
         # SOCKADDR_IN: sin_family, then sin_port and sin_addr in network
         # byte order.
         rport, raddress = struct.unpack_from("!H4s", name.raw, 2)
-        localip = _find_pktinfo(control.raw, message.Control.len)
+        # If the control data was truncated, Control.len is the length
+        # Winsock wanted rather than what it wrote, so clamp it.
+        localip = _find_pktinfo(control.raw,
+                                min(message.Control.len, _CONTROL_SIZE))
         return (data.raw[:received.value], socket.inet_ntoa(raddress),
                 rport, localip)
 

@@ -22,6 +22,18 @@ from .TftpShared import *
 
 log = logging.getLogger("tftpy.TftpServer")
 
+# The socket module only exports IP_PKTINFO from Python 3.12, on every
+# platform, so fall back to the kernel's value before that. Whether the
+# option really works is decided by setsockopt succeeding.
+if hasattr(socket, "IP_PKTINFO"):
+    IP_PKTINFO = socket.IP_PKTINFO
+elif sys.platform.startswith("linux"):
+    IP_PKTINFO = 8
+elif sys.platform == "darwin":
+    IP_PKTINFO = 26
+else:
+    IP_PKTINFO = None
+
 
 class TftpServer(TftpSession):
     """This class implements a tftp server object. Run the listen() method to
@@ -334,10 +346,10 @@ class TftpServer(TftpSession):
             except (ImportError, AttributeError, OSError) as err:
                 log.debug("Could not enable IP_PKTINFO: %s", err)
                 return None
-        if not hasattr(self.sock, "recvmsg") or not hasattr(socket, "IP_PKTINFO"):
+        if not hasattr(self.sock, "recvmsg") or IP_PKTINFO is None:
             return None
         try:
-            self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_PKTINFO, 1)
+            self.sock.setsockopt(socket.IPPROTO_IP, IP_PKTINFO, 1)
         except OSError as err:
             log.debug("Could not enable IP_PKTINFO: %s", err)
             return None
@@ -354,7 +366,7 @@ class TftpServer(TftpSession):
             bufsize, socket.CMSG_SPACE(12))
         localip = ""
         for level, ctype, data in ancdata:
-            if (level == socket.IPPROTO_IP and ctype == socket.IP_PKTINFO
+            if (level == socket.IPPROTO_IP and ctype == IP_PKTINFO
                     and len(data) >= 12):
                 _, spec_dst, _ = struct.unpack("i4s4s", data[:12])
                 localip = socket.inet_ntoa(spec_dst)
