@@ -60,6 +60,33 @@ class TestTftpyClasses(unittest.TestCase):
         self.assertEqual(rrq.mode, "octet", "Mode correct")
         self.assertEqual(rrq.options["blksize"], "1024", "blksize correct")
 
+    def testTftpPacketEmptyOptionValues(self):
+        options = {"blksize": "1024", "grandstream_REV_RECOVERY": "", "tsize": "0"}
+        for packet_type in (tftpy.TftpPacketTypes.TftpPacketRRQ,
+                            tftpy.TftpPacketTypes.TftpPacketWRQ):
+            with self.subTest(packet_type=packet_type):
+                packet = packet_type()
+                packet.filename = "config.xml"
+                packet.mode = "octet"
+                packet.options = options
+                packet.encode()
+                packet.decode()
+                self.assertEqual(packet.options, options)
+                state = tftpy.TftpStates.TftpState(None)
+                self.assertEqual(state.returnSupportedOptions(packet.options),
+                                 {"blksize": "1024", "tsize": 0})
+
+    def testTftpPacketRejectsEmptyOptionNames(self):
+        packet = tftpy.TftpPacketTypes.TftpPacketRRQ()
+        for options in ({"": "value"}, {"blksize": "1024", "": "value"}):
+            with self.subTest(options=options):
+                packet.filename = "config.xml"
+                packet.mode = "octet"
+                packet.options = options
+                packet.encode()
+                with self.assertRaises(tftpy.TftpException):
+                    packet.decode()
+
     def testTftpPacketWRQ(self):
         log.debug("===> Running test case testTftpPacketWRQ")
         options = {}

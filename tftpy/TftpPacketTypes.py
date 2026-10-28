@@ -73,11 +73,15 @@ class TftpPacketWithOptions:
         # Count the nulls in the buffer. Each one terminates a string.
         log.debug("about to iterate options buffer counting nulls")
         length = 0
+        field_count = 0
         for i in range(len(buffer)):
             if ord(buffer[i: i + 1]) == 0:
                 log.debug("found a null at length %d", length)
-                if length > 0:
+                # Empty values are valid for vendor options, but each name
+                # must still be nonempty.
+                if length > 0 or field_count % 2:
                     fmt += b"%dsx" % length
+                    field_count += 1
                     length = -1
                 else:
                     raise TftpException("Invalid options in buffer")
