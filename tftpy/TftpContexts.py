@@ -489,6 +489,9 @@ class TftpContextClientDownload(TftpContext):
                 # if it exists.
                 log.error("Received File not found error")
                 if self.fileobj is not None and not self.filelike_fileobj:
+                    # Windows cannot unlink an open file. Closing also releases
+                    # its lock before removing the failed download.
+                    self.fileobj.close()
                     if os.path.exists(self.fileobj.name):
                         log.debug("unlinking output file of %s",
                                   self.fileobj.name)

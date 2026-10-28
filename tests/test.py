@@ -13,7 +13,8 @@ from contextlib import contextmanager
 from shutil import rmtree
 from unittest.mock import call, patch
 
-from tftpy.TftpContexts import TftpContextClientUpload
+from tftpy.TftpContexts import TftpContextClientUpload, TftpContextClientDownload
+from tftpy.TftpShared import TftpFileNotFoundError
 
 log = logging.getLogger("tftpy")
 log.setLevel(logging.DEBUG)
@@ -216,6 +217,60 @@ class TftpContextClientUploadCleanupTest(unittest.TestCase):
                     call(opened_file, unlock=True),
                 ],
             )
+
+class TftpContextClientDownloadCleanupTest(unittest.TestCase):
+    def make_context(self, output, flock=True):
+        context = TftpContextClientDownload(
+            host="127.0.0.1", port=69, filename="missing.bin",
+            output=output, options={}, packethook=None, timeout=1,
+            flock=flock,
+        )
+        self.addCleanup(context.end)
+        return context
+
+    def test_missing_remote_file_closes_output_before_unlink(self):
+        for flock in (True, False):
+            with self.subTest(flock=flock), tempfile.TemporaryDirectory() as tempdir:
+                output_path = Path(tempdir) / "output.bin"
+                context = self.make_context(output_path, flock=flock)
+                original_unlink = os.unlink
+
+                def unlink_closed_file(path):
+                    # Windows rejects unlinking an open file. Enforce that
+                    # ordering on all platforms before removing the real file.
+                    if not context.fileobj.closed:
+                        raise PermissionError("output file is still open")
+                    original_unlink(path)
+
+                error = TftpFileNotFoundError("missing remote file")
+                with patch.object(context, "sock", wraps=context.sock) as sock, \
+                        patch.object(context, "cycle", side_effect=error), \
+                        patch("tftpy.TftpContexts.os.unlink", side_effect=unlink_closed_file):
+                    sock.sendto.return_value = 0
+                    with self.assertRaises(TftpFileNotFoundError) as raised:
+                        with context:
+                            context.start()
+                self.assertIs(raised.exception, error)
+                self.assertFalse(output_path.exists())
+                self.assertTrue(context.fileobj.closed)
+                self.assertEqual(context.sock.fileno(), -1)
+
+    def test_missing_remote_file_preserves_caller_owned_output(self):
+        output = BytesIO(b"keep caller contents")
+        self.addCleanup(output.close)
+        context = self.make_context(output)
+        with patch.object(context, "sock", wraps=context.sock) as sock, \
+                patch.object(context, "cycle", side_effect=TftpFileNotFoundError), \
+                patch("tftpy.TftpContexts.os.unlink") as unlink:
+            sock.sendto.return_value = 0
+            with self.assertRaises(TftpFileNotFoundError):
+                with context:
+                    context.start()
+        unlink.assert_not_called()
+        self.assertFalse(output.closed)
+        self.assertEqual(output.getvalue(), b"keep caller contents")
+        self.assertEqual(context.sock.fileno(), -1)
+
 
 class TftpyTestCase(unittest.TestCase):
     """Better approaches to defining the server function"""
