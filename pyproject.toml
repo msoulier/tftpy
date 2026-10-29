@@ -25,5 +25,5 @@ license = { text = "MIT" }
 Homepage = "https://github.com/msoulier/tftpy"
 Issues = "https://github.com/msoulier/tftpy/issues"
 
-[tools.setuptools]
+[tool.setuptools]
 script-files = ["bin/tftpy_client.py", "bin/tftpy_server.py"]
